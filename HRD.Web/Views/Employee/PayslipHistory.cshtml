@@ -1,0 +1,484 @@
+﻿@model List<HRD.Web.Models.DTOs.PayrollResponse>
+@{
+    ViewData["Title"] = "Riwayat Slip Gaji";
+    var currentYear = ViewBag.Year ?? DateTime.Now.Year;
+    var availableYears = ViewBag.Years as List<int> ?? new List<int>();
+    var employee = ViewBag.Employee as HRD.Web.Models.DTOs.KaryawanResponse;
+}
+
+<div class="container-fluid px-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="bi bi-clock-history text-primary me-2"></i>
+                        Riwayat Slip Gaji
+                    </h1>
+                    @if (employee != null)
+                    {
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-person me-1"></i>@employee.NamaLengkap 
+                            <span class="mx-2">|</span>
+                            <i class="bi bi-card-text me-1"></i>@employee.NIK
+                            <span class="mx-2">|</span>
+                            <i class="bi bi-briefcase me-1"></i>@employee.Posisi
+                        </p>
+                    }
+                </div>
+                <div>
+                    <a href="@Url.Action("CurrentPayslip", "Employee")" class="btn btn-outline-primary">
+                        <i class="bi bi-receipt me-2"></i>Slip Gaji Terkini
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="get" class="d-flex align-items-end gap-3">
+                        <div class="flex-grow-1">
+                            <label for="tahun" class="form-label fw-semibold">
+                                <i class="bi bi-calendar3 text-primary me-1"></i>Filter Tahun
+                            </label>
+                            <select id="tahun" name="tahun" class="form-select" onchange="this.form.submit()">
+                                @foreach (var year in availableYears)
+                                {
+                                    @if (year == currentYear)
+                                    {
+                                        <option value="@year" selected>@year</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@year">@year</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i>Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (!string.IsNullOrEmpty(ViewBag.Error))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Payslip History Content -->
+    @if (Model != null && Model.Any())
+    {
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="h6 mb-0">Total Slip Gaji</div>
+                                <div class="h4 mb-0">@Model.Count</div>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-receipt fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="h6 mb-0">Sudah Dibayar</div>
+                                <div class="h4 mb-0">@Model.Count(p => p.StatusBayar == "Sudah Bayar")</div>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-check-circle fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-warning text-dark">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="h6 mb-0">Belum Dibayar</div>
+                                <div class="h4 mb-0">@Model.Count(p => p.StatusBayar == "Belum Bayar")</div>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-clock fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="h6 mb-0">Total Tahun @currentYear</div>
+                                <div class="h4 mb-0">Rp @Model.Sum(p => p.TotalGaji).ToString("N0")</div>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-currency-dollar fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payslip History Table -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table text-primary me-2"></i>
+                        Riwayat Slip Gaji Tahun @currentYear
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()">
+                            <i class="bi bi-file-earmark-excel me-1"></i>Export Excel
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="exportToPDF()">
+                            <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="payslipTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0 fw-semibold text-muted text-uppercase tracking-wider">
+                                    <i class="bi bi-calendar3 me-1"></i>Periode
+                                </th>
+                                <th class="border-0 fw-semibold text-muted text-uppercase tracking-wider">
+                                    <i class="bi bi-currency-dollar me-1"></i>Gaji Pokok
+                                </th>
+                                <th class="border-0 fw-semibold text-muted text-uppercase tracking-wider">
+                                    <i class="bi bi-plus-circle me-1"></i>Tunjangan
+                                </th>
+                                <th class="border-0 fw-semibold text-muted text-uppercase tracking-wider">
+                                    <i class="bi bi-dash-circle me-1"></i>Potongan
+                                </th>
+                                <th class="border-0 fw-semibold text-muted text-uppercase tracking-wider">
+                                    <i class="bi bi-cash-stack me-1"></i>Total Gaji
+                                </th>
+                                <th class="border-0 fw-semibold text-muted text-uppercase tracking-wider">
+                                    <i class="bi bi-check2-square me-1"></i>Status
+                                </th>
+                                <th class="border-0 fw-semibold text-muted text-uppercase tracking-wider text-center">
+                                    <i class="bi bi-gear me-1"></i>Aksi
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payslip in Model.OrderByDescending(p => p.Tahun).ThenByDescending(p => p.Bulan))
+                            {
+                                <tr class="border-bottom">
+                                    <td class="py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-calendar-month text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    @(new System.Globalization.CultureInfo("id-ID").DateTimeFormat.GetMonthName(payslip.Bulan)) @payslip.Tahun
+                                                </div>
+                                                <small class="text-muted">
+                                                    Dibuat: @payslip.TglDibuat.ToString("dd MMM yyyy")
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-semibold text-success">
+                                            Rp @payslip.GajiPokok.ToString("N0")
+                                        </span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-semibold text-info">
+                                            Rp @payslip.Tunjangan.ToString("N0")
+                                        </span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-semibold text-warning">
+                                            Rp @payslip.Potongan.ToString("N0")
+                                        </span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-bold text-primary fs-6">
+                                            Rp @payslip.TotalGaji.ToString("N0")
+                                        </span>
+                                    </td>
+                                    <td class="py-3">
+                                        @if (payslip.StatusBayar == "Sudah Bayar")
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                                                <i class="bi bi-check-circle me-1"></i>Sudah Dibayar
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
+                                                <i class="bi bi-clock me-1"></i>Belum Dibayar
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <div class="btn-group" role="group">
+                                            <a href="@Url.Action("PayslipDetail", "Employee", new { idGaji = payslip.IdGaji })" 
+                                               class="btn btn-outline-primary btn-sm" 
+                                               title="Lihat Detail">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("DownloadPayslip", "Employee", new { idGaji = payslip.IdGaji })" 
+                                               class="btn btn-outline-success btn-sm" 
+                                               title="Download PDF">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up text-primary me-2"></i>
+                            Grafik Perkembangan Gaji @currentYear
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salaryChart" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- No Data State -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                </div>
+                <h4 class="text-muted mb-3">Belum Ada Riwayat Slip Gaji</h4>
+                <p class="text-muted mb-4">
+                    Belum ada slip gaji yang tersedia untuk tahun @currentYear. 
+                    Slip gaji akan muncul setelah HRD memproses payroll bulanan.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="@Url.Action("Dashboard", "Employee")" class="btn btn-primary">
+                        <i class="bi bi-house me-2"></i>Kembali ke Dashboard
+                    </a>
+                    <a href="@Url.Action("CurrentPayslip", "Employee")" class="btn btn-outline-primary">
+                        <i class="bi bi-receipt me-2"></i>Cek Slip Gaji Terkini
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Chart.js for Salary Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize salary chart if data exists
+        @if (Model != null && Model.Any())
+        {
+            <text>
+            const ctx = document.getElementById('salaryChart').getContext('2d');
+            const payslipData = @Html.Raw(Json.Serialize(Model.OrderBy(p => p.Bulan).Select(p => new { 
+                month = p.Bulan, 
+                monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(p.Bulan),
+                totalGaji = p.TotalGaji,
+                gajiPokok = p.GajiPokok,
+                tunjangan = p.Tunjangan,
+                potongan = p.Potongan
+            })));
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: payslipData.map(p => p.monthName),
+                    datasets: [{
+                        label: 'Total Gaji',
+                        data: payslipData.map(p => p.totalGaji),
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Gaji Pokok',
+                        data: payslipData.map(p => p.gajiPokok),
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4
+                    }, {
+                        label: 'Tunjangan',
+                        data: payslipData.map(p => p.tunjangan),
+                        borderColor: '#0dcaf0',
+                        backgroundColor: 'rgba(13, 202, 240, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Bulan'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Nominal (Rupiah)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+            </text>
+        }
+    });
+
+    // Export functions
+    function exportToExcel() {
+        // Implementation for Excel export
+        alert('Fitur export Excel akan segera tersedia');
+    }
+
+    function exportToPDF() {
+        // Implementation for PDF export
+        alert('Fitur export PDF akan segera tersedia');
+    }
+
+    // Add hover effects
+    document.querySelectorAll('.table tbody tr').forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+</script>
+
+<style>
+    .tracking-wider {
+        letter-spacing: 0.05em;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.15s ease-in-out;
+    }
+    
+    .badge {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .btn-group .btn {
+        border-radius: 0.375rem;
+    }
+    
+    .btn-group .btn:not(:last-child) {
+        margin-right: 0.25rem;
+    }
+    
+    .bg-primary { background-color: #0d6efd !important; }
+    .bg-success { background-color: #198754 !important; }
+    .bg-warning { background-color: #ffc107 !important; }
+    .bg-info { background-color: #0dcaf0 !important; }
+    
+    .text-primary { color: #0d6efd !important; }
+    .text-success { color: #198754 !important; }
+    .text-warning { color: #ffc107 !important; }
+    .text-info { color: #0dcaf0 !important; }
+</style>

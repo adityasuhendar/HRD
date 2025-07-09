@@ -1,0 +1,113 @@
+﻿<!-- HRD.Web/Views/Presensi/ClockIn.cshtml -->
+@model HRD.Web.Models.DTOs.ClockInRequest
+@{
+    ViewData["Title"] = "Clock In/Out";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center mb-4">
+                    <i class="bi bi-clock text-primary"></i> Presensi Kerja
+                </h4>
+                
+                @if (ViewBag.AlreadyClocked == true && ViewBag.TodayAttendance != null)
+                {
+                    var attendance = ViewBag.TodayAttendance as HRD.Web.Models.DTOs.PresensiResponse;
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-info-circle"></i> Sudah Clock In Hari Ini</h5>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <strong>Jam Masuk:</strong> @attendance.JamMasuk?.ToString("HH:mm:ss")
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Status:</strong> <span class="badge bg-success">@attendance.StatusPresensi</span>
+                            </div>
+                        </div>
+                        
+                        @if (!attendance.JamKeluar.HasValue)
+                        {
+                            <hr>
+                            <h6>Clock Out</h6>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <input type="text" id="clockOutNotes" class="form-control" placeholder="Catatan clock out (opsional)">
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-danger w-100" onclick="clockOut()">
+                                        <i class="bi bi-box-arrow-right"></i> Clock Out
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <hr>
+                            <div class="text-success">
+                                <strong>Jam Keluar:</strong> @attendance.JamKeluar?.ToString("HH:mm:ss") | 
+                                <strong>Total Jam:</strong> @attendance.TotalJam jam
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center mb-4">
+                        <div class="bg-light rounded-circle d-inline-flex p-4 mb-3">
+                            <i class="bi bi-clock display-1 text-primary"></i>
+                        </div>
+                        <h5>Selamat datang! Silakan clock in untuk memulai kerja hari ini.</h5>
+                        <p class="text-muted">Waktu saat ini: <span id="currentTime"></span></p>
+                    </div>
+                    
+                    <form method="post" asp-action="ClockIn">
+                        <div class="mb-3">
+                            <label asp-for="Catatan" class="form-label">Catatan (Opsional)</label>
+                            <input asp-for="Catatan" class="form-control" placeholder="Masukkan catatan jika ada">
+                        </div>
+                        
+                        <input asp-for="MetodePresensi" type="hidden" value="Web">
+                        <input asp-for="DeviceId" type="hidden" value="web-browser">
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-box-arrow-in-right"></i> Clock In
+                            </button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Update current time
+        function updateTime() {
+            var now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('id-ID');
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        function clockOut() {
+            var notes = document.getElementById('clockOutNotes').value;
+            
+            $.post('@Url.Action("ClockOut", "Presensi")', { catatan: notes })
+                .done(function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                })
+                .fail(function() {
+                    alert('Terjadi kesalahan sistem');
+                });
+        }
+    </script>
+}

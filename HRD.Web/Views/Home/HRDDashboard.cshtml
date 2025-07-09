@@ -1,0 +1,203 @@
+﻿<!-- HRD.Web/Views/Home/HRDDashboard.cshtml -->
+@model HRD.Web.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard HRD";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>Dashboard HRD</h2>
+                <p class="text-muted mb-0">@Model.TanggalHariIni.ToString("dddd, dd MMMM yyyy")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Total Karyawan</h5>
+                        <h3>@Model.TotalKaryawan</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people display-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Hadir Hari Ini</h5>
+                        <h3>@Model.KaryawanHadirHariIni</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle display-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Cuti Pending</h5>
+                        <h3>@Model.CutiMenungguApproval</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-event display-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Absensi</h5>
+                        <h3>95%</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-graph-up display-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Pengajuan Cuti Menunggu -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-calendar-check text-warning"></i> Pengajuan Cuti Menunggu Persetujuan
+                    </h5>
+                    <a href="@Url.Action("Manage", "Cuti")" class="btn btn-sm btn-outline-primary">Kelola Semua</a>
+                </div>
+
+                @if (Model.CutiMenungguList.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Karyawan</th>
+                                    <th>Jenis Cuti</th>
+                                    <th>Tanggal</th>
+                                    <th>Durasi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cuti in Model.CutiMenungguList.Take(5))
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@cuti.NamaKaryawan</strong><br>
+                                            <small class="text-muted">@cuti.NIKKaryawan</small>
+                                        </td>
+                                        <td>@cuti.JenisCuti</td>
+                                        <td>@cuti.TglMulai.ToString("dd/MM/yyyy")<br><small>s/d @cuti.TglSelesai.ToString("dd/MM/yyyy")</small></td>
+                                        <td>@cuti.JumlahHari hari</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success me-1" onclick="quickApprove(@cuti.IdCuti)">
+                                                <i class="bi bi-check"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="quickReject(@cuti.IdCuti)">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-3">
+                        <i class="bi bi-calendar-check display-1 text-muted"></i>
+                        <p class="text-muted mt-3">Tidak ada pengajuan cuti yang menunggu</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-lightning text-primary"></i> Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("Create", "Karyawan")" class="btn btn-outline-primary">
+                        <i class="bi bi-person-plus"></i> Tambah Karyawan
+                    </a>
+                    <a href="@Url.Action("TodaySummary", "Presensi")" class="btn btn-outline-success">
+                        <i class="bi bi-calendar-day"></i> Presensi Hari Ini
+                    </a>
+                    <a href="@Url.Action("Manage", "Cuti")" class="btn btn-outline-warning">
+                        <i class="bi bi-calendar-event"></i> Kelola Cuti
+                    </a>
+                    <a href="#" class="btn btn-outline-info">
+                        <i class="bi bi-file-earmark-text"></i> Generate Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function quickApprove(cutiId) {
+            if (confirm('Setujui pengajuan cuti ini?')) {
+                $.post('@Url.Action("QuickApprove", "Cuti")/' + cutiId)
+                    .done(function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    });
+            }
+        }
+
+        function quickReject(cutiId) {
+            var reason = prompt('Alasan penolakan (opsional):');
+            if (reason !== null) {
+                $.post('@Url.Action("QuickReject", "Cuti")/' + cutiId, { reason: reason })
+                    .done(function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    });
+            }
+        }
+    </script>
+}

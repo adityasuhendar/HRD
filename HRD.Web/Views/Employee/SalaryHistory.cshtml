@@ -1,0 +1,819 @@
+﻿@model List<HRD.Web.Models.DTOs.PayrollResponse>
+@{
+    ViewData["Title"] = "Grafik & Analisis Gaji";
+    var currentYear = ViewBag.Year ?? DateTime.Now.Year;
+    var previousYear = ViewBag.PreviousYear ?? DateTime.Now.Year - 1;
+    var availableYears = ViewBag.Years as List<int> ?? new List<int>();
+    var employee = ViewBag.Employee as HRD.Web.Models.DTOs.KaryawanResponse;
+    var analytics = ViewBag.Analytics;
+}
+
+<div class="container-fluid px-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="bi bi-graph-up text-primary me-2"></i>
+                        Grafik & Analisis Gaji
+                    </h1>
+                    @if (employee != null)
+                    {
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-person me-1"></i>@employee.NamaLengkap 
+                            <span class="mx-2">|</span>
+                            <i class="bi bi-card-text me-1"></i>@employee.NIK
+                            <span class="mx-2">|</span>
+                            <i class="bi bi-briefcase me-1"></i>@employee.Posisi
+                        </p>
+                    }
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("PayslipHistory", "Employee")" class="btn btn-outline-secondary">
+                        <i class="bi bi-table me-2"></i>Riwayat Tabel
+                    </a>
+                    <a href="@Url.Action("CurrentPayslip", "Employee")" class="btn btn-outline-primary">
+                        <i class="bi bi-receipt me-2"></i>Slip Terkini
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="get" class="d-flex align-items-end gap-3">
+                        <div class="flex-grow-1">
+                            <label for="tahun" class="form-label fw-semibold">
+                                <i class="bi bi-calendar3 text-primary me-1"></i>Tahun Analisis
+                            </label>
+                            <select id="tahun" name="tahun" class="form-select" onchange="this.form.submit()">
+                                @foreach (var year in availableYears)
+                                {
+                                    if (year == currentYear)
+                                    {
+                                        <option value="@year" selected>@year</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@year">@year</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-bar-chart me-1"></i>Analisis
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Handling -->
+    @if (!string.IsNullOrEmpty(ViewBag.Error))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Analytics Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 bg-gradient-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-1 opacity-75">Total Gaji @currentYear</h6>
+                                <h3 class="mb-0 fw-bold">Rp @analytics.CurrentYear.TotalSalary.ToString("N0")</h3>
+                                @if (analytics.PreviousYear.TotalSalary > 0)
+                                {
+                                    var growth = ((analytics.CurrentYear.TotalSalary - analytics.PreviousYear.TotalSalary) / analytics.PreviousYear.TotalSalary) * 100;
+                                    <small class="opacity-75">
+                                        @if (growth >= 0)
+                                        {
+                                            <i class="bi bi-arrow-up"></i> @($"+{growth:F1}% dari {previousYear}")
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-arrow-down"></i> @($"{growth:F1}% dari {previousYear}")
+                                        }
+                                    </small>
+                                }
+                            </div>
+                            <div class="fs-1 opacity-75">
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 bg-gradient-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-1 opacity-75">Rata-rata Bulanan</h6>
+                                <h3 class="mb-0 fw-bold">Rp @analytics.CurrentYear.AverageSalary.ToString("N0")</h3>
+                                <small class="opacity-75">@analytics.CurrentYear.TotalPayslips bulan data</small>
+                            </div>
+                            <div class="fs-1 opacity-75">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 bg-gradient-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-1 opacity-75">Gaji Tertinggi</h6>
+                                <h3 class="mb-0 fw-bold">Rp @analytics.CurrentYear.HighestSalary.ToString("N0")</h3>
+                                <small class="opacity-75">Pencapaian terbaik</small>
+                            </div>
+                            <div class="fs-1 opacity-75">
+                                <i class="bi bi-trophy"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100 bg-gradient-warning text-dark">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-1 opacity-75">Total Tunjangan</h6>
+                                <h3 class="mb-0 fw-bold">Rp @analytics.CurrentYear.TotalAllowances.ToString("N0")</h3>
+                                <small class="opacity-75">Benefit tambahan</small>
+                            </div>
+                            <div class="fs-1 opacity-75">
+                                <i class="bi bi-gift"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Charts Row -->
+        <div class="row mb-4">
+            <!-- Salary Trend Chart -->
+            <div class="col-lg-8 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 border-bottom-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-semibold">
+                                <i class="bi bi-graph-up text-primary me-2"></i>
+                                Tren Gaji @currentYear
+                            </h5>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="radio" class="btn-check" name="chartType" id="line" checked>
+                                <label class="btn btn-outline-primary" for="line">Line</label>
+                                <input type="radio" class="btn-check" name="chartType" id="bar">
+                                <label class="btn btn-outline-primary" for="bar">Bar</label>
+                                <input type="radio" class="btn-check" name="chartType" id="area">
+                                <label class="btn btn-outline-primary" for="area">Area</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salaryTrendChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Composition Pie Chart -->
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 border-bottom-0">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-pie-chart text-info me-2"></i>
+                            Komposisi Rata-rata
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="compositionChart" height="300"></canvas>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="d-flex align-items-center">
+                                    <span class="badge bg-success me-2" style="width: 12px; height: 12px;"></span>
+                                    Gaji Pokok
+                                </span>
+                                <span class="fw-semibold">@((Model.Any() ? Model.Average(p => p.GajiPokok) : 0).ToString("N0"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="d-flex align-items-center">
+                                    <span class="badge bg-info me-2" style="width: 12px; height: 12px;"></span>
+                                    Tunjangan
+                                </span>
+                                <span class="fw-semibold">@((Model.Any() ? Model.Average(p => p.Tunjangan) : 0).ToString("N0"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="d-flex align-items-center">
+                                    <span class="badge bg-warning me-2" style="width: 12px; height: 12px;"></span>
+                                    Potongan
+                                </span>
+                                <span class="fw-semibold">-@((Model.Any() ? Model.Average(p => p.Potongan) : 0).ToString("N0"))</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Charts Row -->
+        <div class="row mb-4">
+            <!-- Monthly Growth Chart -->
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 border-bottom-0">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-arrow-up-right text-success me-2"></i>
+                            Pertumbuhan Bulanan
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="growthChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Year Comparison Chart -->
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 border-bottom-0">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-bar-chart text-warning me-2"></i>
+                            Perbandingan @previousYear vs @currentYear
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="comparisonChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analytics Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 border-bottom-0">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-table text-secondary me-2"></i>
+                            Detail Analisis @currentYear
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="border-0 fw-semibold">Bulan</th>
+                                        <th class="border-0 fw-semibold text-end">Gaji Pokok</th>
+                                        <th class="border-0 fw-semibold text-end">Tunjangan</th>
+                                        <th class="border-0 fw-semibold text-end">Potongan</th>
+                                        <th class="border-0 fw-semibold text-end">Total Gaji</th>
+                                        <th class="border-0 fw-semibold text-center">Growth</th>
+                                        <th class="border-0 fw-semibold text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var sortedData = Model.OrderBy(p => p.Bulan).ToList();
+                                        decimal previousSalary = 0;
+                                    }
+                                    @foreach (var payslip in sortedData)
+                                    {
+                                        var growth = previousSalary > 0 ? ((payslip.TotalGaji - previousSalary) / previousSalary) * 100 : 0;
+                                        var monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(payslip.Bulan);
+                                        
+                                        <tr>
+                                            <td class="py-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                        <i class="bi bi-calendar-month text-primary"></i>
+                                                    </div>
+                                                    <span class="fw-semibold">@monthName</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 text-end text-success fw-semibold">Rp @payslip.GajiPokok.ToString("N0")</td>
+                                            <td class="py-3 text-end text-info fw-semibold">Rp @payslip.Tunjangan.ToString("N0")</td>
+                                            <td class="py-3 text-end text-warning fw-semibold">Rp @payslip.Potongan.ToString("N0")</td>
+                                            <td class="py-3 text-end text-primary fw-bold">Rp @payslip.TotalGaji.ToString("N0")</td>
+                                            <td class="py-3 text-center">
+                                                @if (previousSalary > 0)
+                                                {
+                                                    if (growth >= 0)
+                                                    {
+                                                        <span class="badge bg-success-subtle text-success">
+                                                            <i class="bi bi-arrow-up me-1"></i>@growth.ToString("F1")%
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-danger-subtle text-danger">
+                                                            <i class="bi bi-arrow-down me-1"></i>@growth.ToString("F1")%
+                                                        </span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary-subtle text-secondary">
+                                                        <i class="bi bi-dash"></i>
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td class="py-3 text-center">
+                                                @if (payslip.StatusBayar == "Sudah Bayar")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle me-1"></i>Paid
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-clock me-1"></i>Pending
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        
+                                        previousSalary = payslip.TotalGaji;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <!-- No Data State -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-graph-down display-1 text-muted"></i>
+                </div>
+                <h4 class="text-muted mb-3">Belum Ada Data Gaji untuk Analisis</h4>
+                <p class="text-muted mb-4">
+                    Belum ada data gaji yang tersedia untuk tahun @currentYear. 
+                    Data akan muncul setelah HRD memproses payroll bulanan.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="@Url.Action("Dashboard", "Employee")" class="btn btn-primary">
+                        <i class="bi bi-house me-2"></i>Kembali ke Dashboard
+                    </a>
+                    <a href="@Url.Action("PayslipHistory", "Employee")" class="btn btn-outline-primary">
+                        <i class="bi bi-table me-2"></i>Lihat Riwayat
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Chart.js -->
+<!-- <script src="https:cdn.jsdelivr.net/npm/chart.js"></script> -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    @if (Model != null && Model.Any())
+    {
+        <text>
+        // Prepare data
+        const salaryData = @Html.Raw(Json.Serialize(Model.OrderBy(p => p.Bulan).Select(p => new { 
+            month = p.Bulan, 
+            monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(p.Bulan),
+            totalGaji = p.TotalGaji,
+            gajiPokok = p.GajiPokok,
+            tunjangan = p.Tunjangan,
+            potongan = p.Potongan
+        })));
+
+        const months = salaryData.map(d => d.monthName);
+        const totalSalaries = salaryData.map(d => d.totalGaji);
+        const basicSalaries = salaryData.map(d => d.gajiPokok);
+        const allowances = salaryData.map(d => d.tunjangan);
+        const deductions = salaryData.map(d => d.potongan);
+
+        // Chart colors
+        const colors = {
+            primary: '#0d6efd',
+            success: '#198754', 
+            info: '#0dcaf0',
+            warning: '#ffc107',
+            danger: '#dc3545'
+        };
+
+        // 1. Salary Trend Chart (Dynamic Type Switching)
+        let salaryTrendChart;
+        const initSalaryTrendChart = (type = 'line') => {
+            const ctx = document.getElementById('salaryTrendChart').getContext('2d');
+            
+            if (salaryTrendChart) {
+                salaryTrendChart.destroy();
+            }
+
+            const config = {
+                type: type,
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Total Gaji',
+                        data: totalSalaries,
+                        borderColor: colors.primary,
+                        backgroundColor: type === 'line' ? 'rgba(13, 110, 253, 0.1)' : colors.primary,
+                        borderWidth: 3,
+                        fill: type === 'line',
+                        tension: 0.4
+                    }, {
+                        label: 'Gaji Pokok',
+                        data: basicSalaries,
+                        borderColor: colors.success,
+                        backgroundColor: type === 'line' ? 'rgba(25, 135, 84, 0.1)' : colors.success,
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4
+                    }, {
+                        label: 'Tunjangan',
+                        data: allowances,
+                        borderColor: colors.info,
+                        backgroundColor: type === 'line' ? 'rgba(13, 202, 240, 0.1)' : colors.info,
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            };
+
+            salaryTrendChart = new Chart(ctx, config);
+        };
+
+        // Initialize with line chart
+        initSalaryTrendChart('line');
+
+        // Chart type switcher
+        document.querySelectorAll('input[name="chartType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                initSalaryTrendChart(this.id);
+            });
+        });
+
+        // 2. Composition Pie Chart
+        const avgBasic = salaryData.reduce((sum, d) => sum + d.gajiPokok, 0) / salaryData.length;
+        const avgAllowances = salaryData.reduce((sum, d) => sum + d.tunjangan, 0) / salaryData.length;
+        const avgDeductions = salaryData.reduce((sum, d) => sum + d.potongan, 0) / salaryData.length;
+
+        new Chart(document.getElementById('compositionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Gaji Pokok', 'Tunjangan', 'Potongan'],
+                datasets: [{
+                    data: [avgBasic, avgAllowances, avgDeductions],
+                    backgroundColor: [colors.success, colors.info, colors.warning],
+                    borderWidth: 0,
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return context.label + ': Rp ' + context.parsed.toLocaleString('id-ID') + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // 3. Monthly Growth Chart
+        const growthData = [];
+        for (let i = 1; i < totalSalaries.length; i++) {
+            const growth = ((totalSalaries[i] - totalSalaries[i-1]) / totalSalaries[i-1]) * 100;
+            growthData.push(growth);
+        }
+
+        new Chart(document.getElementById('growthChart'), {
+            type: 'bar',
+            data: {
+                labels: months.slice(1), // Skip first month as no previous data
+                datasets: [{
+                    label: 'Pertumbuhan (%)',
+                    data: growthData,
+                    backgroundColor: growthData.map(g => g >= 0 ? 'rgba(25, 135, 84, 0.8)' : 'rgba(220, 53, 69, 0.8)'),
+                    borderColor: growthData.map(g => g >= 0 ? colors.success : colors.danger),
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                const sign = value >= 0 ? '+' : '';
+                                return 'Pertumbuhan: ' + sign + value.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Year Comparison Chart
+        const currentYearAvg = totalSalaries.reduce((a, b) => a + b, 0) / totalSalaries.length;
+        const previousYearAvg = @analytics.PreviousYear.AverageSalary;
+
+        new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['@previousYear', '@currentYear'],
+                datasets: [{
+                    label: 'Rata-rata Gaji',
+                    data: [previousYearAvg, currentYearAvg],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(13, 110, 253, 0.8)'
+                    ],
+                    borderColor: [colors.warning, colors.primary],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Rata-rata: Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            },
+                            afterLabel: function(context) {
+                                if (context.dataIndex === 1 && previousYearAvg > 0) {
+                                    const growth = ((currentYearAvg - previousYearAvg) / previousYearAvg) * 100;
+                                    const sign = growth >= 0 ? '+' : '';
+                                    return 'Pertumbuhan: ' + sign + growth.toFixed(1) + '%';
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp ' + value.toLocaleString('id-ID');
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 5. Add chart animations and interactions
+        Chart.defaults.animation.duration = 1500;
+        Chart.defaults.animation.easing = 'easeInOutQuart';
+
+        // Add hover effects to chart containers
+        document.querySelectorAll('.card').forEach(card => {
+            const canvas = card.querySelector('canvas');
+            if (canvas) {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 1rem 2rem rgba(0, 0, 0, 0.175)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)';
+                });
+            }
+        });
+
+        // Add loading animation
+        const showLoadingAnimation = () => {
+            document.querySelectorAll('canvas').forEach(canvas => {
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#6c757d';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Loading...', canvas.width / 2, canvas.height / 2);
+            });
+        };
+
+        // Performance optimization for large datasets
+        if (salaryData.length > 12) {
+            Chart.defaults.elements.point.radius = 2;
+            Chart.defaults.elements.point.hoverRadius = 4;
+        }
+
+        // Real-time data update simulation (optional)
+        const updateCharts = () => {
+            // This can be used for real-time updates
+            console.log('Charts updated at:', new Date().toLocaleTimeString());
+        };
+
+        // Update charts every 5 minutes (optional)
+        // setInterval(updateCharts, 300000);
+
+        </text>
+    }
+
+    // Global functions for export and print
+    window.exportCharts = function() {
+        // Implementation for exporting charts
+        const charts = ['salaryTrendChart', 'compositionChart', 'growthChart', 'comparisonChart'];
+        
+        charts.forEach(chartId => {
+            const canvas = document.getElementById(chartId);
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = chartId + '_' + new Date().getTime() + '.png';
+                link.href = url;
+                link.click();
+            }
+        });
+        
+        // Show success message
+        showNotification('Charts exported successfully!', 'success');
+    };
+
+    window.printReport = function() {
+        // Optimize for printing
+        const originalTitle = document.title;
+        document.title = 'Salary Analysis Report - ' + new Date().toLocaleDateString();
+        
+        // Hide unnecessary elements
+        document.querySelectorAll('.btn, .form-select, .dropdown').forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        window.print();
+        
+        // Restore after print
+        setTimeout(() => {
+            document.title = originalTitle;
+            document.querySelectorAll('.btn, .form-select, .dropdown').forEach(el => {
+                el.style.display = '';
+            });
+        }, 1000);
+    };
+
+    // Utility function for notifications
+    const showNotification = (message, type = 'info') => {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1060; min-width: 300px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    };
+
+    // Responsive chart resize handler
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            Chart.helpers.each(Chart.instances, function(instance) {
+                instance.resize();
+            });
+        }, 100);
+    });
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey) {
+            switch(e.key) {
+                case 'p':
+                    e.preventDefault();
+                    printReport();
+                    break;
+                case 's':
+                    e.preventDefault();
+                    exportCharts();
+                    break;
+            }
+        }
+    });
+
+    console.log('Salary History Charts initialized successfully!');
+});
+</script>

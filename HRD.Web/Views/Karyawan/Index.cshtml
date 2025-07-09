@@ -1,0 +1,291 @@
+﻿@model List<HRD.Web.Models.DTOs.KaryawanResponse>
+@{
+    ViewData["Title"] = "Daftar Karyawan";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>
+            <i class="bi bi-people text-primary"></i> Daftar Karyawan
+        </h2>
+        <p class="text-muted">Kelola data karyawan perusahaan</p>
+    </div>
+    <a href="@Url.Action("Create")" class="btn btn-success">
+        <i class="bi bi-person-plus"></i> Tambah Karyawan
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Error as string))
+{
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-people display-6"></i>
+                    <h4>@Model.Count</h4>
+                    <small>Total Karyawan</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle display-6"></i>
+                    <h4>@Model.Count(k => k.StatusKaryawan == "Aktif")</h4>
+                    <small>Aktif</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-pause-circle display-6"></i>
+                    <h4>@Model.Count(k => k.StatusKaryawan != "Aktif")</h4>
+                    <small>Non-Aktif</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-diagram-3 display-6"></i>
+                    <h4>@Model.GroupBy(k => k.Divisi).Count()</h4>
+                    <small>Divisi</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Daftar Karyawan (@Model.Count orang)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>NIK</th>
+                            <th>Nama Karyawan</th>
+                            <th>Posisi</th>
+                            <th>Divisi</th>
+                            <th>Status</th>
+                            <th>Bergabung</th>
+                            <th>Gaji</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var karyawan in Model.OrderBy(k => k.NIK))
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">@karyawan.NIK</strong>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@karyawan.NamaLengkap</strong>
+                                        <br><small class="text-muted">
+                                            <i class="bi bi-envelope"></i> @karyawan.EmailKantor
+                                        </small>
+                                        @if (!string.IsNullOrEmpty(karyawan.NoTelepon))
+                                        {
+                                            <br>
+                                
+                                            <small class="text-muted">
+                                                <i class="bi bi-telephone"></i> @karyawan.NoTelepon
+                                            </small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">@karyawan.Posisi</span>
+                                </td>
+                                <td>
+                                    @if (karyawan.Divisi == "Development")
+                                    {
+                                        <span class="badge bg-primary">💻 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Design")
+                                    {
+                                        <span class="badge bg-success">🎨 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Marketing")
+                                    {
+                                        <span class="badge bg-warning text-dark">📢 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Finance")
+                                    {
+                                        <span class="badge bg-info">💰 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Human Resources")
+                                    {
+                                        <span class="badge bg-secondary">👥 @karyawan.Divisi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@karyawan.Divisi</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (karyawan.StatusKaryawan == "Aktif")
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Aktif
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-pause-circle"></i> Non-Aktif
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <small>
+                                        @karyawan.TglBergabung.ToString("dd/MM/yyyy")
+                                        <br><span class="text-muted">
+                                            @((DateTime.Now - karyawan.TglBergabung).Days) hari
+                                        </span>
+                                    </small>
+                                </td>
+                                <td>
+                                    <small>
+                                        <strong>@karyawan.GajiPokok.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</strong>
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Details", new { id = karyawan.IdKaryawan })"
+                                           class="btn btn-sm btn-outline-primary" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", new { id = karyawan.IdKaryawan })"
+                                           class="btn btn-sm btn-outline-warning" title="Edit Data">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        @if (karyawan.StatusKaryawan == "Aktif")
+                                        {
+                                            <a href="@Url.Action("Deactivate", new { id = karyawan.IdKaryawan })"
+                                               class="btn btn-sm btn-outline-danger"
+                                               onclick="return confirm('Yakin ingin menonaktifkan karyawan ini?')"
+                                               title="Non-aktifkan">
+                                                <i class="bi bi-pause"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Activate", new { id = karyawan.IdKaryawan })"
+                                               class="btn btn-sm btn-outline-success"
+                                               onclick="return confirm('Yakin ingin mengaktifkan karyawan ini?')"
+                                               title="Aktifkan">
+                                                <i class="bi bi-play"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Info -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-graph-up"></i> Distribusi Divisi
+                </div>
+                <div class="card-body">
+                    @foreach (var divisi in Model.GroupBy(k => k.Divisi).OrderByDescending(g => g.Count()))
+                    {
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>@divisi.Key</span>
+                            <span><strong>@divisi.Count()</strong> orang</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-currency-dollar"></i> Info Gaji
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Rata-rata:</span>
+                        <span><strong>@Model.Average(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</strong></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Tertinggi:</span>
+                        <span><strong>@Model.Max(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</strong></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Terendah:</span>
+                        <span><strong>@Model.Min(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</strong></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Total Gaji:</span>
+                        <span><strong>@Model.Sum(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <i class="bi bi-people display-1 text-muted"></i>
+        <h4 class="mt-3">Belum Ada Karyawan</h4>
+        <p class="text-muted">Sistem belum memiliki data karyawan. Mulai dengan menambah karyawan pertama.</p>
+        <a href="@Url.Action("Create")" class="btn btn-success btn-lg">
+            <i class="bi bi-person-plus"></i> Tambah Karyawan Pertama
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Auto dismiss alerts after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(function(alert) {
+                var closeBtn = alert.querySelector('.btn-close');
+                if (closeBtn) {
+                    closeBtn.click();
+                }
+            });
+        }, 5000);
+    </script>
+}
