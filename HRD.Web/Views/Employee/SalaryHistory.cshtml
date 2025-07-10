@@ -617,7 +617,7 @@
 </style>
 
 <div class="salary-analytics-container">
-    <div class="container-fluid px-4">
+<div class="container-fluid px-4">
         <!-- Page Header -->
         <div class="page-header animate-in">
             <div class="d-flex justify-content-between align-items-start">
@@ -654,255 +654,256 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Filter Section -->
-        <div class="row mb-4">
-            <div class="col-md-6">
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
                 <div class="card filter-card animate-in" style="animation-delay: 0.1s;">
-                    <div class="card-body">
-                        <form method="get" class="d-flex align-items-end gap-3">
-                            <div class="flex-grow-1">
+                <div class="card-body">
+                    <form method="get" class="d-flex align-items-end gap-3">
+                        <div class="flex-grow-1">
                                 <label for="tahun" class="form-label">
                                     <i class="bi bi-calendar3"></i>
                                     Tahun Analisis
-                                </label>
-                                <select id="tahun" name="tahun" class="form-select" onchange="this.form.submit()">
-                                    @foreach (var year in availableYears)
-                                    {
+                            </label>
+                            <select id="tahun" name="tahun" class="form-select" onchange="this.form.submit()">
+                                @foreach (var year in availableYears)
+                                {
                                         @if (year == currentYear)
+                                    {
+                                        <option value="@year" selected>@year</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@year">@year</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div>
+                                <button type="submit" class="btn btn-filter">
+                                    <i class="bi bi-bar-chart"></i> Analisis
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Error Alert -->
+    @if (!string.IsNullOrEmpty(ViewBag.Error))
+    {
+            <div class="alert alert-danger alert-dismissible fade show animate-in" role="alert" style="animation-delay: 0.2s;">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Analytics Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card analytics-card primary animate-in" style="animation-delay: 0.3s;">
+                        <div class="analytics-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                    <h6 class="analytics-label">Total Gaji @currentYear</h6>
+                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.TotalSalary.ToString("N0")</h3>
+                                @if (analytics.PreviousYear.TotalSalary > 0)
+                                {
+                                    var growth = ((analytics.CurrentYear.TotalSalary - analytics.PreviousYear.TotalSalary) / analytics.PreviousYear.TotalSalary) * 100;
+                                        <small class="analytics-growth">
+                                        @if (growth >= 0)
                                         {
-                                            <option value="@year" selected>@year</option>
+                                            <i class="bi bi-arrow-up"></i> @($"+{growth:F1}% dari {previousYear}")
                                         }
                                         else
                                         {
-                                            <option value="@year">@year</option>
+                                            <i class="bi bi-arrow-down"></i> @($"{growth:F1}% dari {previousYear}")
                                         }
-                                    }
-                                </select>
+                                    </small>
+                                }
                             </div>
+                                <div>
+                                    <i class="bi bi-currency-dollar analytics-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card analytics-card success animate-in" style="animation-delay: 0.4s;">
+                        <div class="analytics-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <button type="submit" class="btn btn-filter">
-                                    <i class="bi bi-bar-chart"></i> Analisis
-                                </button>
+                                    <h6 class="analytics-label">Rata-rata Bulanan</h6>
+                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.AverageSalary.ToString("N0")</h3>
+                                    <small class="analytics-growth">@analytics.CurrentYear.TotalPayslips bulan data</small>
                             </div>
-                        </form>
+                                <div>
+                                    <i class="bi bi-graph-up-arrow analytics-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card analytics-card info animate-in" style="animation-delay: 0.5s;">
+                        <div class="analytics-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                    <h6 class="analytics-label">Gaji Tertinggi</h6>
+                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.HighestSalary.ToString("N0")</h3>
+                                    <small class="analytics-growth">Pencapaian terbaik</small>
+                            </div>
+                                <div>
+                                    <i class="bi bi-trophy-fill analytics-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card analytics-card warning animate-in" style="animation-delay: 0.6s;">
+                        <div class="analytics-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                    <h6 class="analytics-label">Total Tunjangan</h6>
+                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.TotalAllowances.ToString("N0")</h3>
+                                    <small class="analytics-growth">Benefit tambahan</small>
+                            </div>
+                                <div>
+                                    <i class="bi bi-gift-fill analytics-icon"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Error Alert -->
-        @if (!string.IsNullOrEmpty(ViewBag.Error))
-        {
-            <div class="alert alert-danger alert-dismissible fade show animate-in" role="alert" style="animation-delay: 0.2s;">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                @ViewBag.Error
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
-        @if (Model != null && Model.Any())
-        {
-            <!-- Analytics Cards -->
-            <div class="row mb-4">
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <div class="card analytics-card primary animate-in" style="animation-delay: 0.3s;">
-                        <div class="analytics-card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="analytics-label">Total Gaji @currentYear</h6>
-                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.TotalSalary.ToString("N0")</h3>
-                                    @if (analytics.PreviousYear.TotalSalary > 0)
-                                    {
-                                        var growth = ((analytics.CurrentYear.TotalSalary - analytics.PreviousYear.TotalSalary) / analytics.PreviousYear.TotalSalary) * 100;
-                                        <small class="analytics-growth">
-                                            @if (growth >= 0)
-                                            {
-                                                <i class="bi bi-arrow-up"></i> @($"+{growth:F1}% dari {previousYear}")
-                                            }
-                                            else
-                                            {
-                                                <i class="bi bi-arrow-down"></i> @($"{growth:F1}% dari {previousYear}")
-                                            }
-                                        </small>
-                                    }
-                                </div>
-                                <div>
-                                    <i class="bi bi-currency-dollar analytics-icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <div class="card analytics-card success animate-in" style="animation-delay: 0.4s;">
-                        <div class="analytics-card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="analytics-label">Rata-rata Bulanan</h6>
-                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.AverageSalary.ToString("N0")</h3>
-                                    <small class="analytics-growth">@analytics.CurrentYear.TotalPayslips bulan data</small>
-                                </div>
-                                <div>
-                                    <i class="bi bi-graph-up-arrow analytics-icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <div class="card analytics-card info animate-in" style="animation-delay: 0.5s;">
-                        <div class="analytics-card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="analytics-label">Gaji Tertinggi</h6>
-                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.HighestSalary.ToString("N0")</h3>
-                                    <small class="analytics-growth">Pencapaian terbaik</small>
-                                </div>
-                                <div>
-                                    <i class="bi bi-trophy-fill analytics-icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <div class="card analytics-card warning animate-in" style="animation-delay: 0.6s;">
-                        <div class="analytics-card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="analytics-label">Total Tunjangan</h6>
-                                    <h3 class="analytics-number">Rp @analytics.CurrentYear.TotalAllowances.ToString("N0")</h3>
-                                    <small class="analytics-growth">Benefit tambahan</small>
-                                </div>
-                                <div>
-                                    <i class="bi bi-gift-fill analytics-icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Charts Row -->
-            <div class="row mb-4">
-                <!-- Salary Trend Chart -->
-                <div class="col-lg-8 mb-4">
+        <!-- Main Charts Row -->
+        <div class="row mb-4">
+            <!-- Salary Trend Chart -->
+            <div class="col-lg-8 mb-4">
                     <div class="card chart-card animate-in" style="animation-delay: 0.7s;">
                         <div class="chart-card-header">
-                            <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
                                     <i class="bi bi-graph-up"></i>
-                                    Tren Gaji @currentYear
-                                </h5>
+                                Tren Gaji @currentYear
+                            </h5>
                                 <div class="btn-group btn-group-sm chart-type-switcher" role="group">
-                                    <input type="radio" class="btn-check" name="chartType" id="line" checked>
-                                    <label class="btn btn-outline-primary" for="line">Line</label>
-                                    <input type="radio" class="btn-check" name="chartType" id="bar">
-                                    <label class="btn btn-outline-primary" for="bar">Bar</label>
-                                    <input type="radio" class="btn-check" name="chartType" id="area">
-                                    <label class="btn btn-outline-primary" for="area">Area</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart-card-body">
-                            <div class="chart-container">
-                                <canvas id="salaryTrendChart" height="300"></canvas>
+                                <input type="radio" class="btn-check" name="chartType" id="line" checked>
+                                <label class="btn btn-outline-primary" for="line">Line</label>
+                                <input type="radio" class="btn-check" name="chartType" id="bar">
+                                <label class="btn btn-outline-primary" for="bar">Bar</label>
+                                <input type="radio" class="btn-check" name="chartType" id="area">
+                                <label class="btn btn-outline-primary" for="area">Area</label>
                             </div>
                         </div>
                     </div>
+                        <div class="chart-card-body">
+                            <div class="chart-container">
+                        <canvas id="salaryTrendChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
                 </div>
 
                 <!-- Salary Composition Chart -->
-                <div class="col-lg-4 mb-4">
+            <div class="col-lg-4 mb-4">
                     <div class="card chart-card animate-in" style="animation-delay: 0.8s;">
                         <div class="chart-card-header">
                             <h5 class="mb-0">
                                 <i class="bi bi-pie-chart-fill"></i>
-                                Komposisi Rata-rata
-                            </h5>
-                        </div>
+                            Komposisi Rata-rata
+                        </h5>
+                    </div>
                         <div class="chart-card-body">
-                            <canvas id="compositionChart" height="300"></canvas>
+                        <canvas id="compositionChart" height="300"></canvas>
                             <div class="composition-legend">
                                 <div class="legend-item">
-                                    <span class="d-flex align-items-center">
+                                <span class="d-flex align-items-center">
                                         <span class="legend-color" style="background: #10b981;"></span>
-                                        Gaji Pokok
-                                    </span>
+                                    Gaji Pokok
+                                </span>
                                     <span class="fw-semibold">Rp @((Model.Any() ? Model.Average(p => p.GajiPokok) : 0).ToString("N0"))</span>
-                                </div>
+                            </div>
                                 <div class="legend-item">
-                                    <span class="d-flex align-items-center">
+                                <span class="d-flex align-items-center">
                                         <span class="legend-color" style="background: #3b82f6;"></span>
-                                        Tunjangan
-                                    </span>
+                                    Tunjangan
+                                </span>
                                     <span class="fw-semibold">Rp @((Model.Any() ? Model.Average(p => p.Tunjangan) : 0).ToString("N0"))</span>
-                                </div>
+                            </div>
                                 <div class="legend-item">
-                                    <span class="d-flex align-items-center">
+                                <span class="d-flex align-items-center">
                                         <span class="legend-color" style="background: #f59e0b;"></span>
-                                        Potongan
-                                    </span>
+                                    Potongan
+                                </span>
                                     <span class="fw-semibold">-Rp @((Model.Any() ? Model.Average(p => p.Potongan) : 0).ToString("N0"))</span>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Secondary Charts Row -->
-            <div class="row mb-4">
-                <!-- Monthly Growth Chart -->
-                <div class="col-lg-6 mb-4">
+        <!-- Secondary Charts Row -->
+        <div class="row mb-4">
+            <!-- Monthly Growth Chart -->
+            <div class="col-lg-6 mb-4">
                     <div class="card chart-card animate-in" style="animation-delay: 0.9s;">
                         <div class="chart-card-header">
                             <h5 class="mb-0">
                                 <i class="bi bi-arrow-up-right"></i>
-                                Pertumbuhan Bulanan
-                            </h5>
-                        </div>
-                        <div class="chart-card-body">
-                            <canvas id="growthChart" height="250"></canvas>
-                        </div>
+                            Pertumbuhan Bulanan
+                        </h5>
                     </div>
-                </div>
-
-                <!-- Year Comparison Chart -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card chart-card animate-in" style="animation-delay: 1.0s;">
-                        <div class="chart-card-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-bar-chart"></i>
-                                Perbandingan @previousYear vs @currentYear
-                            </h5>
-                        </div>
                         <div class="chart-card-body">
-                            <canvas id="comparisonChart" height="250"></canvas>
-                        </div>
+                        <canvas id="growthChart" height="250"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Detailed Analytics Table -->
-            <div class="row">
-                <div class="col-12">
+            <!-- Year Comparison Chart -->
+            <div class="col-lg-6 mb-4">
+                    <div class="card chart-card animate-in" style="animation-delay: 1.0s;">
+                        <div class="chart-card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-bar-chart"></i>
+                            Perbandingan @previousYear vs @currentYear
+                        </h5>
+                    </div>
+                        <div class="chart-card-body">
+                        <canvas id="comparisonChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analytics Table -->
+        <div class="row">
+            <div class="col-12">
                     <div class="card analytics-table animate-in" style="animation-delay: 1.1s;">
                         <div class="analytics-table-header">
                             <h5 class="mb-0">
                                 <i class="bi bi-table"></i>
-                                Detail Analisis @currentYear
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
+                            Detail Analisis @currentYear
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
                                 <table class="table custom-table">
                                     <thead>
-                                        <tr>
+                                    <tr>
                                             <th>Bulan</th>
                                             <th class="text-end">Gaji Pokok</th>
                                             <th class="text-end">Tunjangan</th>
@@ -910,82 +911,83 @@
                                             <th class="text-end">Total Gaji</th>
                                             <th class="text-center">Growth</th>
                                             <th class="text-center">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @{
-                                            var sortedData = Model.OrderBy(p => p.Bulan).ToList();
-                                            decimal previousSalary = 0;
-                                        }
-                                        @foreach (var payslip in sortedData)
-                                        {
-                                            var growth = previousSalary > 0 ? ((payslip.TotalGaji - previousSalary) / previousSalary) * 100 : 0;
-                                            var monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(payslip.Bulan);
-                                            
-                                            <tr>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var sortedData = Model.OrderBy(p => p.Bulan).ToList();
+                                        decimal previousSalary = 0;
+                                    }
+                                    @foreach (var payslip in sortedData)
+                                    {
+                                        var growth = previousSalary > 0 ? ((payslip.TotalGaji - previousSalary) / previousSalary) * 100 : 0;
+                                        var monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(payslip.Bulan);
+                                        
+                                        <tr>
                                                 <td>
                                                     <div class="month-info">
                                                         <div class="month-icon">
                                                             <i class="bi bi-calendar-month"></i>
-                                                        </div>
-                                                        <span class="fw-semibold">@monthName</span>
                                                     </div>
-                                                </td>
+                                                    <span class="fw-semibold">@monthName</span>
+                                                </div>
+                                            </td>
                                                 <td class="text-end fw-semibold" style="color: #10b981;">Rp @payslip.GajiPokok.ToString("N0")</td>
                                                 <td class="text-end fw-semibold" style="color: #3b82f6;">Rp @payslip.Tunjangan.ToString("N0")</td>
                                                 <td class="text-end fw-semibold" style="color: #f59e0b;">Rp @payslip.Potongan.ToString("N0")</td>
                                                 <td class="text-end fw-bold" style="color: var(--aegis-red);">Rp @payslip.TotalGaji.ToString("N0")</td>
                                                 <td class="text-center">
-                                                    @if (previousSalary > 0)
+                                                @if (previousSalary > 0)
+                                                {
+                                                    if (growth >= 0)
                                                     {
-                                                        if (growth >= 0)
-                                                        {
                                                             <span class="growth-badge growth-positive">
                                                                 <i class="bi bi-arrow-up"></i>@growth.ToString("F1")%
-                                                            </span>
-                                                        }
-                                                        else
-                                                        {
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
                                                             <span class="growth-badge growth-negative">
                                                                 <i class="bi bi-arrow-down"></i>@growth.ToString("F1")%
-                                                            </span>
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="growth-badge growth-neutral">
-                                                            <i class="bi bi-dash"></i>
                                                         </span>
                                                     }
-                                                </td>
+                                                }
+                                                else
+                                                {
+                                                        <span class="growth-badge growth-neutral">
+                                                        <i class="bi bi-dash"></i>
+                                                    </span>
+                                                }
+                                            </td>
                                                 <td class="text-center">
-                                                    @if (payslip.StatusBayar == "Sudah Bayar")
-                                                    {
+                                                @if (payslip.StatusBayar == "Sudah Bayar")
+                                                {
                                                         <span class="growth-badge status-badge-paid">
                                                             <i class="bi bi-check-circle"></i>Paid
-                                                        </span>
-                                                    }
-                                                    else
-                                                    {
+                                                    </span>
+                                                }
+                                                else
+                                                {
                                                         <span class="growth-badge status-badge-pending">
                                                             <i class="bi bi-clock"></i>Pending
-                                                        </span>
-                                                    }
-                                                </td>
-                                            </tr>
-                                            
-                                            previousSalary = payslip.TotalGaji;
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        
+                                        previousSalary = payslip.TotalGaji;
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-        }
-        else
-        {
+        </div>
+
+    }
+    else
+    {
             <!-- Empty State -->
             <div class="empty-state animate-in" style="animation-delay: 0.3s;">
                 <i class="bi bi-graph-down"></i>
@@ -1003,34 +1005,35 @@
                     </a>
                 </div>
             </div>
-        }
-    </div>
+        </div>
+    }
+</div>
 </div>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            @if (Model != null && Model.Any())
-            {
-                <text>
-                // Prepare data
-                const salaryData = @Html.Raw(Json.Serialize(Model.OrderBy(p => p.Bulan).Select(p => new { 
-                    month = p.Bulan, 
-                    monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(p.Bulan),
-                    totalGaji = p.TotalGaji,
-                    gajiPokok = p.GajiPokok,
-                    tunjangan = p.Tunjangan,
-                    potongan = p.Potongan
-                })));
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    @if (Model != null && Model.Any())
+    {
+        <text>
+        // Prepare data
+        const salaryData = @Html.Raw(Json.Serialize(Model.OrderBy(p => p.Bulan).Select(p => new { 
+            month = p.Bulan, 
+            monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(p.Bulan),
+            totalGaji = p.TotalGaji,
+            gajiPokok = p.GajiPokok,
+            tunjangan = p.Tunjangan,
+            potongan = p.Potongan
+        })));
 
-                const months = salaryData.map(d => d.monthName);
-                const totalSalaries = salaryData.map(d => d.totalGaji);
-                const basicSalaries = salaryData.map(d => d.gajiPokok);
-                const allowances = salaryData.map(d => d.tunjangan);
-                const deductions = salaryData.map(d => d.potongan);
+        const months = salaryData.map(d => d.monthName);
+        const totalSalaries = salaryData.map(d => d.totalGaji);
+        const basicSalaries = salaryData.map(d => d.gajiPokok);
+        const allowances = salaryData.map(d => d.tunjangan);
+        const deductions = salaryData.map(d => d.potongan);
 
                 // Aegislabs Chart Colors
                 const aegislabsColors = {
@@ -1040,68 +1043,68 @@
                     warning: '#f59e0b',
                     danger: '#dc3545',
                     primaryLight: 'rgba(255, 64, 97, 0.1)'
-                };
+        };
 
-                // 1. Salary Trend Chart (Dynamic Type Switching)
-                let salaryTrendChart;
-                const initSalaryTrendChart = (type = 'line') => {
-                    const ctx = document.getElementById('salaryTrendChart').getContext('2d');
-                    
-                    if (salaryTrendChart) {
-                        salaryTrendChart.destroy();
-                    }
+        // 1. Salary Trend Chart (Dynamic Type Switching)
+        let salaryTrendChart;
+        const initSalaryTrendChart = (type = 'line') => {
+            const ctx = document.getElementById('salaryTrendChart').getContext('2d');
+            
+            if (salaryTrendChart) {
+                salaryTrendChart.destroy();
+            }
 
-                    const config = {
-                        type: type,
-                        data: {
-                            labels: months,
-                            datasets: [{
-                                label: 'Total Gaji',
-                                data: totalSalaries,
+            const config = {
+                type: type,
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Total Gaji',
+                        data: totalSalaries,
                                 borderColor: aegislabsColors.primary,
                                 backgroundColor: type === 'line' ? aegislabsColors.primaryLight : aegislabsColors.primary,
-                                borderWidth: 3,
-                                fill: type === 'line',
+                        borderWidth: 3,
+                        fill: type === 'line',
                                 tension: 0.4,
                                 pointBackgroundColor: aegislabsColors.primary,
                                 pointBorderColor: '#ffffff',
                                 pointBorderWidth: 2,
                                 pointRadius: 5,
                                 pointHoverRadius: 7
-                            }, {
-                                label: 'Gaji Pokok',
-                                data: basicSalaries,
+                    }, {
+                        label: 'Gaji Pokok',
+                        data: basicSalaries,
                                 borderColor: aegislabsColors.success,
                                 backgroundColor: type === 'line' ? 'rgba(16, 185, 129, 0.1)' : aegislabsColors.success,
-                                borderWidth: 2,
-                                fill: false,
+                        borderWidth: 2,
+                        fill: false,
                                 tension: 0.4,
                                 pointBackgroundColor: aegislabsColors.success,
                                 pointBorderColor: '#ffffff',
                                 pointBorderWidth: 2,
                                 pointRadius: 4,
                                 pointHoverRadius: 6
-                            }, {
-                                label: 'Tunjangan',
-                                data: allowances,
+                    }, {
+                        label: 'Tunjangan',
+                        data: allowances,
                                 borderColor: aegislabsColors.info,
                                 backgroundColor: type === 'line' ? 'rgba(59, 130, 246, 0.1)' : aegislabsColors.info,
-                                borderWidth: 2,
-                                fill: false,
+                        borderWidth: 2,
+                        fill: false,
                                 tension: 0.4,
                                 pointBackgroundColor: aegislabsColors.info,
                                 pointBorderColor: '#ffffff',
                                 pointBorderWidth: 2,
                                 pointRadius: 4,
                                 pointHoverRadius: 6
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
                                     labels: {
                                         usePointStyle: true,
                                         padding: 20,
@@ -1110,33 +1113,33 @@
                                             weight: '600'
                                         }
                                     }
-                                },
-                                tooltip: {
-                                    mode: 'index',
-                                    intersect: false,
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
                                     backgroundColor: 'rgba(44, 62, 80, 0.9)',
                                     titleColor: '#ffffff',
                                     bodyColor: '#ffffff',
                                     borderColor: aegislabsColors.primary,
                                     borderWidth: 1,
                                     cornerRadius: 8,
-                                    callbacks: {
-                                        label: function(context) {
-                                            return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
-                                        }
-                                    }
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
                                 }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
                                     grid: {
                                         color: 'rgba(0,0,0,0.05)',
                                         drawBorder: false
                                     },
-                                    ticks: {
-                                        callback: function(value) {
-                                            return 'Rp ' + value.toLocaleString('id-ID');
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
                                         },
                                         color: '#6c757d',
                                         font: {
@@ -1153,78 +1156,78 @@
                                         font: {
                                             size: 11,
                                             weight: '500'
-                                        }
-                                    }
                                 }
-                            },
-                            interaction: {
-                                mode: 'nearest',
-                                axis: 'x',
-                                intersect: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
                             },
                             elements: {
                                 line: {
                                     borderJoinStyle: 'round'
                                 }
-                            }
-                        }
-                    };
+                    }
+                }
+            };
 
-                    salaryTrendChart = new Chart(ctx, config);
-                };
+            salaryTrendChart = new Chart(ctx, config);
+        };
 
-                // Initialize with line chart
-                initSalaryTrendChart('line');
+        // Initialize with line chart
+        initSalaryTrendChart('line');
 
-                // Chart type switcher
-                document.querySelectorAll('input[name="chartType"]').forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        initSalaryTrendChart(this.id);
+        // Chart type switcher
+        document.querySelectorAll('input[name="chartType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                initSalaryTrendChart(this.id);
                         showNotification(`Chart type changed to ${this.id}`, 'info');
-                    });
-                });
+            });
+        });
 
-                // 2. Composition Pie Chart
-                const avgBasic = salaryData.reduce((sum, d) => sum + d.gajiPokok, 0) / salaryData.length;
-                const avgAllowances = salaryData.reduce((sum, d) => sum + d.tunjangan, 0) / salaryData.length;
-                const avgDeductions = salaryData.reduce((sum, d) => sum + d.potongan, 0) / salaryData.length;
+        // 2. Composition Pie Chart
+        const avgBasic = salaryData.reduce((sum, d) => sum + d.gajiPokok, 0) / salaryData.length;
+        const avgAllowances = salaryData.reduce((sum, d) => sum + d.tunjangan, 0) / salaryData.length;
+        const avgDeductions = salaryData.reduce((sum, d) => sum + d.potongan, 0) / salaryData.length;
 
-                new Chart(document.getElementById('compositionChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Gaji Pokok', 'Tunjangan', 'Potongan'],
-                        datasets: [{
-                            data: [avgBasic, avgAllowances, avgDeductions],
+        new Chart(document.getElementById('compositionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Gaji Pokok', 'Tunjangan', 'Potongan'],
+                datasets: [{
+                    data: [avgBasic, avgAllowances, avgDeductions],
                             backgroundColor: [aegislabsColors.success, aegislabsColors.info, aegislabsColors.warning],
-                            borderWidth: 0,
-                            hoverBorderWidth: 3,
+                    borderWidth: 0,
+                    hoverBorderWidth: 3,
                             hoverBorderColor: '#ffffff',
                             hoverOffset: 10
-                        }]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
+                    tooltip: {
                                 backgroundColor: 'rgba(44, 62, 80, 0.9)',
                                 titleColor: '#ffffff',
                                 bodyColor: '#ffffff',
                                 borderColor: aegislabsColors.primary,
                                 borderWidth: 1,
                                 cornerRadius: 8,
-                                callbacks: {
-                                    label: function(context) {
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                        return context.label + ': Rp ' + context.parsed.toLocaleString('id-ID') + ' (' + percentage + '%)';
-                                    }
-                                }
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return context.label + ': Rp ' + context.parsed.toLocaleString('id-ID') + ' (' + percentage + '%)';
                             }
-                        },
+                        }
+                    }
+                },
                         cutout: '60%',
                         animation: {
                             animateRotate: true,
@@ -1232,74 +1235,77 @@
                             duration: 2000,
                             easing: 'easeInOutQuart'
                         }
-                    }
-                });
+            }
+        });
 
-                // 3. Monthly Growth Chart
-                const growthData = [];
-                for (let i = 1; i < totalSalaries.length; i++) {
-                    const growth = ((totalSalaries[i] - totalSalaries[i-1]) / totalSalaries[i-1]) * 100;
-                    growthData.push(growth);
-                }
+        // 3. Monthly Growth Chart
+        const growthData = [];
+        for (let i = 1; i < totalSalaries.length; i++) {
+            const growth = ((totalSalaries[i] - totalSalaries[i-1]) / totalSalaries[i-1]) * 100;
+            growthData.push(growth);
+        }
 
-                new Chart(document.getElementById('growthChart'), {
-                    type: 'bar',
-                    data: {
+        new Chart(document.getElementById('growthChart'), {
+            type: 'bar',
+            data: {
                         labels: months.slice(1),
-                        datasets: [{
-                            label: 'Pertumbuhan (%)',
-                            data: growthData,
+                datasets: [{
+                    label: 'Pertumbuhan (%)',
+                    data: growthData,
                             backgroundColor: growthData.map(g => g >= 0 ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)'),
                             borderColor: growthData.map(g => g >= 0 ? aegislabsColors.success : aegislabsColors.danger),
                             borderWidth: 2,
                             borderRadius: 6,
                             borderSkipped: false,
                             hoverBackgroundColor: growthData.map(g => g >= 0 ? aegislabsColors.success : aegislabsColors.danger)
-                        }]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
+                    tooltip: {
                                 backgroundColor: 'rgba(44, 62, 80, 0.9)',
                                 titleColor: '#ffffff',
                                 bodyColor: '#ffffff',
                                 borderColor: aegislabsColors.primary,
                                 borderWidth: 1,
                                 cornerRadius: 8,
-                                callbacks: {
-                                    label: function(context) {
-                                        const value = context.parsed.y;
-                                        const sign = value >= 0 ? '+' : '';
-                                        return 'Pertumbuhan: ' + sign + value.toFixed(1) + '%';
-                                    }
-                                }
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                const sign = value >= 0 ? '+' : '';
+                                return 'Pertumbuhan: ' + sign + value.toFixed(1) + '%';
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
                                 grid: {
                                     color: 'rgba(0,0,0,0.05)',
                                     drawBorder: false
                                 },
-                                ticks: {
-                                    callback: function(value) {
-                                        return value + '%';
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
                                     },
                                     color: '#6c757d',
                                     font: {
                                         size: 11
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                                 },
                                 ticks: {
                                     color: '#6c757d',
@@ -1307,87 +1313,90 @@
                                         size: 11,
                                         weight: '500'
                                     }
-                                }
-                            }
+                        }
+                    }
                         },
                         animation: {
                             duration: 1500,
                             easing: 'easeInOutQuart'
-                        }
-                    }
-                });
+                }
+            }
+        });
 
-                // 4. Year Comparison Chart
-                const currentYearAvg = totalSalaries.reduce((a, b) => a + b, 0) / totalSalaries.length;
-                const previousYearAvg = @analytics.PreviousYear.AverageSalary;
+        // 4. Year Comparison Chart
+        const currentYearAvg = totalSalaries.reduce((a, b) => a + b, 0) / totalSalaries.length;
+        const previousYearAvg = @analytics.PreviousYear.AverageSalary;
 
-                new Chart(document.getElementById('comparisonChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['@previousYear', '@currentYear'],
-                        datasets: [{
-                            label: 'Rata-rata Gaji',
-                            data: [previousYearAvg, currentYearAvg],
-                            backgroundColor: [
+        new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['@previousYear', '@currentYear'],
+                datasets: [{
+                    label: 'Rata-rata Gaji',
+                    data: [previousYearAvg, currentYearAvg],
+                    backgroundColor: [
                                 'rgba(245, 158, 11, 0.8)',
                                 'rgba(255, 64, 97, 0.8)'
-                            ],
+                    ],
                             borderColor: [aegislabsColors.warning, aegislabsColors.primary],
-                            borderWidth: 2,
+                    borderWidth: 2,
                             borderRadius: 8,
                             borderSkipped: false,
                             hoverBackgroundColor: [aegislabsColors.warning, aegislabsColors.primary]
-                        }]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
+                    tooltip: {
                                 backgroundColor: 'rgba(44, 62, 80, 0.9)',
                                 titleColor: '#ffffff',
                                 bodyColor: '#ffffff',
                                 borderColor: aegislabsColors.primary,
                                 borderWidth: 1,
                                 cornerRadius: 8,
-                                callbacks: {
-                                    label: function(context) {
-                                        return 'Rata-rata: Rp ' + context.parsed.y.toLocaleString('id-ID');
-                                    },
-                                    afterLabel: function(context) {
-                                        if (context.dataIndex === 1 && previousYearAvg > 0) {
-                                            const growth = ((currentYearAvg - previousYearAvg) / previousYearAvg) * 100;
-                                            const sign = growth >= 0 ? '+' : '';
-                                            return 'Pertumbuhan: ' + sign + growth.toFixed(1) + '%';
-                                        }
-                                        return '';
-                                    }
+                        callbacks: {
+                            label: function(context) {
+                                return 'Rata-rata: Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            },
+                            afterLabel: function(context) {
+                                if (context.dataIndex === 1 && previousYearAvg > 0) {
+                                    const growth = ((currentYearAvg - previousYearAvg) / previousYearAvg) * 100;
+                                    const sign = growth >= 0 ? '+' : '';
+                                    return 'Pertumbuhan: ' + sign + growth.toFixed(1) + '%';
                                 }
+                                return '';
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
                                 grid: {
                                     color: 'rgba(0,0,0,0.05)',
                                     drawBorder: false
                                 },
-                                ticks: {
-                                    callback: function(value) {
-                                        return 'Rp ' + value.toLocaleString('id-ID');
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp ' + value.toLocaleString('id-ID');
                                     },
                                     color: '#6c757d',
                                     font: {
                                         size: 11
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                                 },
                                 ticks: {
                                     color: '#6c757d',
@@ -1395,35 +1404,48 @@
                                         size: 11,
                                         weight: '500'
                                     }
-                                }
-                            }
+                        }
+                    }
                         },
                         animation: {
                             duration: 1500,
                             easing: 'easeInOutQuart'
-                        }
-                    }
-                });
+                }
+            }
+        });
 
                 // Enhanced interactions and animations
-                Chart.defaults.animation.duration = 1500;
-                Chart.defaults.animation.easing = 'easeInOutQuart';
+        Chart.defaults.animation.duration = 1500;
+        Chart.defaults.animation.easing = 'easeInOutQuart';
 
                 // Add hover effects to chart cards
                 document.querySelectorAll('.chart-card').forEach(card => {
-                    card.addEventListener('mouseenter', function() {
+                card.addEventListener('mouseenter', function() {
                         this.style.transform = 'translateY(-3px)';
                         this.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.15)';
-                    });
-                    
-                    card.addEventListener('mouseleave', function() {
-                        this.style.transform = 'translateY(0)';
-                        this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
-                    });
                 });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
+        });
+
+        // Add loading animation
+        const showLoadingAnimation = () => {
+            document.querySelectorAll('canvas').forEach(canvas => {
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#6c757d';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Loading...', canvas.width / 2, canvas.height / 2);
+            });
+        };
 
                 </text>
-            }
+        }
 
             // Enhanced notification system
             function showNotification(message, type = 'info') {
@@ -1436,91 +1458,94 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 `;
-                
+
                 $('body').append(notification);
-                
+
                 setTimeout(() => {
                     $('.alert').fadeOut();
                 }, 4000);
-            }
+    }
 
             // Export and Print Functions
-            window.exportCharts = function() {
-                const charts = ['salaryTrendChart', 'compositionChart', 'growthChart', 'comparisonChart'];
-                
-                charts.forEach(chartId => {
-                    const canvas = document.getElementById(chartId);
-                    if (canvas) {
+    window.exportCharts = function() {
+        // Implementation for exporting charts
+        const charts = ['salaryTrendChart', 'compositionChart', 'growthChart', 'comparisonChart'];
+        
+        charts.forEach(chartId => {
+            const canvas = document.getElementById(chartId);
+            if (canvas) {
                         const url = canvas.toDataURL('image/png', 1.0);
-                        const link = document.createElement('a');
+                const link = document.createElement('a');
                         link.download = chartId + '_@@currentYear_' + new Date().getTime() + '.png';
-                        link.href = url;
-                        link.click();
-                    }
-                });
-                
-                showNotification('Charts exported successfully!', 'success');
-            };
+                link.href = url;
+                link.click();
+            }
+        });
+        
+        // Show success message
+        showNotification('Charts exported successfully!', 'success');
+    };
 
-            window.printReport = function() {
-                const originalTitle = document.title;
+    window.printReport = function() {
+        // Optimize for printing
+        const originalTitle = document.title;
                 document.title = 'Salary Analysis Report @currentYear - ' + new Date().toLocaleDateString();
-                
-                // Hide unnecessary elements
-                document.querySelectorAll('.btn, .form-select, .dropdown').forEach(el => {
-                    el.style.display = 'none';
-                });
-                
-                window.print();
-                
-                // Restore after print
-                setTimeout(() => {
-                    document.title = originalTitle;
-                    document.querySelectorAll('.btn, .form-select, .dropdown').forEach(el => {
-                        el.style.display = '';
-                    });
-                }, 1000);
-            };
+        
+        // Hide unnecessary elements
+        document.querySelectorAll('.btn, .form-select, .dropdown').forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        window.print();
+        
+        // Restore after print
+        setTimeout(() => {
+            document.title = originalTitle;
+            document.querySelectorAll('.btn, .form-select, .dropdown').forEach(el => {
+                el.style.display = '';
+            });
+        }, 1000);
+    };
 
             // Show success message when data is loaded
             @if (Model != null && Model.Any())
             {
                 <text>
-                setTimeout(() => {
+        setTimeout(() => {
                     showNotification(`Analisis gaji untuk tahun @currentYear berhasil dimuat dengan @Model.Count data point`, 'success');
                 }, 1000);
                 </text>
             }
 
-            // Responsive chart resize handler
-            let resizeTimeout;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(function() {
-                    Chart.helpers.each(Chart.instances, function(instance) {
-                        instance.resize();
-                    });
-                }, 100);
+    // Responsive chart resize handler
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            Chart.helpers.each(Chart.instances, function(instance) {
+                instance.resize();
             });
+        }, 100);
+    });
 
             // Keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey) {
-                    switch(e.key) {
-                        case 'p':
-                            e.preventDefault();
-                            printReport();
-                            break;
-                        case 's':
-                            e.preventDefault();
-                            exportCharts();
-                            break;
-                    }
-                }
-            });
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey) {
+            switch(e.key) {
+                case 'p':
+                    e.preventDefault();
+                    printReport();
+                    break;
+                case 's':
+                    e.preventDefault();
+                    exportCharts();
+                    break;
+            }
+        }
+    });
 
             console.log('Aegislabs Salary Analytics initialized successfully!');
-        });
+});
 
         // Global utility functions
         window.showNotification = function(message, type = 'info') {
@@ -1541,5 +1566,5 @@
                 alerts[alerts.length - 1]?.remove();
             }, 4000);
         };
-    </script>
+</script>
 }

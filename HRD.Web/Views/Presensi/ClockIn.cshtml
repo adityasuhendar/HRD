@@ -1,4 +1,5 @@
-﻿@model HRD.Web.Models.DTOs.ClockInRequest
+﻿<!-- HRD.Web/Views/Presensi/ClockIn.cshtml -->
+@model HRD.Web.Models.DTOs.ClockInRequest
 @{
     ViewData["Title"] = "Clock In/Out";
 }
@@ -380,7 +381,7 @@
 </style>
 
 <div class="presensi-container">
-    <div class="row justify-content-center">
+<div class="row justify-content-center">
         <div class="col-lg-8 col-xl-7">
             <div class="card presensi-card">
                 <!-- Header -->
@@ -388,13 +389,13 @@
                     <h4>
                         <i class="bi bi-clock-fill"></i>
                         Sistem Presensi Aegislabs
-                    </h4>
+                </h4>
                 </div>
-
+                
                 <div class="card-body p-4">
-                    @if (ViewBag.AlreadyClocked == true && ViewBag.TodayAttendance != null)
-                    {
-                        var attendance = ViewBag.TodayAttendance as HRD.Web.Models.DTOs.PresensiResponse;
+                @if (ViewBag.AlreadyClocked == true && ViewBag.TodayAttendance != null)
+                {
+                    var attendance = ViewBag.TodayAttendance as HRD.Web.Models.DTOs.PresensiResponse;
                         
                         <!-- Already Clocked In Alert -->
                         <div class="clocked-alert">
@@ -406,25 +407,25 @@
                             <!-- Clock Info Display -->
                             <div class="clock-info">
                                 <div class="row">
-                                    <div class="col-md-6">
+                            <div class="col-md-6">
                                         <div class="clock-info-item">
                                             <span class="clock-info-label">Jam Masuk:</span>
                                             <span class="clock-info-value text-success">
                                                 @attendance.JamMasuk?.ToString("HH:mm:ss")
                                             </span>
-                                        </div>
+                            </div>
                                     </div>
-                                    <div class="col-md-6">
+                            <div class="col-md-6">
                                         <div class="clock-info-item">
                                             <span class="clock-info-label">Status:</span>
                                             <span class="status-badge-success">@attendance.StatusPresensi</span>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
                                 </div>
                             </div>
-                            
-                            @if (!attendance.JamKeluar.HasValue)
-                            {
+                        
+                        @if (!attendance.JamKeluar.HasValue)
+                        {
                                 <!-- Clock Out Section -->
                                 <div class="clock-out-section">
                                     <h6>
@@ -436,17 +437,17 @@
                                             <label for="clockOutNotes" class="form-label">Catatan Clock Out (Opsional)</label>
                                             <input type="text" id="clockOutNotes" class="form-control" 
                                                    placeholder="Masukkan catatan jika ada...">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button class="btn btn-clock-out" onclick="clockOut()" id="clockOutBtn">
-                                                <i class="bi bi-box-arrow-right"></i> Clock Out
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
-                            }
-                            else
-                            {
+                                <div class="col-md-4">
+                                            <button class="btn btn-clock-out" onclick="clockOut()" id="clockOutBtn">
+                                        <i class="bi bi-box-arrow-right"></i> Clock Out
+                                    </button>
+                                </div>
+                            </div>
+                                </div>
+                        }
+                        else
+                        {
                                 <!-- Clock Out Complete -->
                                 <div class="clock-out-complete">
                                     <div class="row">
@@ -462,17 +463,17 @@
                                             <div class="d-flex align-items-center">
                                                 <i class="bi bi-stopwatch text-success me-2 fs-5"></i>
                                                 <div>
-                                                    <strong>Total Jam:</strong> @attendance.TotalJam jam
-                                                </div>
+                                <strong>Total Jam:</strong> @attendance.TotalJam jam
+                            </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
+                        }
+                    </div>
+                }
+                else
+                {
                         <!-- Clock In Welcome Section -->
                         <div class="clock-in-welcome">
                             <div class="clock-icon-container">
@@ -483,9 +484,11 @@
                             <div class="current-time">
                                 <i class="bi bi-clock-fill me-2"></i>
                                 <span id="currentTime"></span>
-                            </div>
                         </div>
-                        
+                        <h5>Selamat datang! Silakan clock in untuk memulai kerja hari ini.</h5>
+                        <p class="text-muted">Waktu saat ini: <span id="currentTime"></span></p>
+                    </div>
+                    
                         <!-- Clock In Form -->
                         <div class="clock-in-form">
                             <form method="post" asp-action="ClockIn" id="clockInForm">
@@ -496,25 +499,25 @@
                                     </label>
                                     <input asp-for="Catatan" class="form-control" 
                                            placeholder="Masukkan catatan jika ada (misal: WFH, Meeting, dll)">
-                                </div>
-                                
+                        </div>
+                        
                                 <!-- Hidden Fields -->
-                                <input asp-for="MetodePresensi" type="hidden" value="Web">
-                                <input asp-for="DeviceId" type="hidden" value="web-browser">
-                                
-                                <div class="text-center">
+                        <input asp-for="MetodePresensi" type="hidden" value="Web">
+                        <input asp-for="DeviceId" type="hidden" value="web-browser">
+                        
+                        <div class="text-center">
                                     <button type="submit" class="btn btn-clock-in" id="clockInBtn">
                                         <i class="bi bi-box-arrow-in-right"></i>
                                         <span id="clockInText">Clock In Sekarang</span>
-                                    </button>
-                                </div>
-                            </form>
+                            </button>
                         </div>
-                    }
-                </div>
+                    </form>
+                        </div>
+                }
             </div>
         </div>
     </div>
+</div>
 </div>
 
 @section Scripts {
@@ -535,31 +538,31 @@
         // Enhanced Clock Out Function
         function clockOut() {
             if (confirm('Yakin ingin clock out sekarang?')) {
-                var notes = document.getElementById('clockOutNotes').value;
+            var notes = document.getElementById('clockOutNotes').value;
                 var clockOutBtn = document.getElementById('clockOutBtn');
                 
                 // Show loading state
                 clockOutBtn.disabled = true;
                 clockOutBtn.innerHTML = '<i class="bi bi-arrow-repeat loading-spinner"></i> Processing...';
-                
-                $.post('@Url.Action("ClockOut", "Presensi")', { catatan: notes })
-                    .done(function(response) {
-                        if (response.success) {
+            
+            $.post('@Url.Action("ClockOut", "Presensi")', { catatan: notes })
+                .done(function(response) {
+                    if (response.success) {
                             showNotification(response.message, 'success');
                             
                             // Reload page after short delay
                             setTimeout(() => {
-                                location.reload();
+                        location.reload();
                             }, 1500);
-                        } else {
+                    } else {
                             showNotification('Error: ' + response.message, 'error');
                             
                             // Restore button state
                             clockOutBtn.disabled = false;
                             clockOutBtn.innerHTML = '<i class="bi bi-box-arrow-right"></i> Clock Out';
-                        }
-                    })
-                    .fail(function() {
+                    }
+                })
+                .fail(function() {
                         showNotification('Terjadi kesalahan sistem', 'error');
                         
                         // Restore button state
@@ -582,7 +585,7 @@
                     clockInText.textContent = 'Processing...';
                 }
             });
-        });
+                });
 
         // Enhanced Notification Function
         function showNotification(message, type) {

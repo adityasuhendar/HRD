@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿<!-- HRD.Web/Views/Shared/_Layout.cshtml -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -301,8 +302,18 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    @if (User.Identity!.IsAuthenticated)
-    {
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-building"></i> HRD System
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    @if (User.Identity!.IsAuthenticated)
+                    {
         <!-- Mobile Toggle Button -->
         <button class="mobile-toggle d-md-none" id="sidebarToggle">
             <i class="bi bi-list"></i>
@@ -328,12 +339,12 @@
                         <a class="sidebar-nav-link" asp-controller="Home" asp-action="Index">
                             <i class="bi bi-house"></i>
                             <span>Dashboard</span>
-                        </a>
+                                </a>
                     </div>
                 </div>
-
-                @if (User.IsInRole("Karyawan"))
-                {
+                            
+                            @if (User.IsInRole("Karyawan"))
+                            {
                     <!-- Employee Menu -->
                     <div class="nav-section">
                         <div class="nav-section-title">Employee</div>
@@ -344,7 +355,7 @@
                                 <i class="bi bi-clock"></i>
                                 <span>Presensi</span>
                                 <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
+                                    </a>
                             <div class="collapse sidebar-dropdown" id="presensiMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="ClockIn">Clock In/Out</a>
                                 <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="Index">Riwayat Presensi</a>
@@ -357,7 +368,7 @@
                                 <i class="bi bi-calendar"></i>
                                 <span>Cuti</span>
                                 <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
+                                    </a>
                             <div class="collapse sidebar-dropdown" id="cutiMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Cuti" asp-action="Create">Ajukan Cuti</a>
                                 <a class="sidebar-dropdown-item" asp-controller="Cuti" asp-action="Index">Riwayat Cuti</a>
@@ -370,7 +381,7 @@
                                 <i class="bi bi-receipt"></i>
                                 <span>My Payslip</span>
                                 <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
+                                    </a>
                             <div class="collapse sidebar-dropdown" id="payslipMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="CurrentPayslip">Slip Gaji Bulan Ini</a>
                                 <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="PayslipHistory">Riwayat Slip Gaji</a>
@@ -378,10 +389,10 @@
                             </div>
                         </div>
                     </div>
-                }
-
-                @if (User.IsInRole("HRD"))
-                {
+                            }
+                            
+                            @if (User.IsInRole("HRD"))
+                            {
                     <!-- HRD Management -->
                     <div class="nav-section">
                         <div class="nav-section-title">Management</div>
@@ -392,7 +403,7 @@
                                 <i class="bi bi-people"></i>
                                 <span>Karyawan</span>
                                 <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
+                                    </a>
                             <div class="collapse sidebar-dropdown" id="karyawanMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Karyawan" asp-action="Index">Daftar Karyawan</a>
                                 <a class="sidebar-dropdown-item" asp-controller="Karyawan" asp-action="Create">Tambah Karyawan</a>
@@ -405,7 +416,7 @@
                                 <i class="bi bi-clock-history"></i>
                                 <span>Presensi</span>
                                 <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
+                                    </a>
                             <div class="collapse sidebar-dropdown" id="presensiHRDMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="TodaySummary">Ringkasan Hari Ini</a>
                                 <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="Manage">Kelola Presensi</a>
@@ -418,7 +429,7 @@
                                 <i class="bi bi-calendar-check"></i>
                                 <span>Cuti</span>
                                 <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
+                                    </a>
                             <div class="collapse sidebar-dropdown" id="cutiHRDMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Cuti" asp-action="Manage">Kelola Cuti</a>
                             </div>
@@ -430,7 +441,7 @@
                                 <i class="bi bi-cash-stack"></i>
                                 <span>Payroll</span>
                                 <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
+                                    </a>
                             <div class="collapse sidebar-dropdown" id="payrollMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Payroll" asp-action="Index">Payroll Management</a>
                                 <a class="sidebar-dropdown-item" asp-controller="Payroll" asp-action="Reports">Laporan Gaji</a>
@@ -438,10 +449,10 @@
                             </div>
                         </div>
                     </div>
-                }
+                            }
             </div>
         </nav>
-
+                        
         <!-- Main Content Area -->
         <div class="aegis-main">
             <!-- Top Header -->
@@ -460,42 +471,49 @@
                     </div>
                     <form method="post" asp-controller="Auth" asp-action="Logout" class="d-inline">
                         <button type="submit" class="btn btn-logout">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </button>
-                    </form>
+                                                <i class="bi bi-box-arrow-right"></i> Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    }
                 </div>
             </div>
-
+        </nav>
+    </header>
+    
             <!-- Alert Messages -->
-            @if (TempData["SuccessMessage"] != null)
-            {
+        @if (TempData["SuccessMessage"] != null)
+        {
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 10px;">
-                    <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            
-            @if (TempData["ErrorMessage"] != null)
-            {
+                <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        
+        @if (TempData["ErrorMessage"] != null)
+        {
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 10px;">
-                    <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            
-            @if (ViewBag.Error != null)
-            {
+                <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        
+        @if (ViewBag.Error != null)
+        {
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 10px;">
-                    <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-
+                <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        
             <!-- Main Content -->
             <main role="main">
-                @RenderBody()
-            </main>
-        </div>
+            @RenderBody()
+        </main>
+    </div>
     }
     else
     {

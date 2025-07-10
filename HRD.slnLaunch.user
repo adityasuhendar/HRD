@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "HRD.API\\HRD.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "HRD.Web\\HRD.Web.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

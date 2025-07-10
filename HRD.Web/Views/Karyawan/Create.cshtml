@@ -235,6 +235,7 @@
                 <h4>Tambah Karyawan Baru</h4>
                 <p class="mb-0 opacity-75">Lengkapi formulir untuk menambahkan karyawan baru ke sistem</p>
             </div>
+            <div class="card-body">
 
             <div class="card-body p-4">
                 <!-- Alert Messages -->
@@ -262,29 +263,29 @@
 
                     <div class="row">
                         <div class="col-lg-4 mb-3">
-                            <label asp-for="Username" class="form-label">
-                                <i class="bi bi-person-circle"></i> Username <span class="text-danger">*</span>
-                            </label>
+                                <label asp-for="Username" class="form-label">
+                                    <i class="bi bi-person-circle"></i> Username <span class="text-danger">*</span>
+                                </label>
                             <input asp-for="Username" class="form-control" placeholder="john.doe" />
-                            <span asp-validation-for="Username" class="text-danger"></span>
-                            <div class="form-text">
-                                <i class="bi bi-info-circle"></i> Username untuk login ke sistem
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> Username untuk login ke sistem
+                                </div>
                             </div>
-                        </div>
                         <div class="col-lg-4 mb-3">
-                            <label asp-for="Email" class="form-label">
+                                <label asp-for="Email" class="form-label">
                                 <i class="bi bi-envelope-fill"></i> Email Personal <span class="text-danger">*</span>
-                            </label>
+                                </label>
                             <input asp-for="Email" type="email" class="form-control" placeholder="john@gmail.com" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                            <div class="form-text">Email pribadi untuk login</div>
-                        </div>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                                <div class="form-text">Email pribadi untuk login</div>
+                            </div>
                         <div class="col-lg-4 mb-3">
-                            <label asp-for="Password" class="form-label">
+                                <label asp-for="Password" class="form-label">
                                 <i class="bi bi-shield-lock-fill"></i> Password <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="Password" type="password" class="form-control" placeholder="Minimal 6 karakter" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
+                                </label>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Minimal 6 karakter" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
                             <div class="form-text">Password Pribad  i untuk login</div>
                         </div>
                     </div>
@@ -296,111 +297,114 @@
 
                     <div class="row">
                         <div class="col-lg-3 mb-3">
-                            <label asp-for="NIK" class="form-label">
+                                <label asp-for="NIK" class="form-label">
                                 <i class="bi bi-credit-card-fill"></i> NIK <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="NIK" class="form-control" placeholder="EMP003" />
-                            <span asp-validation-for="NIK" class="text-danger"></span>
-                            <div class="form-text">Nomor Induk Karyawan</div>
-                        </div>
+                                </label>
+                                <input asp-for="NIK" class="form-control" placeholder="EMP003" />
+                                <span asp-validation-for="NIK" class="text-danger"></span>
+                                <div class="form-text">Nomor Induk Karyawan</div>
+                            </div>
                         <div class="col-lg-5 mb-3">
-                            <label asp-for="NamaLengkap" class="form-label">
+                                <label asp-for="NamaLengkap" class="form-label">
                                 <i class="bi bi-person-fill"></i> Nama Lengkap <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="NamaLengkap" class="form-control" placeholder="John Doe Smith" />
-                            <span asp-validation-for="NamaLengkap" class="text-danger"></span>
-                        </div>
+                                </label>
+                                <input asp-for="NamaLengkap" class="form-control" placeholder="John Doe Smith" />
+                                <span asp-validation-for="NamaLengkap" class="text-danger"></span>
+                            </div>
                         <div class="col-lg-4 mb-3">
-                            <label asp-for="EmailKantor" class="form-label">
-                                <i class="bi bi-building"></i> Email Kantor <span class="text-danger">*</span>
-                            </label>
+                                <label asp-for="EmailKantor" class="form-label">
+                                    <i class="bi bi-building"></i> Email Kantor <span class="text-danger">*</span>
+                                </label>
                             <input asp-for="EmailKantor" type="email" class="form-control" placeholder="john@aegislabs.com" />
-                            <span asp-validation-for="EmailKantor" class="text-danger"></span>
+                                <span asp-validation-for="EmailKantor" class="text-danger"></span>
                             <div class="form-text">Email resmi Aegislabs</div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-3 mb-3">
-                            <label asp-for="NoTelepon" class="form-label">
+                                <label asp-for="NoTelepon" class="form-label">
                                 <i class="bi bi-telephone-fill"></i> No. Telepon
-                            </label>
-                            <input asp-for="NoTelepon" class="form-control" placeholder="08123456789" />
-                            <span asp-validation-for="NoTelepon" class="text-danger"></span>
-                        </div>
+                                </label>
+                                <input asp-for="NoTelepon" class="form-control" placeholder="08123456789" />
+                                <span asp-validation-for="NoTelepon" class="text-danger"></span>
+                            </div>
                         <div class="col-lg-3 mb-3">
-                            <label asp-for="Posisi" class="form-label">
+                                <label asp-for="Posisi" class="form-label">
                                 <i class="bi bi-briefcase-fill"></i> Posisi <span class="text-danger">*</span>
-                            </label>
-                            <select asp-for="Posisi" class="form-select">
-                                <option value="">-- Pilih Posisi --</option>
-                                <option value="Software Developer">💻 Software Developer</option>
-                                <option value="Frontend Developer">🎨 Frontend Developer</option>
-                                <option value="Backend Developer">⚙️ Backend Developer</option>
-                                <option value="Full Stack Developer">🚀 Full Stack Developer</option>
-                                <option value="UI/UX Designer">🎭 UI/UX Designer</option>
-                                <option value="Project Manager">📋 Project Manager</option>
-                                <option value="QA Tester">🔍 QA Tester</option>
-                                <option value="DevOps Engineer">🔧 DevOps Engineer</option>
-                                <option value="Business Analyst">📊 Business Analyst</option>
-                                <option value="Marketing Specialist">📢 Marketing Specialist</option>
-                                <option value="HR Specialist">👥 HR Specialist</option>
-                                <option value="Finance Officer">💰 Finance Officer</option>
-                            </select>
-                            <span asp-validation-for="Posisi" class="text-danger"></span>
-                        </div>
+                                </label>
+                                <select asp-for="Posisi" class="form-select">
+                                    <option value="">-- Pilih Posisi --</option>
+                                    <option value="Software Developer">💻 Software Developer</option>
+                                    <option value="Frontend Developer">🎨 Frontend Developer</option>
+                                    <option value="Backend Developer">⚙️ Backend Developer</option>
+                                    <option value="Full Stack Developer">🚀 Full Stack Developer</option>
+                                    <option value="UI/UX Designer">🎭 UI/UX Designer</option>
+                                    <option value="Project Manager">📋 Project Manager</option>
+                                    <option value="QA Tester">🔍 QA Tester</option>
+                                    <option value="DevOps Engineer">🔧 DevOps Engineer</option>
+                                    <option value="Business Analyst">📊 Business Analyst</option>
+                                    <option value="Marketing Specialist">📢 Marketing Specialist</option>
+                                    <option value="HR Specialist">👥 HR Specialist</option>
+                                    <option value="Finance Officer">💰 Finance Officer</option>
+                                </select>
+                                <span asp-validation-for="Posisi" class="text-danger"></span>
+                            </div>
                         <div class="col-lg-3 mb-3">
-                            <label asp-for="Divisi" class="form-label">
+                                <label asp-for="Divisi" class="form-label">
                                 <i class="bi bi-diagram-3-fill"></i> Divisi <span class="text-danger">*</span>
-                            </label>
-                            <select asp-for="Divisi" class="form-select">
-                                <option value="">-- Pilih Divisi --</option>
-                                <option value="Development">💻 Development</option>
-                                <option value="Design">🎨 Design</option>
-                                <option value="Marketing">📢 Marketing</option>
-                                <option value="Finance">💰 Finance</option>
-                                <option value="Human Resources">👥 Human Resources</option>
-                                <option value="Operations">⚙️ Operations</option>
-                                <option value="Sales">💼 Sales</option>
-                            </select>
-                            <span asp-validation-for="Divisi" class="text-danger"></span>
-                        </div>
+                                </label>
+                                <select asp-for="Divisi" class="form-select">
+                                    <option value="">-- Pilih Divisi --</option>
+                                    <option value="Development">💻 Development</option>
+                                    <option value="Design">🎨 Design</option>
+                                    <option value="Marketing">📢 Marketing</option>
+                                    <option value="Finance">💰 Finance</option>
+                                    <option value="Human Resources">👥 Human Resources</option>
+                                    <option value="Operations">⚙️ Operations</option>
+                                    <option value="Sales">💼 Sales</option>
+                                </select>
+                                <span asp-validation-for="Divisi" class="text-danger"></span>
+                            </div>
                         <div class="col-lg-3 mb-3">
-                            <label asp-for="TglBergabung" class="form-label">
+                                <label asp-for="TglBergabung" class="form-label">
                                 <i class="bi bi-calendar-date-fill"></i> Tanggal Bergabung <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="TglBergabung" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                            <span asp-validation-for="TglBergabung" class="text-danger"></span>
+                                </label>
+                                <input asp-for="TglBergabung" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="TglBergabung" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Salary Information -->
                     <div class="section-header">
-                        <i class="bi bi-cash-stack"></i> Informasi Gaji
+                                <i class="bi bi-cash-stack"></i> Informasi Gaji
+                            </h5>
+                        </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-6 mb-3">
-                            <label asp-for="GajiPokok" class="form-label">
-                                <i class="bi bi-currency-dollar"></i> Gaji Pokok <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="GajiPokok"
-                                   type="number"
-                                   class="form-control"
+                                <label asp-for="GajiPokok" class="form-label">
+                                    <i class="bi bi-currency-dollar"></i> Gaji Pokok <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="GajiPokok"
+                                       type="number"
+                                       class="form-control"
                                    placeholder="7000000"
-                                   min="1000000"
-                                   max="100000000"
-                                   step="1000"
-                                   value="@Model.GajiPokok" />
-                            <span asp-validation-for="GajiPokok" class="text-danger"></span>
-                            <div class="form-text">
+                                       min="1000000"
+                                       max="100000000"
+                                       step="1000"
+                                       value="@Model.GajiPokok" />
+                                <span asp-validation-for="GajiPokok" class="text-danger"></span>
+                                <div class="form-text">
                                 Format: 7000000 (tanpa titik/koma) • Range: 1 juta - 100 juta
                             </div>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">
+                                <label class="form-label">
                                 <i class="bi bi-info-circle-fill"></i> Referensi Gaji Aegislabs
-                            </label>
+                                </label>
                             <div class="salary-reference">
                                 <div class="row">
                                     <div class="col-6">
@@ -419,20 +423,22 @@
                     <!-- Tips Section -->
                     <div class="alert alert-info tips-section">
                         <h6><i class="bi bi-lightbulb-fill"></i> Panduan Pengisian Form</h6>
-                        <div class="row">
+                                <div class="row">
                             <div class="col-lg-6">
-                                <small>
+                                        <small>
                                     • <strong>Username:</strong> Format nama.depan (huruf kecil)<br>
-                                    • <strong>Email Personal:</strong> Email pribadi karyawan<br>
+                                            • <strong>Email Personal:</strong> Email pribadi karyawan<br>
                                     • <strong>Email Kantor:</strong> Gunakan domain aegislabs.com
-                                </small>
-                            </div>
+                                        </small>
+                                    </div>
                             <div class="col-lg-6">
-                                <small>
+                                        <small>
                                     • <strong>NIK:</strong> Format EMP + nomor urut (EMP001, EMP002)<br>
                                     • <strong>Password:</strong> Default password123 (bisa diubah user)<br>
                                     • <strong>Gaji:</strong> Sesuaikan dengan level dan pengalaman
-                                </small>
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -458,7 +464,7 @@
                         <i class="bi bi-shield-check-fill"></i> Akun Login
                     </div>
                     <div class="info-card-body">
-                        Karyawan akan mendapat akun login dengan username dan password yang diisi.
+                            Karyawan akan mendapat akun login dengan username dan password yang diisi.
                         Password dapat diubah setelah login pertama kali.
                     </div>
                 </div>
@@ -481,7 +487,8 @@
                     </div>
                     <div class="info-card-body">
                         Karyawan otomatis aktif setelah ditambahkan dan dapat langsung
-                        menggunakan sistem presensi dan pengajuan cuti.
+                            menggunakan sistem presensi dan pengajuan cuti.
+                        </small>
                     </div>
                 </div>
             </div>
