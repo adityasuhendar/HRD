@@ -325,16 +325,16 @@
 <!-- Page Header -->
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
-    <div>
-        <h2>
+        <div>
+            <h2>
                 <i class="bi bi-people-fill"></i> Daftar Karyawan Aegislabs
-        </h2>
+            </h2>
             <p>Kelola dan monitor data karyawan perusahaan</p>
-    </div>
+        </div>
         <a href="@Url.Action("Create")" class="btn btn-add-employee">
             <i class="bi bi-person-plus-fill"></i> Tambah Karyawan
-    </a>
-</div>
+        </a>
+    </div>
 </div>
 
 <!-- Alert Messages -->
@@ -439,7 +439,6 @@
                                         @if (!string.IsNullOrEmpty(karyawan.NoTelepon))
                                         {
                                             <br>
-                                
                                             <small class="text-muted">
                                                 <i class="bi bi-telephone"></i> @karyawan.NoTelepon
                                             </small>
@@ -494,8 +493,7 @@
                                         <small class="fw-bold">@karyawan.TglBergabung.ToString("dd/MM/yyyy")</small>
                                         <br><small class="text-muted">
                                             @((DateTime.Now - karyawan.TglBergabung).Days) hari
-                                        </span>
-                                    </small>
+                                        </small>
                                     </div>
                                 </td>
                                 <td>
@@ -603,8 +601,8 @@ else
 @section Scripts {
     <script>
         $(document).ready(function() {
-        // Auto dismiss alerts after 5 seconds
-        setTimeout(function() {
+            // Auto dismiss alerts after 5 seconds
+            setTimeout(function() {
                 $('.alert-dismissible').each(function() {
                     $(this).fadeOut();
                 });
@@ -641,8 +639,8 @@ else
                     
                     if (elementBottom > viewportTop && elementTop < viewportBottom) {
                         $(this).addClass('animate__fadeInUp');
-                }
-            });
+                    }
+                });
             });
         });
     </script>

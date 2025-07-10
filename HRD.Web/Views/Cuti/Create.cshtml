@@ -1,5 +1,4 @@
-﻿<!-- HRD.Web/Views/Cuti/Create.cshtml -->
-@model HRD.Web.Models.DTOs.CreateCutiRequest
+﻿@model HRD.Web.Models.DTOs.CreateCutiRequest
 @{
     ViewData["Title"] = "Ajukan Cuti";
 }
@@ -441,7 +440,7 @@
 </style>
 
 <div class="cuti-container">
-<div class="row justify-content-center">
+    <div class="row justify-content-center">
         <div class="col-lg-8 col-xl-7">
             <div class="card cuti-card">
                 <!-- Header -->
@@ -449,58 +448,58 @@
                     <h4>
                         <i class="bi bi-calendar-plus-fill"></i>
                         Ajukan Cuti Baru
-                </h4>
-            </div>
+                    </h4>
+                </div>
 
                 <div class="cuti-form">
-                <form method="post" asp-action="Create" id="cutiForm">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                    
-                    <!-- Jenis Cuti -->
+                    <form method="post" asp-action="Create" id="cutiForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Jenis Cuti -->
                         <div class="mb-4">
-                        <label asp-for="JenisCuti" class="form-label">
+                            <label asp-for="JenisCuti" class="form-label">
                                 <i class="bi bi-tag-fill"></i>
                                 Jenis Cuti <span class="text-danger">*</span>
-                        </label>
-                        <select asp-for="JenisCuti" class="form-select">
-                            <option value="">-- Pilih Jenis Cuti --</option>
-                            <option value="Tahunan">🏖️ Cuti Tahunan</option>
-                            <option value="Sakit">🤒 Cuti Sakit</option>
-                            <option value="Melahirkan">👶 Cuti Melahirkan</option>
-                            <option value="Menikah">💒 Cuti Menikah</option>
-                            <option value="Duka Cita">😢 Cuti Duka Cita</option>
-                            <option value="Izin Khusus">📋 Izin Khusus</option>
-                        </select>
-                        <span asp-validation-for="JenisCuti" class="text-danger"></span>
-                    </div>
+                            </label>
+                            <select asp-for="JenisCuti" class="form-select">
+                                <option value="">-- Pilih Jenis Cuti --</option>
+                                <option value="Tahunan">🏖️ Cuti Tahunan</option>
+                                <option value="Sakit">🤒 Cuti Sakit</option>
+                                <option value="Melahirkan">👶 Cuti Melahirkan</option>
+                                <option value="Menikah">💒 Cuti Menikah</option>
+                                <option value="Duka Cita">😢 Cuti Duka Cita</option>
+                                <option value="Izin Khusus">📋 Izin Khusus</option>
+                            </select>
+                            <span asp-validation-for="JenisCuti" class="text-danger"></span>
+                        </div>
 
-                    <!-- Tanggal Range -->
-                    <div class="row">
-                        <div class="col-md-6">
+                        <!-- Tanggal Range -->
+                        <div class="row">
+                            <div class="col-md-6">
                                 <div class="mb-4">
-                                <label asp-for="TglMulai" class="form-label">
+                                    <label asp-for="TglMulai" class="form-label">
                                         <i class="bi bi-calendar-date-fill"></i>
                                         Tanggal Mulai <span class="text-danger">*</span>
-                                </label>
+                                    </label>
                                     <input asp-for="TglMulai" type="date" class="form-control" id="tglMulai"
                                            min="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                                <span asp-validation-for="TglMulai" class="text-danger"></span>
+                                    <span asp-validation-for="TglMulai" class="text-danger"></span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
+                            <div class="col-md-6">
                                 <div class="mb-4">
-                                <label asp-for="TglSelesai" class="form-label">
+                                    <label asp-for="TglSelesai" class="form-label">
                                         <i class="bi bi-calendar-check-fill"></i>
                                         Tanggal Selesai <span class="text-danger">*</span>
-                                </label>
+                                    </label>
                                     <input asp-for="TglSelesai" type="date" class="form-control" id="tglSelesai"
                                            min="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                                <span asp-validation-for="TglSelesai" class="text-danger"></span>
+                                    <span asp-validation-for="TglSelesai" class="text-danger"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Duration Display -->
+                        <!-- Duration Display -->
                         <div class="mb-4">
                             <div class="duration-alert" id="durationDisplay" style="display: none;">
                                 <i class="bi bi-calendar-week-fill"></i>
@@ -527,67 +526,65 @@
                                 <button type="button" class="btn btn-template" onclick="setTemplate('personal')">
                                     <span>🏠 Urusan Pribadi</span>
                                 </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Alasan -->
+                        <!-- Alasan -->
                         <div class="mb-4">
-                        <label asp-for="Alasan" class="form-label">
+                            <label asp-for="Alasan" class="form-label">
                                 <i class="bi bi-chat-text-fill"></i>
                                 Alasan Cuti
-                        </label>
-                        <textarea asp-for="Alasan" class="form-control" rows="4" 
+                            </label>
+                            <textarea asp-for="Alasan" class="form-control" rows="4"
                                       placeholder="Jelaskan alasan pengajuan cuti Anda dengan detail..."></textarea>
-                        <span asp-validation-for="Alasan" class="text-danger"></span>
-                        <div class="form-text">
+                            <span asp-validation-for="Alasan" class="text-danger"></span>
+                            <div class="form-text">
                                 <i class="bi bi-info-circle-fill"></i>
                                 Alasan yang jelas dan detail akan membantu mempercepat proses persetujuan
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Action Buttons -->
+                        <!-- Action Buttons -->
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="@Url.Action("Index", "Cuti")" class="btn btn-back">
-                            <i class="bi bi-arrow-left"></i> Kembali
-                        </a>
+                                <i class="bi bi-arrow-left"></i> Kembali
+                            </a>
                             <div class="d-flex gap-3">
                                 <button type="button" class="btn btn-preview" onclick="previewRequest()">
                                     <i class="bi bi-eye-fill"></i> Preview
-                            </button>
+                                </button>
                                 <button type="submit" class="btn btn-submit" id="submitBtn">
                                     <i class="bi bi-send-fill"></i> Ajukan Cuti
-                            </button>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 </div>
 
-        <!-- Preview Modal -->
-        <div class="modal fade" id="previewModal" tabindex="-1">
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
                     <i class="bi bi-eye-fill"></i> Preview Pengajuan Cuti
-                        </h5>
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body" id="previewContent">
-                        <!-- Preview content will be populated by JavaScript -->
-                    </div>
-                    <div class="modal-footer">
+            </div>
+            <div class="modal-body" id="previewContent">
+                <!-- Preview content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-lg"></i> Tutup
                 </button>
                 <button type="button" class="btn btn-submit" onclick="submitForm()">
                     <i class="bi bi-send-fill"></i> Confirm & Submit
-                        </button>
-                    </div>
-                </div>
+                </button>
             </div>
         </div>
     </div>
@@ -602,15 +599,15 @@
         function calculateDuration() {
             const startDate = document.getElementById('tglMulai').value;
             const endDate = document.getElementById('tglSelesai').value;
-            
+
             if (startDate && endDate) {
                 const start = new Date(startDate);
                 const end = new Date(endDate);
-                
+
                 if (end >= start) {
                     const diffTime = Math.abs(end - start);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                    
+
                     // Calculate working days (exclude weekends)
                     let workingDays = 0;
                     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
@@ -618,9 +615,9 @@
                             workingDays++;
                         }
                     }
-                    
+
                     document.getElementById('durationDisplay').style.display = 'block';
-                    document.getElementById('durationText').textContent = 
+                    document.getElementById('durationText').textContent =
                         `Durasi: ${diffDays} hari kalendar (${workingDays} hari kerja)`;
                 } else {
                     document.getElementById('durationDisplay').style.display = 'none';
@@ -635,7 +632,7 @@
         function setTemplate(type) {
             const alasanField = document.querySelector('textarea[name="Alasan"]');
             const jenisCutiField = document.querySelector('select[name="JenisCuti"]');
-            
+
             const templates = {
                 vacation: {
                     jenis: 'Tahunan',
@@ -654,7 +651,7 @@
                     alasan: 'Urusan pribadi penting yang memerlukan penanganan segera'
                 }
             };
-            
+
             if (templates[type]) {
                 jenisCutiField.value = templates[type].jenis;
                 alasanField.value = templates[type].alasan;
@@ -678,16 +675,16 @@
             const tglMulai = document.getElementById('tglMulai').value;
             const tglSelesai = document.getElementById('tglSelesai').value;
             const alasan = document.querySelector('textarea[name="Alasan"]').value;
-            
+
             if (!jenisCuti || !tglMulai || !tglSelesai) {
                 showNotification('Mohon lengkapi jenis cuti dan tanggal terlebih dahulu', 'error');
                 return;
             }
-            
+
             const startDate = new Date(tglMulai);
             const endDate = new Date(tglSelesai);
             const diffDays = Math.ceil(Math.abs(endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-            
+
             // Calculate working days
             let workingDays = 0;
             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
@@ -705,14 +702,14 @@
                         </tr>
                         <tr>
                             <td><i class="bi bi-calendar-date-fill me-2"></i>Tanggal Mulai</td>
-                            <td>${new Date(tglMulai).toLocaleDateString('id-ID', { 
-                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                            <td>${new Date(tglMulai).toLocaleDateString('id-ID', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                             })}</td>
                         </tr>
                         <tr>
                             <td><i class="bi bi-calendar-check-fill me-2"></i>Tanggal Selesai</td>
-                            <td>${new Date(tglSelesai).toLocaleDateString('id-ID', { 
-                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                            <td>${new Date(tglSelesai).toLocaleDateString('id-ID', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                             })}</td>
                         </tr>
                         <tr>
@@ -735,7 +732,7 @@
                     melalui email tentang status persetujuan cuti Anda.
                 </div>
             `;
-            
+
             document.getElementById('previewContent').innerHTML = previewHtml;
             const modal = new bootstrap.Modal(document.getElementById('previewModal'));
             modal.show();
@@ -760,13 +757,13 @@
         document.getElementById('cutiForm').addEventListener('submit', function(e) {
             const startDate = new Date(document.getElementById('tglMulai').value);
             const endDate = new Date(document.getElementById('tglSelesai').value);
-            
+
             if (endDate < startDate) {
                 e.preventDefault();
                 showNotification('Tanggal selesai tidak boleh lebih awal dari tanggal mulai', 'error');
                 return false;
             }
-            
+
             // Show loading state
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
@@ -804,4 +801,3 @@
         });
     </script>
 }
-

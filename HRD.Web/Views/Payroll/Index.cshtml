@@ -358,12 +358,12 @@
 <!-- Page Header -->
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
-    <div>
-        <h2>
+        <div>
+            <h2>
                 <i class="bi bi-cash-stack"></i> Payroll Management Aegislabs
-        </h2>
+            </h2>
             <p>Kelola gaji bulanan karyawan dengan sistem terintegrasi</p>
-    </div>
+        </div>
         <button type="button" class="btn btn-generate" data-bs-toggle="modal" data-bs-target="#generateModal">
             <i class="bi bi-plus-circle-fill"></i> Generate Payroll
         </button>
@@ -686,15 +686,15 @@
 @section Scripts {
     <script>
         let currentPayrollData = [];
-        
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             const currentMonth = new Date().getMonth() + 1;
             const currentYear = new Date().getFullYear();
-            
+
             document.getElementById('bulanSelect').value = currentMonth;
             document.getElementById('tahunSelect').value = currentYear;
-            
+
             // Auto-load current month
             loadPayroll();
         });
@@ -703,23 +703,23 @@
         async function loadPayroll() {
             const bulan = document.getElementById('bulanSelect').value;
             const tahun = document.getElementById('tahunSelect').value;
-            
+
             if (!bulan || !tahun) {
                 showNotification('Pilih bulan dan tahun terlebih dahulu', 'error');
                 return;
             }
-            
+
             try {
                 showLoading(true);
-                
+
                 const response = await fetch(`/Payroll/GetPayrollSummary?bulan=${bulan}&tahun=${tahun}`);
                 const result = await response.json();
-                
+
                 if (result.success && result.data) {
                     currentPayrollData = result.data.detailPayroll || [];
                     displayPayrollSummary(result.data);
                     displayPayrollTable(result.data.detailPayroll);
-                    
+
                     document.getElementById('emptyState').style.display = 'none';
                     document.getElementById('summaryCards').style.display = 'flex';
                     document.getElementById('payrollActions').style.display = currentPayrollData.length > 0 ? 'block' : 'none';
@@ -733,7 +733,7 @@
                     document.getElementById('payrollActions').style.display = 'none';
                     document.getElementById('payrollTable').style.display = 'none';
                     document.getElementById('emptyState').style.display = 'block';
-                    
+
                     document.getElementById('emptyState').innerHTML = `
                         <i class="bi bi-cash-stack"></i>
                         <h4>Payroll Belum Dibuat</h4>
@@ -765,19 +765,19 @@
         function displayPayrollTable(payrolls) {
             const tbody = document.getElementById('payrollTableBody');
             tbody.innerHTML = '';
-            
+
             if (!payrolls || payrolls.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Tidak ada data payroll</td></tr>';
                 return;
             }
-            
+
             payrolls.forEach((payroll, index) => {
                 const row = document.createElement('tr');
                 const isDisabled = payroll.statusBayar === 'Sudah Bayar';
-                
+
                 row.innerHTML = `
                     <td>
-                        <input type="checkbox" class="payroll-checkbox" value="${payroll.idGaji}" 
+                        <input type="checkbox" class="payroll-checkbox" value="${payroll.idGaji}"
                                onchange="updateSelectedCount()" ${isDisabled ? 'disabled' : ''}
                                style="transform: scale(1.2); accent-color: var(--aegis-red);">
                     </td>
@@ -794,20 +794,20 @@
                     <td><span class="text-danger">${formatCurrency(payroll.potongan)}</span></td>
                     <td><strong class="text-success">${formatCurrency(payroll.totalGaji)}</strong></td>
                     <td>
-                        ${payroll.statusBayar === 'Sudah Bayar' 
+                        ${payroll.statusBayar === 'Sudah Bayar'
                             ? '<span class="custom-badge badge-paid"><i class="bi bi-check-circle"></i> Sudah Bayar</span>'
                             : '<span class="custom-badge badge-unpaid"><i class="bi bi-clock"></i> Belum Bayar</span>'
                         }
                     </td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                        <button type="button" class="btn btn-sm btn-outline-primary"
                                 onclick="editPayroll(${payroll.idGaji})" ${isDisabled ? 'disabled' : ''}
                                 style="border-radius: 8px;">
                             <i class="bi bi-pencil"></i>
                         </button>
                     </td>
                 `;
-                
+
                 tbody.appendChild(row);
             });
         }
@@ -816,16 +816,16 @@
         async function generatePayroll() {
             const bulan = parseInt(document.getElementById('generateBulan').value);
             const tahun = parseInt(document.getElementById('generateTahun').value);
-            
+
             if (!bulan || !tahun) {
                 showNotification('Pilih bulan dan tahun terlebih dahulu', 'error');
                 return;
             }
-            
+
             if (!confirm(`Yakin ingin generate payroll untuk ${getMonthName(bulan)} ${tahun}?`)) {
                 return;
             }
-            
+
             try {
                 showLoading(true);
 
@@ -836,20 +836,20 @@
                     },
                     body: JSON.stringify({ Bulan: bulan, Tahun: tahun })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // Close modal
                     bootstrap.Modal.getInstance(document.getElementById('generateModal')).hide();
-                    
+
                     // Update selectors and reload
                     document.getElementById('bulanSelect').value = bulan;
                     document.getElementById('tahunSelect').value = tahun;
-                    
+
                     // Reload payroll data
                     await loadPayroll();
-                    
+
                     showNotification(`Payroll berhasil dibuat untuk ${result.data.jumlahKaryawan} karyawan`, 'success');
                 } else {
                     showNotification(result.message || 'Gagal generate payroll', 'error');
@@ -869,7 +869,7 @@
                 showNotification('Data payroll tidak ditemukan', 'error');
                 return;
             }
-            
+
             // Populate edit form
             document.getElementById('editIdGaji').value = payroll.idGaji;
             document.getElementById('editKaryawan').value = `${payroll.nik} - ${payroll.namaLengkap}`;
@@ -878,9 +878,9 @@
             document.getElementById('editPotongan').value = payroll.potongan;
             document.getElementById('editJamKerja').value = payroll.totalJamKerja;
             document.getElementById('editKeterangan').value = payroll.keterangan || '';
-            
+
             updateTotalGaji();
-            
+
             // Show modal
             new bootstrap.Modal(document.getElementById('editModal')).show();
         }
@@ -890,7 +890,7 @@
             const gajiPokok = parseFloat(document.getElementById('editGajiPokok').value.replace(/[^0-9]/g, '')) || 0;
             const tunjangan = parseFloat(document.getElementById('editTunjangan').value) || 0;
             const potongan = parseFloat(document.getElementById('editPotongan').value) || 0;
-            
+
             const total = gajiPokok + tunjangan - potongan;
             document.getElementById('editTotalGaji').textContent = formatCurrency(total);
         }
@@ -908,7 +908,7 @@
                 TotalJamKerja: parseInt(document.getElementById('editJamKerja').value) || 0,
                 Keterangan: document.getElementById('editKeterangan').value
             };
-            
+
             try {
                 showLoading(true);
 
@@ -919,16 +919,16 @@
                     },
                     body: JSON.stringify(data)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // Close modal
                     bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-                    
+
                     // Reload data
                     await loadPayroll();
-                    
+
                     showNotification('Payroll berhasil diperbarui', 'success');
                 } else {
                     showNotification(result.message || 'Gagal memperbarui payroll', 'error');
@@ -964,12 +964,12 @@
             const selected = document.querySelectorAll('.payroll-checkbox:checked').length;
             document.getElementById('selectedCount').textContent = selected;
             document.getElementById('processBtn').disabled = selected === 0;
-            
+
             // Update select all checkbox
             const checkboxes = document.querySelectorAll('.payroll-checkbox:not(:disabled)');
             const checkedCheckboxes = document.querySelectorAll('.payroll-checkbox:checked');
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            
+
             if (checkedCheckboxes.length === 0) {
                 selectAllCheckbox.indeterminate = false;
                 selectAllCheckbox.checked = false;
@@ -985,16 +985,16 @@
         async function processSelectedPayments() {
             const selectedIds = Array.from(document.querySelectorAll('.payroll-checkbox:checked'))
                 .map(cb => parseInt(cb.value));
-            
+
             if (selectedIds.length === 0) {
                 showNotification('Pilih minimal satu payroll untuk diproses', 'error');
                 return;
             }
-            
+
             if (!confirm(`Yakin ingin memproses pembayaran untuk ${selectedIds.length} karyawan?`)) {
                 return;
             }
-            
+
             try {
                 showLoading(true);
 
@@ -1005,13 +1005,13 @@
                     },
                     body: JSON.stringify(selectedIds)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // Reload data
                     await loadPayroll();
-                    
+
                     showNotification(result.message || 'Pembayaran berhasil diproses', 'success');
                 } else {
                     showNotification(result.message || 'Gagal memproses pembayaran', 'error');
@@ -1079,7 +1079,7 @@
 
                     if (elementBottom > viewportTop && elementTop < viewportBottom) {
                         $(this).addClass('animate__fadeInUp');
-        }
+                    }
                 });
             });
         });

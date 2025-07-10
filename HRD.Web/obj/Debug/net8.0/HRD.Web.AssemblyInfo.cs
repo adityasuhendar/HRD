@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HRD.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2eb4506f2c50185a4b225520b44723c3acc1377b")]
 [assembly: System.Reflection.AssemblyProductAttribute("HRD.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HRD.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

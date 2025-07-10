@@ -1,5 +1,4 @@
-﻿<!-- Fix: HRD.Web/Views/Employee/CurrentPayslip.cshtml -->
-@model HRD.Web.Models.DTOs.PayrollResponse
+﻿@model HRD.Web.Models.DTOs.PayrollResponse
 @{
     ViewData["Title"] = "Slip Gaji Bulan Ini";
 }
@@ -495,30 +494,30 @@
     <!-- Page Header -->
     <div class="page-header animate-in">
         <div class="d-flex justify-content-between align-items-center">
-    <div>
-        <h2>
+            <div>
+                <h2>
                     <i class="bi bi-receipt-cutoff"></i>
                     Slip Gaji @ViewBag.MonthName @ViewBag.Year
-        </h2>
+                </h2>
                 <p>Slip gaji bulan berjalan - Aegislabs HRD System</p>
-    </div>
-    @if (Model != null)
-    {
-        <div>
+            </div>
+            @if (Model != null)
+            {
+                <div>
                     <button onclick="window.print()" class="btn btn-print">
                         <i class="bi bi-printer-fill"></i> Print Slip
-            </button>
+                    </button>
                     <a href="@Url.Action("Dashboard")" class="btn btn-back">
-                <i class="bi bi-arrow-left"></i> Kembali
-            </a>
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>
+                </div>
+            }
         </div>
-    }
-</div>
     </div>
 
-@if (Model != null)
-{
-    <div class="row justify-content-center">
+    @if (Model != null)
+    {
+        <div class="row justify-content-center">
             <div class="col-lg-8 col-xl-7">
                 <div class="card payslip-card animate-in" style="animation-delay: 0.2s;">
                     <!-- Payslip Header -->
@@ -526,8 +525,8 @@
                         <h5>
                             <i class="bi bi-receipt-cutoff"></i>
                             Slip Gaji - @ViewBag.MonthName @ViewBag.Year
-                    </h5>
-                </div>
+                        </h5>
+                    </div>
 
                     <div class="card-body p-4">
                         <!-- Employee Information -->
@@ -556,8 +555,8 @@
                                                 <td>Divisi:</td>
                                                 <td>@Model.Divisi</td>
                                             </tr>
-                            </table>
-                        </div>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <h6 class="info-section-title">
@@ -574,39 +573,39 @@
                                                 <td>Jam Kerja:</td>
                                                 <td><strong>@Model.TotalJamKerja jam</strong></td>
                                             </tr>
-                                <tr>
-                                    <td>Status:</td>
-                                    <td>
-                                        @if (Model.StatusBayar == "Sudah Bayar")
-                                        {
+                                            <tr>
+                                                <td>Status:</td>
+                                                <td>
+                                                    @if (Model.StatusBayar == "Sudah Bayar")
+                                                    {
                                                         <span class="status-badge-paid">
                                                             <i class="bi bi-check-circle-fill"></i> Sudah Dibayar
-                                            </span>
-                                        }
-                                        else
-                                        {
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
                                                         <span class="status-badge-unpaid">
                                                             <i class="bi bi-clock-fill"></i> Belum Dibayar
-                                            </span>
-                                        }
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+                                                        </span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                    <!-- Salary Details -->
-                    <div class="table-responsive">
+                        <!-- Salary Details -->
+                        <div class="table-responsive">
                             <table class="table salary-table">
                                 <thead>
-                                <tr>
+                                    <tr>
                                         <th>Komponen Gaji</th>
                                         <th class="text-end">Jumlah (IDR)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                     <tr class="salary-row-gaji-pokok">
                                         <td>
                                             <i class="bi bi-currency-dollar me-2"></i>
@@ -615,9 +614,9 @@
                                         <td class="text-end">
                                             <strong>@Model.GajiPokok.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</strong>
                                         </td>
-                                </tr>
-                                @if (Model.Tunjangan > 0)
-                                {
+                                    </tr>
+                                    @if (Model.Tunjangan > 0)
+                                    {
                                         <tr class="salary-row-tunjangan">
                                             <td>
                                                 <i class="bi bi-plus-circle-fill me-2"></i>
@@ -626,10 +625,10 @@
                                             <td class="text-end">
                                                 + @Model.Tunjangan.ToString("C0", new System.Globalization.CultureInfo("id-ID"))
                                             </td>
-                                    </tr>
-                                }
-                                @if (Model.Potongan > 0)
-                                {
+                                        </tr>
+                                    }
+                                    @if (Model.Potongan > 0)
+                                    {
                                         <tr class="salary-row-potongan">
                                             <td>
                                                 <i class="bi bi-dash-circle-fill me-2"></i>
@@ -638,8 +637,8 @@
                                             <td class="text-end">
                                                 - @Model.Potongan.ToString("C0", new System.Globalization.CultureInfo("id-ID"))
                                             </td>
-                                    </tr>
-                                }
+                                        </tr>
+                                    }
                                     <tr class="salary-row-total">
                                         <td>
                                             <i class="bi bi-cash-stack me-2"></i>
@@ -648,49 +647,49 @@
                                         <td class="text-end">
                                             <span class="total-amount">@Model.TotalGaji.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</span>
                                         </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    @if (!string.IsNullOrEmpty(Model.Keterangan))
-                    {
+                        @if (!string.IsNullOrEmpty(Model.Keterangan))
+                        {
                             <div class="keterangan-section">
                                 <h6>
                                     <i class="bi bi-chat-text-fill me-2"></i>
                                     Keterangan Tambahan:
                                 </h6>
                                 <p>@Model.Keterangan</p>
-                        </div>
-                    }
+                            </div>
+                        }
 
                         <div class="payslip-footer">
                             <small>
                                 <i class="bi bi-calendar-check-fill me-2"></i>
-                            Slip gaji dibuat pada @Model.TglDibuat.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID"))
+                                Slip gaji dibuat pada @Model.TglDibuat.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID"))
                                 <br>
                                 <i class="bi bi-shield-check-fill me-2"></i>
                                 Dokumen ini dihasilkan secara otomatis oleh sistem Aegislabs HRD
-                        </small>
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-}
-else
-{
+    }
+    else
+    {
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <div class="empty-state animate-in" style="animation-delay: 0.2s;">
-        @if (!string.IsNullOrEmpty(ViewBag.Message as string))
-        {
+                    @if (!string.IsNullOrEmpty(ViewBag.Message as string))
+                    {
                         <i class="bi bi-info-circle-fill text-info"></i>
                         <h4>@ViewBag.Message</h4>
                         <p>Slip gaji akan tersedia setelah HRD memproses payroll bulan ini. Mohon bersabar dan cek kembali nanti.</p>
-        }
-        else if (!string.IsNullOrEmpty(ViewBag.Error as string))
-        {
+                    }
+                    else if (!string.IsNullOrEmpty(ViewBag.Error as string))
+                    {
                         <i class="bi bi-exclamation-triangle-fill text-danger"></i>
                         <h4>Terjadi Kesalahan</h4>
                         <p>@ViewBag.Error</p>
@@ -700,11 +699,11 @@ else
                         <i class="bi bi-receipt-cutoff text-info"></i>
                         <h4>Slip Gaji Tidak Tersedia</h4>
                         <p>Data slip gaji untuk bulan ini belum tersedia. Silakan hubungi HRD untuk informasi lebih lanjut.</p>
-        }
-    </div>
+                    }
+                </div>
             </div>
         </div>
-}
+    }
 </div>
 
 @section Scripts {
@@ -728,7 +727,7 @@ else
                             printBtn.disabled = false;
                         }, 1000);
                     }, 500);
-            }
+                }
             };
 
             // Override the onclick for better UX
@@ -739,7 +738,7 @@ else
                 @@keyframes spin {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
-            }
+                }
             `).appendTo('head');
 
             // Enhanced notification system
@@ -769,7 +768,7 @@ else
                         showNotification('Slip gaji berhasil dimuat untuk periode @ViewBag.MonthName @ViewBag.Year', 'success');
                     }, 1000);
                     </text>
-        }
+            }
 
             // Handle print-specific events
             window.addEventListener('beforeprint', function() {
