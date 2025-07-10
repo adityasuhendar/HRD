@@ -1,0 +1,647 @@
+﻿@model List<HRD.Web.Models.DTOs.KaryawanResponse>
+@{
+    ViewData["Title"] = "Daftar Karyawan";
+}
+
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+<!-- Custom CSS untuk Index Karyawan -->
+<style>
+    /* Aegislabs Theme Variables */
+    :root {
+        --aegis-red: #ff4061;
+        --aegis-white: #ffffff;
+        --aegis-red-hover: #e5395a;
+        --aegis-red-light: rgba(255, 64, 97, 0.1);
+        --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+        --aegis-dark: #2c3e50;
+        --aegis-gray: #f8f9fa;
+    }
+
+    /* Header Section */
+    .page-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px var(--aegis-red-shadow);
+    }
+
+    .page-header h2 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .page-header p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-card-body {
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stats-card.primary {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.success {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.warning {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.info {
+        background: linear-gradient(135deg, #17a2b8, #6f42c1);
+        color: var(--aegis-white);
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stats-label {
+        font-size: 0.9rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Main Table Card */
+    .table-card {
+        background: var(--aegis-white);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .table-card-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Table Styling */
+    .custom-table {
+        margin: 0;
+    }
+
+    .custom-table thead th {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .custom-table tbody td {
+        border: none;
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .custom-table tbody tr:hover {
+        background: var(--aegis-red-light);
+    }
+
+    .custom-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Badge Styling */
+    .custom-badge {
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-status-active {
+        background: #28a745;
+        color: white;
+    }
+
+    .badge-status-inactive {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .badge-divisi {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: 1px solid rgba(255, 64, 97, 0.3);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        border: none;
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-view {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: #138496;
+        color: white;
+    }
+
+    .btn-edit {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .btn-edit:hover {
+        background: #e0a800;
+        color: #212529;
+    }
+
+    .btn-deactivate {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-deactivate:hover {
+        background: #c82333;
+        color: white;
+    }
+
+    .btn-activate {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-activate:hover {
+        background: #218838;
+        color: white;
+    }
+
+    /* Add Employee Button */
+    .btn-add-employee {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 10px;
+        color: var(--aegis-white);
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+    }
+
+    .btn-add-employee:hover {
+        background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--aegis-red-shadow);
+        color: var(--aegis-white);
+    }
+
+    /* Summary Cards */
+    .summary-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .summary-card-header {
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .summary-card-body {
+        padding: 1rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--aegis-white);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: #dee2e6;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        color: var(--aegis-dark);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .stats-card-body {
+            padding: 1rem;
+        }
+        
+        .custom-table {
+            font-size: 0.85rem;
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2>
+                <i class="bi bi-people-fill"></i> Daftar Karyawan Aegislabs
+            </h2>
+            <p>Kelola dan monitor data karyawan perusahaan</p>
+        </div>
+        <a href="@Url.Action("Create")" class="btn btn-add-employee">
+            <i class="bi bi-person-plus-fill"></i> Tambah Karyawan
+        </a>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Error as string))
+{
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Error
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <!-- Stats Cards Row -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card primary">
+                <div class="stats-card-body">
+                    <i class="bi bi-people-fill stats-icon"></i>
+                    <h4 class="stats-number">@Model.Count</h4>
+                    <p class="stats-label">Total Karyawan</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card success">
+                <div class="stats-card-body">
+                    <i class="bi bi-check-circle-fill stats-icon"></i>
+                    <h4 class="stats-number">@Model.Count(k => k.StatusKaryawan == "Aktif")</h4>
+                    <p class="stats-label">Karyawan Aktif</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card warning">
+                <div class="stats-card-body">
+                    <i class="bi bi-pause-circle-fill stats-icon"></i>
+                    <h4 class="stats-number">@Model.Count(k => k.StatusKaryawan != "Aktif")</h4>
+                    <p class="stats-label">Non-Aktif</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card info">
+                <div class="stats-card-body">
+                    <i class="bi bi-diagram-3-fill stats-icon"></i>
+                    <h4 class="stats-number">@Model.GroupBy(k => k.Divisi).Count()</h4>
+                    <p class="stats-label">Total Divisi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Table -->
+    <div class="card table-card">
+        <div class="table-card-header">
+            <i class="bi bi-table"></i> Data Karyawan (@Model.Count orang terdaftar)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            <th>NIK</th>
+                            <th>Karyawan</th>
+                            <th>Posisi</th>
+                            <th>Divisi</th>
+                            <th>Status</th>
+                            <th>Bergabung</th>
+                            <th>Gaji</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var karyawan in Model.OrderBy(k => k.NIK))
+                        {
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-primary">@karyawan.NIK</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">@karyawan.NamaLengkap</div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-envelope"></i> @karyawan.EmailKantor
+                                        </small>
+                                        @if (!string.IsNullOrEmpty(karyawan.NoTelepon))
+                                        {
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="bi bi-telephone"></i> @karyawan.NoTelepon
+                                            </small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="custom-badge badge-divisi">@karyawan.Posisi</span>
+                                </td>
+                                <td>
+                                    @if (karyawan.Divisi == "Development")
+                                    {
+                                        <span class="badge bg-primary">💻 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Design")
+                                    {
+                                        <span class="badge bg-success">🎨 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Marketing")
+                                    {
+                                        <span class="badge bg-warning text-dark">📢 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Finance")
+                                    {
+                                        <span class="badge bg-info">💰 @karyawan.Divisi</span>
+                                    }
+                                    else if (karyawan.Divisi == "Human Resources")
+                                    {
+                                        <span class="badge bg-secondary">👥 @karyawan.Divisi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@karyawan.Divisi</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (karyawan.StatusKaryawan == "Aktif")
+                                    {
+                                        <span class="custom-badge badge-status-active">
+                                            <i class="bi bi-check-circle"></i> Aktif
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="custom-badge badge-status-inactive">
+                                            <i class="bi bi-pause-circle"></i> Non-Aktif
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div>
+                                        <small class="fw-bold">@karyawan.TglBergabung.ToString("dd/MM/yyyy")</small>
+                                        <br><small class="text-muted">
+                                            @((DateTime.Now - karyawan.TglBergabung).Days) hari
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">@karyawan.GajiPokok.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Details", new { id = karyawan.IdKaryawan })"
+                                           class="btn btn-sm action-btn btn-view" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", new { id = karyawan.IdKaryawan })"
+                                           class="btn btn-sm action-btn btn-edit" title="Edit Data">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        @if (karyawan.StatusKaryawan == "Aktif")
+                                        {
+                                            <a href="@Url.Action("Deactivate", new { id = karyawan.IdKaryawan })"
+                                               class="btn btn-sm action-btn btn-deactivate"
+                                               onclick="return confirm('Yakin ingin menonaktifkan karyawan ini?')"
+                                               title="Non-aktifkan">
+                                                <i class="bi bi-pause"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Activate", new { id = karyawan.IdKaryawan })"
+                                               class="btn btn-sm action-btn btn-activate"
+                                               onclick="return confirm('Yakin ingin mengaktifkan karyawan ini?')"
+                                               title="Aktifkan">
+                                                <i class="bi bi-play"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Info -->
+    <div class="row mt-4">
+        <div class="col-lg-6 mb-3">
+            <div class="card summary-card">
+                <div class="summary-card-header" style="background: var(--aegis-red); color: white;">
+                    <i class="bi bi-graph-up-arrow"></i> Distribusi Divisi
+                </div>
+                <div class="summary-card-body">
+                    @foreach (var divisi in Model.GroupBy(k => k.Divisi).OrderByDescending(g => g.Count()))
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold">@divisi.Key</span>
+                            <span class="custom-badge" style="background: var(--aegis-red-light); color: var(--aegis-red);">
+                                <strong>@divisi.Count()</strong> orang
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-3">
+            <div class="card summary-card">
+                <div class="summary-card-header" style="background: #28a745; color: white;">
+                    <i class="bi bi-currency-dollar"></i> Informasi Gaji
+                </div>
+                <div class="summary-card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Rata-rata Gaji:</span>
+                        <span class="fw-bold">@Model.Average(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Gaji Tertinggi:</span>
+                        <span class="fw-bold">@Model.Max(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Gaji Terendah:</span>
+                        <span class="fw-bold">@Model.Min(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold">Total Pengeluaran Gaji:</span>
+                        <span class="fw-bold text-success">@Model.Sum(k => k.GajiPokok).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Empty State -->
+    <div class="empty-state">
+        <i class="bi bi-people"></i>
+        <h4>Belum Ada Data Karyawan</h4>
+        <p>Sistem Aegislabs belum memiliki data karyawan. Mulai dengan menambahkan karyawan pertama untuk menggunakan fitur HRD secara lengkap.</p>
+        <a href="@Url.Action("Create")" class="btn btn-add-employee btn-lg">
+            <i class="bi bi-person-plus-fill"></i> Tambah Karyawan Pertama
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Auto dismiss alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert-dismissible').each(function() {
+                    $(this).fadeOut();
+                });
+            }, 5000);
+
+            // Enhanced confirmation dialogs
+            $('a[onclick*="confirm"]').on('click', function(e) {
+                e.preventDefault();
+                const action = $(this).attr('title');
+                const confirmMsg = `Apakah Anda yakin ingin ${action.toLowerCase()} karyawan ini?`;
+                
+                if (confirm(confirmMsg)) {
+                    window.location.href = $(this).attr('href');
+                }
+            });
+
+            // Table row hover enhancement
+            $('.custom-table tbody tr').hover(
+                function() {
+                    $(this).css('background-color', 'var(--aegis-red-light)');
+                },
+                function() {
+                    $(this).css('background-color', '');
+                }
+            );
+
+            // Stats cards animation on scroll
+            $(window).scroll(function() {
+                $('.stats-card').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const elementBottom = elementTop + $(this).outerHeight();
+                    const viewportTop = $(window).scrollTop();
+                    const viewportBottom = viewportTop + $(window).height();
+                    
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass('animate__fadeInUp');
+                    }
+                });
+            });
+        });
+    </script>
+}

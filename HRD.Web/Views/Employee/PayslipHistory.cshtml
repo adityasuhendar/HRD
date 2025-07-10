@@ -1,0 +1,1129 @@
+﻿@model List<HRD.Web.Models.DTOs.PayrollResponse>
+@{
+    ViewData["Title"] = "Riwayat Slip Gaji";
+    var currentYear = ViewBag.Year ?? DateTime.Now.Year;
+    var availableYears = ViewBag.Years as List<int> ?? new List<int>();
+    var employee = ViewBag.Employee as HRD.Web.Models.DTOs.KaryawanResponse;
+}
+
+<!-- Custom CSS untuk Payslip History Page -->
+<style>
+    /* Aegislabs Theme Variables */
+    :root {
+        --aegis-red: #ff4061;
+        --aegis-white: #ffffff;
+        --aegis-red-hover: #e5395a;
+        --aegis-red-light: rgba(255, 64, 97, 0.1);
+        --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+        --aegis-dark: #2c3e50;
+        --aegis-gray: #f8f9fa;
+    }
+
+    /* Main Container */
+    .payslip-history-container {
+        background: linear-gradient(135deg, var(--aegis-gray), #e9ecef);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px var(--aegis-red-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: scale(0.8);
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-header p {
+        margin: 0.75rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-header i {
+        font-size: 2.2rem;
+        margin-right: 0.75rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Employee Info Badge */
+    .employee-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        opacity: 0.95;
+        position: relative;
+        z-index: 2;
+    }
+
+    .employee-info .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Action Button */
+    .btn-current-payslip {
+        background: var(--aegis-white);
+        color: var(--aegis-red);
+        border: 3px solid var(--aegis-white);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-current-payslip:hover {
+        background: transparent;
+        color: var(--aegis-white);
+        border-color: var(--aegis-white);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Filter Card */
+    .filter-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .filter-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--aegis-dark);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label i {
+        color: var(--aegis-red);
+        font-size: 1.1rem;
+    }
+
+    .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        border-color: var(--aegis-red);
+        box-shadow: 0 0 0 0.2rem var(--aegis-red-light);
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+    }
+
+    .btn-filter:hover {
+        background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 6px 20px var(--aegis-red-shadow);
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-card-body {
+        padding: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stats-card.primary {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.info {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: var(--aegis-white);
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        opacity: 0.9;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stats-label {
+        font-size: 0.9rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Main Table Card */
+    .table-card {
+        background: var(--aegis-white);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .table-card-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .export-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-export {
+        background: var(--aegis-white);
+        border: 2px solid var(--aegis-red);
+        color: var(--aegis-red);
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-export:hover {
+        background: var(--aegis-red);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Custom Table Styling */
+    .custom-table {
+        margin: 0;
+    }
+
+    .custom-table thead th {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .custom-table tbody td {
+        border: none;
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .custom-table tbody tr:hover {
+        background: var(--aegis-red-light);
+    }
+
+    .custom-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Period Display */
+    .period-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .period-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--aegis-red-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--aegis-red);
+        font-size: 1.2rem;
+    }
+
+    .period-details .period-name {
+        font-weight: 600;
+        color: var(--aegis-dark);
+        font-size: 1rem;
+    }
+
+    .period-details .period-date {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    /* Amount Display */
+    .amount-display {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .amount-gaji-pokok {
+        color: #059669;
+    }
+
+    .amount-tunjangan {
+        color: #3b82f6;
+    }
+
+    .amount-potongan {
+        color: #f59e0b;
+    }
+
+    .amount-total {
+        color: var(--aegis-red);
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-paid {
+        background: #dcfce7;
+        color: #059669;
+        border: 1px solid #bbf7d0;
+    }
+
+    .status-unpaid {
+        background: #fef3c7;
+        color: #d97706;
+        border: 1px solid #fed7aa;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        margin-right: 0.25rem;
+    }
+
+    .btn-view {
+        background: transparent;
+        border: 2px solid var(--aegis-red);
+        color: var(--aegis-red);
+    }
+
+    .btn-view:hover {
+        background: var(--aegis-red);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .btn-download {
+        background: transparent;
+        border: 2px solid #059669;
+        color: #059669;
+    }
+
+    .btn-download:hover {
+        background: #059669;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Chart Card */
+    .chart-card {
+        background: var(--aegis-white);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .chart-card-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--aegis-white);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--aegis-red), #ff6b85);
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: #dee2e6;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        color: var(--aegis-dark);
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-back-dashboard, .btn-check-current {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+        margin: 0 0.5rem;
+    }
+
+    .btn-back-dashboard:hover, .btn-check-current:hover {
+        background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 6px 20px var(--aegis-red-shadow);
+    }
+
+    .btn-check-current {
+        background: transparent;
+        border: 2px solid var(--aegis-red);
+        color: var(--aegis-red);
+        box-shadow: none;
+    }
+
+    .btn-check-current:hover {
+        background: var(--aegis-red);
+        color: white;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-danger {
+        background: #ffe6ea;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+
+    .alert-success {
+        background: #e7f5e7;
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .payslip-history-container {
+            padding: 1rem 0;
+        }
+        
+        .page-header {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .employee-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .stats-card-body {
+            padding: 1rem;
+        }
+        
+        .stats-number {
+            font-size: 1.75rem;
+        }
+        
+        .custom-table {
+            font-size: 0.85rem;
+        }
+        
+        .custom-table thead th,
+        .custom-table tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .period-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .period-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .export-buttons {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+    }
+
+    /* Animation */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+
+<div class="payslip-history-container">
+    <div class="container-fluid px-4">
+        <!-- Page Header -->
+        <div class="page-header animate-in">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h1>
+                        <i class="bi bi-clock-history"></i>
+                        Riwayat Slip Gaji Aegislabs
+                    </h1>
+                    @if (employee != null)
+                    {
+                        <div class="employee-info">
+                            <div class="info-item">
+                                <i class="bi bi-person"></i>
+                                <span>@employee.NamaLengkap</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-card-text"></i>
+                                <span>@employee.NIK</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>@employee.Posisi</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div>
+                    <a href="@Url.Action("CurrentPayslip", "Employee")" class="btn btn-current-payslip">
+                        <i class="bi bi-receipt-cutoff"></i> Slip Gaji Terkini
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card filter-card animate-in" style="animation-delay: 0.1s;">
+                    <div class="card-body">
+                        <form method="get" class="d-flex align-items-end gap-3">
+                            <div class="flex-grow-1">
+                                <label for="tahun" class="form-label">
+                                    <i class="bi bi-calendar3"></i>
+                                    Filter Tahun
+                                </label>
+                                <select id="tahun" name="tahun" class="form-select" onchange="this.form.submit()">
+                                    @foreach (var year in availableYears)
+                                    {
+                                        @if (year == currentYear)
+                                        {
+                                            <option value="@year" selected>@year</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@year">@year</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-filter">
+                                    <i class="bi bi-search"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        @if (!string.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="alert alert-danger alert-dismissible fade show animate-in" role="alert" style="animation-delay: 0.2s;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                @ViewBag.Error
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show animate-in" role="alert" style="animation-delay: 0.2s;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show animate-in" role="alert" style="animation-delay: 0.2s;">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Content Section -->
+        @if (Model != null && Model.Any())
+        {
+            <!-- Summary Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stats-card primary animate-in" style="animation-delay: 0.3s;">
+                        <div class="stats-card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stats-label">Total Slip Gaji</div>
+                                    <div class="stats-number">@Model.Count</div>
+                                </div>
+                                <div>
+                                    <i class="bi bi-receipt-cutoff stats-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stats-card success animate-in" style="animation-delay: 0.4s;">
+                        <div class="stats-card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stats-label">Sudah Dibayar</div>
+                                    <div class="stats-number">@Model.Count(p => p.StatusBayar == "Sudah Bayar")</div>
+                                </div>
+                                <div>
+                                    <i class="bi bi-check-circle-fill stats-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stats-card warning animate-in" style="animation-delay: 0.5s;">
+                        <div class="stats-card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stats-label">Belum Dibayar</div>
+                                    <div class="stats-number">@Model.Count(p => p.StatusBayar == "Belum Bayar")</div>
+                                </div>
+                                <div>
+                                    <i class="bi bi-clock-fill stats-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card stats-card info animate-in" style="animation-delay: 0.6s;">
+                        <div class="stats-card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stats-label">Total @currentYear</div>
+                                    <div class="stats-number" style="font-size: 1.5rem;">Rp @Model.Sum(p => p.TotalGaji).ToString("N0")</div>
+                                </div>
+                                <div>
+                                    <i class="bi bi-currency-dollar stats-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Table -->
+            <div class="card table-card animate-in" style="animation-delay: 0.7s;">
+                <div class="table-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-table"></i>
+                            Riwayat Slip Gaji Tahun @currentYear
+                        </h5>
+                        <div class="export-buttons">
+                            <button class="btn btn-export" onclick="exportToExcel()">
+                                <i class="bi bi-file-earmark-excel"></i> Excel
+                            </button>
+                            <button class="btn btn-export" onclick="exportToPDF()">
+                                <i class="bi bi-file-earmark-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table custom-table" id="payslipTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <i class="bi bi-calendar3 me-1"></i>Periode
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-currency-dollar me-1"></i>Gaji Pokok
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-plus-circle me-1"></i>Tunjangan
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-dash-circle me-1"></i>Potongan
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-cash-stack me-1"></i>Total Gaji
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-check2-square me-1"></i>Status
+                                    </th>
+                                    <th class="text-center">
+                                        <i class="bi bi-gear me-1"></i>Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var payslip in Model.OrderByDescending(p => p.Tahun).ThenByDescending(p => p.Bulan))
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="period-info">
+                                                <div class="period-icon">
+                                                    <i class="bi bi-calendar-month"></i>
+                                                </div>
+                                                <div class="period-details">
+                                                    <div class="period-name">
+                                                        @(new System.Globalization.CultureInfo("id-ID").DateTimeFormat.GetMonthName(payslip.Bulan)) @payslip.Tahun
+                                                    </div>
+                                                    <div class="period-date">
+                                                        Dibuat: @payslip.TglDibuat.ToString("dd MMM yyyy")
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="amount-display amount-gaji-pokok">
+                                                Rp @payslip.GajiPokok.ToString("N0")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="amount-display amount-tunjangan">
+                                                Rp @payslip.Tunjangan.ToString("N0")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="amount-display amount-potongan">
+                                                Rp @payslip.Potongan.ToString("N0")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="amount-display amount-total">
+                                                Rp @payslip.TotalGaji.ToString("N0")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (payslip.StatusBayar == "Sudah Bayar")
+                                            {
+                                                <span class="status-badge status-paid">
+                                                    <i class="bi bi-check-circle"></i>Sudah Dibayar
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-badge status-unpaid">
+                                                    <i class="bi bi-clock"></i>Belum Dibayar
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center">
+                                                <a href="@Url.Action("PayslipDetail", "Employee", new { idGaji = payslip.IdGaji })" 
+                                                   class="btn action-btn btn-view" 
+                                                   title="Lihat Detail">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("DownloadPayslip", "Employee", new { idGaji = payslip.IdGaji })" 
+                                                   class="btn action-btn btn-download" 
+                                                   title="Download PDF">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card chart-card animate-in" style="animation-delay: 0.8s;">
+                        <div class="chart-card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-graph-up"></i>
+                                Grafik Perkembangan Gaji @currentYear
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salaryChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state animate-in" style="animation-delay: 0.3s;">
+                <i class="bi bi-inbox"></i>
+                <h4>Belum Ada Riwayat Slip Gaji</h4>
+                <p>
+                    Belum ada slip gaji yang tersedia untuk tahun @currentYear. 
+                    Slip gaji akan muncul setelah HRD memproses payroll bulanan.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="@Url.Action("EmployeeDashboard", "Home")" class="btn btn-back-dashboard">
+                        <i class="bi bi-house"></i> Kembali ke Dashboard
+                    </a>
+                    <a href="@Url.Action("CurrentPayslip", "Employee")" class="btn btn-check-current">
+                        <i class="bi bi-receipt-cutoff"></i> Cek Slip Gaji Terkini
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Chart.js for Salary Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize salary chart if data exists
+            @if (Model != null && Model.Any())
+            {
+                <text>
+                const ctx = document.getElementById('salaryChart').getContext('2d');
+                const payslipData = @Html.Raw(Json.Serialize(Model.OrderBy(p => p.Bulan).Select(p => new { 
+                    month = p.Bulan, 
+                    monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(p.Bulan),
+                    totalGaji = p.TotalGaji,
+                    gajiPokok = p.GajiPokok,
+                    tunjangan = p.Tunjangan,
+                    potongan = p.Potongan
+                })));
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: payslipData.map(p => p.monthName),
+                        datasets: [{
+                            label: 'Total Gaji',
+                            data: payslipData.map(p => p.totalGaji),
+                            borderColor: '#ff4061',
+                            backgroundColor: 'rgba(255, 64, 97, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Gaji Pokok',
+                            data: payslipData.map(p => p.gajiPokok),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }, {
+                            label: 'Tunjangan',
+                            data: payslipData.map(p => p.tunjangan),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Bulan'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Nominal (Rupiah)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'Rp ' + value.toLocaleString('id-ID');
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+                </text>
+            }
+
+            // Enhanced notification system
+            function showNotification(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : type === 'info' ? 'alert-info' : 'alert-danger';
+                const icon = type === 'success' ? 'bi-check-circle-fill' : type === 'info' ? 'bi-info-circle-fill' : 'bi-exclamation-triangle-fill';
+                
+                const notification = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <i class="bi ${icon}"></i> ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                $('body').append(notification);
+                
+                setTimeout(() => {
+                    $('.alert').fadeOut();
+                }, 4000);
+            }
+
+            // Show welcome message
+            @if (Model != null && Model.Any())
+            {
+                <text>
+                setTimeout(() => {
+                    showNotification(`Riwayat slip gaji untuk tahun @currentYear berhasil dimuat (@Model.Count slip gaji)`, 'success');
+                }, 1000);
+                </text>
+            }
+        });
+
+        // Export functions with enhanced UX
+        function exportToExcel() {
+            showNotification('Fitur export Excel akan segera tersedia', 'info');
+        }
+
+        function exportToPDF() {
+            showNotification('Fitur export PDF akan segera tersedia', 'info');
+        }
+
+        // Enhanced table interactions
+        $(document).ready(function() {
+            // Table row hover effects
+            $('.custom-table tbody tr').hover(
+                function() {
+                    $(this).css('background-color', 'var(--aegis-red-light)');
+                },
+                function() {
+                    $(this).css('background-color', '');
+                }
+            );
+
+            // Action button loading states
+            $('.action-btn').on('click', function(e) {
+                const btn = $(this);
+                const originalContent = btn.html();
+                
+                btn.prop('disabled', true);
+                btn.html('<i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i>');
+                
+                // Restore button after navigation (fallback)
+                setTimeout(() => {
+                    btn.prop('disabled', false);
+                    btn.html(originalContent);
+                }, 3000);
+            });
+
+            // Add spinning animation
+            $('<style>').text(`
+                @@keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `).appendTo('head');
+        });
+
+        // Helper function for notifications (global)
+        function showNotification(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : type === 'info' ? 'alert-info' : 'alert-danger';
+            const icon = type === 'success' ? 'bi-check-circle-fill' : type === 'info' ? 'bi-info-circle-fill' : 'bi-exclamation-triangle-fill';
+            
+            const notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <i class="bi ${icon}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            $('body').append(notification);
+            
+            setTimeout(() => {
+                $('.alert').fadeOut();
+            }, 4000);
+        }
+    </script>
+}

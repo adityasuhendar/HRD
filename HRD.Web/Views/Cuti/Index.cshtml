@@ -1,0 +1,649 @@
+﻿@model List<HRD.Web.Models.DTOs.CutiResponse>
+@{
+    ViewData["Title"] = "Riwayat Cuti Saya";
+}
+
+<!-- Custom CSS untuk Cuti Index Page -->
+<style>
+    /* Aegislabs Theme Variables */
+    :root {
+        --aegis-red: #ff4061;
+        --aegis-white: #ffffff;
+        --aegis-red-hover: #e5395a;
+        --aegis-red-light: rgba(255, 64, 97, 0.1);
+        --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+        --aegis-dark: #2c3e50;
+        --aegis-gray: #f8f9fa;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px var(--aegis-red-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: scale(0.8);
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header i {
+            font-size: 2.2rem;
+            margin-right: 0.75rem;
+            position: relative;
+            z-index: 2;
+        }
+
+    /* Add Button */
+    .btn-add-cuti {
+        background: var(--aegis-white);
+        color: var(--aegis-red);
+        border: 3px solid var(--aegis-white);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+        .btn-add-cuti:hover {
+            background: transparent;
+            color: var(--aegis-white);
+            border-color: var(--aegis-white);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+        }
+
+    /* Stats Cards */
+    .stats-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+    .stats-card-body {
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stats-card.approved {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.pending {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.rejected {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.total {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: var(--aegis-white);
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Main Table Card */
+    .table-card {
+        background: var(--aegis-white);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .table-card-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Custom Table Styling */
+    .custom-table {
+        margin: 0;
+    }
+
+        .custom-table thead th {
+            background: var(--aegis-red-light);
+            color: var(--aegis-red);
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .custom-table tbody td {
+            border: none;
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .custom-table tbody tr:hover {
+            background: var(--aegis-red-light);
+        }
+
+        .custom-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Badge Styling */
+    .custom-badge {
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .badge-jenis {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: 1px solid rgba(255, 64, 97, 0.3);
+    }
+
+    .badge-pending {
+        background: #fbbf24;
+        color: #92400e;
+    }
+
+    .badge-approved {
+        background: #10b981;
+        color: white;
+    }
+
+    .badge-rejected {
+        background: #ef4444;
+        color: white;
+    }
+
+    /* Duration Display */
+    .duration-display {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--aegis-red);
+    }
+
+    .duration-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    /* Date Display */
+    .date-main {
+        font-weight: 600;
+        color: var(--aegis-dark);
+    }
+
+    .date-secondary {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    /* Action Button */
+    .btn-detail {
+        background: transparent;
+        border: 2px solid var(--aegis-red);
+        color: var(--aegis-red);
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-detail:hover {
+            background: var(--aegis-red);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--aegis-red-shadow);
+        }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--aegis-white);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .empty-state::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--aegis-red), #ff6b85);
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h4 {
+            color: var(--aegis-dark);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+    .btn-first-cuti {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        padding: 0.875rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+    }
+
+        .btn-first-cuti:hover {
+            background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 6px 20px var(--aegis-red-shadow);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .page-header
+
+    {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .stats-card-body {
+        padding: 1rem;
+    }
+
+    .stats-number {
+        font-size: 1.75rem;
+    }
+
+    .custom-table {
+        font-size: 0.85rem;
+    }
+
+        .custom-table thead th,
+        .custom-table tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+
+    .btn-detail {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+        }
+
+    }
+
+    /* Animation */
+    @@keyframes fadeInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header animate-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2>
+                <i class="bi bi-calendar-check-fill"></i>
+                Riwayat Cuti Saya
+            </h2>
+            <p>Kelola dan pantau semua pengajuan cuti Anda di Aegislabs</p>
+        </div>
+        <a href="@Url.Action("Create")" class="btn btn-add-cuti">
+             Ajukan Cuti Baru
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card approved animate-in" style="animation-delay: 0.1s;">
+            <div class="stats-card-body">
+                <i class="bi bi-check-circle-fill stats-icon"></i>
+                <h4 class="stats-number">@Model.Count(c => c.StatusPersetujuan == "Disetujui")</h4>
+                <p class="stats-label">Cuti Disetujui</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card pending animate-in" style="animation-delay: 0.2s;">
+            <div class="stats-card-body">
+                <i class="bi bi-clock-fill stats-icon"></i>
+                <h4 class="stats-number">@Model.Count(c => c.StatusPersetujuan == "Pending")</h4>
+                <p class="stats-label">Menunggu Persetujuan</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card rejected animate-in" style="animation-delay: 0.3s;">
+            <div class="stats-card-body">
+                <i class="bi bi-x-circle-fill stats-icon"></i>
+                <h4 class="stats-number">@Model.Count(c => c.StatusPersetujuan == "Ditolak")</h4>
+                <p class="stats-label">Cuti Ditolak</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card total animate-in" style="animation-delay: 0.4s;">
+            <div class="stats-card-body">
+                <i class="bi bi-calendar-week-fill stats-icon"></i>
+                <h4 class="stats-number">@Model.Where(c => c.StatusPersetujuan == "Disetujui").Sum(c => c.JumlahHari)</h4>
+                <p class="stats-label">Total Hari Cuti</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <!-- Main Table -->
+    <div class="card table-card animate-in" style="animation-delay: 0.5s;">
+        <div class="table-card-header">
+            <i class="bi bi-table"></i> Daftar Pengajuan Cuti (@Model.Count() pengajuan)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            <th>Jenis Cuti</th>
+                            <th>Periode Cuti</th>
+                            <th>Durasi</th>
+                            <th>Status Persetujuan</th>
+                            <th>Tanggal Pengajuan</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cuti in Model.OrderByDescending(c => c.TglDibuat))
+                        {
+                            <tr>
+                                <td>
+                                    <span class="custom-badge badge-jenis">
+                                        @switch (cuti.JenisCuti)
+                                        {
+                                            case "Tahunan":
+                                                <i class="bi bi-calendar-heart"></i>
+                                                break;
+                                            case "Sakit":
+                                                <i class="bi bi-heart-pulse"></i>
+                                                break;
+                                            case "Melahirkan":
+                                                <i class="bi bi-person-plus"></i>
+                                                break;
+                                            case "Menikah":
+                                                <i class="bi bi-heart"></i>
+                                                break;
+                                            case "Duka Cita":
+                                                <i class="bi bi-heart-break"></i>
+                                                break;
+                                            default:
+                                                <i class="bi bi-calendar-event"></i>
+                                                break;
+                                        }
+                                        @cuti.JenisCuti
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="date-main">@cuti.TglMulai.ToString("dd/MM/yyyy")</div>
+                                    @if (cuti.TglMulai != cuti.TglSelesai)
+                                    {
+                                        <div class="date-secondary">s/d @cuti.TglSelesai.ToString("dd/MM/yyyy")</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="date-secondary">Cuti 1 hari</div>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="duration-display">@cuti.JumlahHari</div>
+                                    <div class="duration-label">hari</div>
+                                </td>
+                                <td>
+                                    @if (cuti.StatusPersetujuan == "Pending")
+                                    {
+                                        <span class="custom-badge badge-pending">
+                                            <i class="bi bi-clock"></i> Menunggu
+                                        </span>
+                                    }
+                                    else if (cuti.StatusPersetujuan == "Disetujui")
+                                    {
+                                        <span class="custom-badge badge-approved">
+                                            <i class="bi bi-check-circle"></i> Disetujui
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="custom-badge badge-rejected">
+                                            <i class="bi bi-x-circle"></i> Ditolak
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="date-main">@cuti.TglDibuat.ToString("dd/MM/yyyy")</div>
+                                    <div class="date-secondary">@cuti.TglDibuat.ToString("HH:mm")</div>
+                                </td>
+                                <td class="text-center">
+                                    <a href="@Url.Action("Details", new { id = cuti.IdCuti })"
+                                       class="btn btn-detail">
+                                        <i class="bi bi-eye-fill"></i> Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Empty State -->
+    <div class="empty-state animate-in" style="animation-delay: 0.5s;">
+        <i class="bi bi-calendar-x"></i>
+        <h4>Belum Ada Pengajuan Cuti</h4>
+        <p>Mulai dengan mengajukan cuti pertama Anda untuk menikmati work-life balance yang optimal</p>
+        <a href="@Url.Action("Create")" class="btn btn-first-cuti">
+            Ajukan Cuti Pertama
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Enhanced table row hover effects
+            $('.custom-table tbody tr').hover(
+                function() {
+                    $(this).css('background-color', 'var(--aegis-red-light)');
+                },
+                function() {
+                    $(this).css('background-color', '');
+                }
+            );
+
+            // Stats cards animation on scroll
+            $(window).scroll(function() {
+                $('.stats-card').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const elementBottom = elementTop + $(this).outerHeight();
+                    const viewportTop = $(window).scrollTop();
+                    const viewportBottom = viewportTop + $(window).height();
+
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass('animate-in');
+                    }
+                });
+            });
+
+            // Add loading state to detail buttons
+            $('.btn-detail').on('click', function(e) {
+                const btn = $(this);
+                const originalText = btn.html();
+
+                btn.prop('disabled', true);
+                btn.html('<i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i> Loading...');
+
+                // Restore button after a short delay (in case navigation is slow)
+                setTimeout(() => {
+                    btn.prop('disabled', false);
+                    btn.html(originalText);
+                }, 3000);
+            });
+
+            // Enhanced notification for better UX
+            function showNotification(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-info';
+                const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-info-circle-fill';
+
+                const notification = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <i class="bi ${icon}"></i> ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+
+                $('body').append(notification);
+
+                setTimeout(() => {
+                    $('.alert').fadeOut();
+                }, 4000);
+            }
+
+            // Show welcome message for first-time users
+            @if (!Model.Any())
+            {
+                    <text>
+                    setTimeout(() => {
+                        showNotification('Selamat datang! Sistem cuti Aegislabs siap membantu Anda mengelola work-life balance.', 'success');
+                    }, 1000);
+                    </text>
+            }
+
+            // Add CSS for spinning animation
+            $('<style>').text(`
+                @@keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `).appendTo('head');
+        });
+    </script>
+}

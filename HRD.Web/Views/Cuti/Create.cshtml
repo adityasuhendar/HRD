@@ -1,0 +1,803 @@
+﻿@model HRD.Web.Models.DTOs.CreateCutiRequest
+@{
+    ViewData["Title"] = "Ajukan Cuti";
+}
+
+<!-- Custom CSS untuk Create Cuti Page -->
+<style>
+    /* Aegislabs Theme Variables */
+    :root {
+        --aegis-red: #ff4061;
+        --aegis-white: #ffffff;
+        --aegis-red-hover: #e5395a;
+        --aegis-red-light: rgba(255, 64, 97, 0.1);
+        --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+        --aegis-dark: #2c3e50;
+        --aegis-gray: #f8f9fa;
+    }
+
+    /* Main Container */
+    .cuti-container {
+        background: linear-gradient(135deg, var(--aegis-gray), #e9ecef);
+        min-height: 80vh;
+        padding: 2rem 0;
+    }
+
+    /* Main Card */
+    .cuti-card {
+        background: var(--aegis-white);
+        border-radius: 25px;
+        border: none;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+    }
+
+        .cuti-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--aegis-red), #ff6b85);
+        }
+
+    /* Card Header */
+    .cuti-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cuti-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: scale(0.8);
+        }
+
+        .cuti-header h4 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cuti-header i {
+            font-size: 2rem;
+            margin-right: 0.75rem;
+            position: relative;
+            z-index: 2;
+        }
+
+    /* Form Styling */
+    .cuti-form {
+        padding: 2.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--aegis-dark);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .form-label i {
+            color: var(--aegis-red);
+            font-size: 1.1rem;
+        }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 0.875rem 1rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--aegis-red);
+            box-shadow: 0 0 0 0.2rem var(--aegis-red-light);
+        }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+        .form-text i {
+            color: var(--aegis-red);
+            margin-right: 0.25rem;
+        }
+
+    /* Required Field Indicator */
+    .text-danger {
+        color: var(--aegis-red) !important;
+    }
+
+    /* Duration Display */
+    .duration-alert {
+        background: linear-gradient(135deg, var(--aegis-red-light), rgba(255, 64, 97, 0.05));
+        border: 2px solid var(--aegis-red);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .duration-alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--aegis-red);
+        }
+
+        .duration-alert i {
+            color: var(--aegis-red);
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+    .duration-text {
+        color: var(--aegis-red);
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    /* Template Buttons */
+    .template-section {
+        background: var(--aegis-red-light);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .template-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .btn-template {
+        background: var(--aegis-white);
+        border: 2px solid var(--aegis-red);
+        color: var(--aegis-red);
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-template::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--aegis-red);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .btn-template:hover {
+            color: var(--aegis-white);
+            border-color: var(--aegis-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--aegis-red-shadow);
+        }
+
+            .btn-template:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+        .btn-template span {
+            position: relative;
+            z-index: 2;
+        }
+
+    /* Action Buttons */
+    .btn-back {
+        background: #6c757d;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-back:hover {
+            background: #545b62;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-preview {
+        background: transparent;
+        border: 2px solid var(--aegis-red);
+        color: var(--aegis-red);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-preview:hover {
+            background: var(--aegis-red);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 6px 20px var(--aegis-red-shadow);
+        }
+
+            .btn-submit:hover:not(:disabled)::before {
+                width: 300px;
+                height: 300px;
+            }
+
+        .btn-submit:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+    /* Modal Styling */
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: white;
+        border-bottom: none;
+        padding: 1.5rem 2rem;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        padding: 1.5rem 2rem;
+    }
+
+    /* Preview Table */
+    .preview-table {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+        .preview-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f8f9fa;
+            vertical-align: top;
+        }
+
+            .preview-table td:first-child {
+                background: var(--aegis-red-light);
+                color: var(--aegis-red);
+                font-weight: 600;
+                width: 30%;
+            }
+
+        .preview-table tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Preview Alert */
+    .preview-alert {
+        background: linear-gradient(135deg, #e7f3ff, #f0f8ff);
+        border: 2px solid #0ea5e9;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+        .preview-alert i {
+            color: #0369a1;
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-danger {
+        background: #ffe6ea;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .cuti-container
+
+    {
+        padding: 1rem 0;
+    }
+
+    .cuti-header {
+        padding: 1.5rem;
+    }
+
+        .cuti-header h4 {
+            font-size: 1.5rem;
+        }
+
+    .cuti-form {
+        padding: 1.5rem;
+    }
+
+    .template-buttons {
+        gap: 0.5rem;
+    }
+
+    .btn-template {
+        font-size: 0.8rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .preview-table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .modal-body, .modal-footer {
+        padding: 1rem;
+    }
+
+    }
+</style>
+
+<div class="cuti-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="card cuti-card">
+                <!-- Header -->
+                <div class="cuti-header">
+                    <h4>
+                        <i class="bi bi-calendar-plus-fill"></i>
+                        Ajukan Cuti Baru
+                    </h4>
+                </div>
+
+                <div class="cuti-form">
+                    <form method="post" asp-action="Create" id="cutiForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Jenis Cuti -->
+                        <div class="mb-4">
+                            <label asp-for="JenisCuti" class="form-label">
+                                <i class="bi bi-tag-fill"></i>
+                                Jenis Cuti <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="JenisCuti" class="form-select">
+                                <option value="">-- Pilih Jenis Cuti --</option>
+                                <option value="Tahunan">🏖️ Cuti Tahunan</option>
+                                <option value="Sakit">🤒 Cuti Sakit</option>
+                                <option value="Melahirkan">👶 Cuti Melahirkan</option>
+                                <option value="Menikah">💒 Cuti Menikah</option>
+                                <option value="Duka Cita">😢 Cuti Duka Cita</option>
+                                <option value="Izin Khusus">📋 Izin Khusus</option>
+                            </select>
+                            <span asp-validation-for="JenisCuti" class="text-danger"></span>
+                        </div>
+
+                        <!-- Tanggal Range -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label asp-for="TglMulai" class="form-label">
+                                        <i class="bi bi-calendar-date-fill"></i>
+                                        Tanggal Mulai <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="TglMulai" type="date" class="form-control" id="tglMulai"
+                                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="TglMulai" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label asp-for="TglSelesai" class="form-label">
+                                        <i class="bi bi-calendar-check-fill"></i>
+                                        Tanggal Selesai <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="TglSelesai" type="date" class="form-control" id="tglSelesai"
+                                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="TglSelesai" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Duration Display -->
+                        <div class="mb-4">
+                            <div class="duration-alert" id="durationDisplay" style="display: none;">
+                                <i class="bi bi-calendar-week-fill"></i>
+                                <span class="duration-text" id="durationText">Durasi cuti akan dihitung otomatis</span>
+                            </div>
+                        </div>
+
+                        <!-- Template Section -->
+                        <div class="template-section">
+                            <label class="form-label">
+                                <i class="bi bi-lightning-fill"></i>
+                                Template Cepat
+                            </label>
+                            <div class="template-buttons">
+                                <button type="button" class="btn btn-template" onclick="setTemplate('vacation')">
+                                    <span>🏖️ Liburan</span>
+                                </button>
+                                <button type="button" class="btn btn-template" onclick="setTemplate('sick')">
+                                    <span>🤒 Sakit</span>
+                                </button>
+                                <button type="button" class="btn btn-template" onclick="setTemplate('family')">
+                                    <span>👨‍👩‍👧‍👦 Keluarga</span>
+                                </button>
+                                <button type="button" class="btn btn-template" onclick="setTemplate('personal')">
+                                    <span>🏠 Urusan Pribadi</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Alasan -->
+                        <div class="mb-4">
+                            <label asp-for="Alasan" class="form-label">
+                                <i class="bi bi-chat-text-fill"></i>
+                                Alasan Cuti
+                            </label>
+                            <textarea asp-for="Alasan" class="form-control" rows="4"
+                                      placeholder="Jelaskan alasan pengajuan cuti Anda dengan detail..."></textarea>
+                            <span asp-validation-for="Alasan" class="text-danger"></span>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle-fill"></i>
+                                Alasan yang jelas dan detail akan membantu mempercepat proses persetujuan
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="@Url.Action("Index", "Cuti")" class="btn btn-back">
+                                <i class="bi bi-arrow-left"></i> Kembali
+                            </a>
+                            <div class="d-flex gap-3">
+                                <button type="button" class="btn btn-preview" onclick="previewRequest()">
+                                    <i class="bi bi-eye-fill"></i> Preview
+                                </button>
+                                <button type="submit" class="btn btn-submit" id="submitBtn">
+                                    <i class="bi bi-send-fill"></i> Ajukan Cuti
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-eye-fill"></i> Preview Pengajuan Cuti
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="previewContent">
+                <!-- Preview content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Tutup
+                </button>
+                <button type="button" class="btn btn-submit" onclick="submitForm()">
+                    <i class="bi bi-send-fill"></i> Confirm & Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Calculate duration when dates change
+        document.getElementById('tglMulai').addEventListener('change', calculateDuration);
+        document.getElementById('tglSelesai').addEventListener('change', calculateDuration);
+
+        function calculateDuration() {
+            const startDate = document.getElementById('tglMulai').value;
+            const endDate = document.getElementById('tglSelesai').value;
+
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+
+                if (end >= start) {
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                    // Calculate working days (exclude weekends)
+                    let workingDays = 0;
+                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                        if (d.getDay() !== 0 && d.getDay() !== 6) { // Not Sunday or Saturday
+                            workingDays++;
+                        }
+                    }
+
+                    document.getElementById('durationDisplay').style.display = 'block';
+                    document.getElementById('durationText').textContent =
+                        `Durasi: ${diffDays} hari kalendar (${workingDays} hari kerja)`;
+                } else {
+                    document.getElementById('durationDisplay').style.display = 'none';
+                    showNotification('Tanggal selesai tidak boleh lebih awal dari tanggal mulai', 'error');
+                }
+            } else {
+                document.getElementById('durationDisplay').style.display = 'none';
+            }
+        }
+
+        // Quick templates with enhanced feedback
+        function setTemplate(type) {
+            const alasanField = document.querySelector('textarea[name="Alasan"]');
+            const jenisCutiField = document.querySelector('select[name="JenisCuti"]');
+
+            const templates = {
+                vacation: {
+                    jenis: 'Tahunan',
+                    alasan: 'Liburan bersama keluarga untuk refreshing dan quality time'
+                },
+                sick: {
+                    jenis: 'Sakit',
+                    alasan: 'Kondisi kesehatan tidak memungkinkan untuk bekerja, perlu istirahat dan pemulihan'
+                },
+                family: {
+                    jenis: 'Izin Khusus',
+                    alasan: 'Urusan keluarga yang mendesak dan tidak dapat ditunda'
+                },
+                personal: {
+                    jenis: 'Izin Khusus',
+                    alasan: 'Urusan pribadi penting yang memerlukan penanganan segera'
+                }
+            };
+
+            if (templates[type]) {
+                jenisCutiField.value = templates[type].jenis;
+                alasanField.value = templates[type].alasan;
+
+                // Visual feedback
+                jenisCutiField.style.borderColor = 'var(--aegis-red)';
+                alasanField.style.borderColor = 'var(--aegis-red)';
+
+                setTimeout(() => {
+                    jenisCutiField.style.borderColor = '';
+                    alasanField.style.borderColor = '';
+                }, 1500);
+
+                showNotification(`Template ${type} berhasil diterapkan`, 'success');
+            }
+        }
+
+        // Enhanced preview functionality
+        function previewRequest() {
+            const jenisCuti = document.querySelector('select[name="JenisCuti"]').value;
+            const tglMulai = document.getElementById('tglMulai').value;
+            const tglSelesai = document.getElementById('tglSelesai').value;
+            const alasan = document.querySelector('textarea[name="Alasan"]').value;
+
+            if (!jenisCuti || !tglMulai || !tglSelesai) {
+                showNotification('Mohon lengkapi jenis cuti dan tanggal terlebih dahulu', 'error');
+                return;
+            }
+
+            const startDate = new Date(tglMulai);
+            const endDate = new Date(tglSelesai);
+            const diffDays = Math.ceil(Math.abs(endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            // Calculate working days
+            let workingDays = 0;
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                if (d.getDay() !== 0 && d.getDay() !== 6) {
+                    workingDays++;
+                }
+            }
+
+            const previewHtml = `
+                <div class="table-responsive">
+                    <table class="table preview-table">
+                        <tr>
+                            <td><i class="bi bi-tag-fill me-2"></i>Jenis Cuti</td>
+                            <td>${jenisCuti}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-calendar-date-fill me-2"></i>Tanggal Mulai</td>
+                            <td>${new Date(tglMulai).toLocaleDateString('id-ID', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                            })}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-calendar-check-fill me-2"></i>Tanggal Selesai</td>
+                            <td>${new Date(tglSelesai).toLocaleDateString('id-ID', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                            })}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-calendar-week-fill me-2"></i>Durasi</td>
+                            <td>${diffDays} hari kalendar (${workingDays} hari kerja)</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-chat-text-fill me-2"></i>Alasan</td>
+                            <td>${alasan || '<em class="text-muted">Tidak ada alasan</em>'}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-clock-fill me-2"></i>Status</td>
+                            <td><span class="badge bg-warning text-dark">Pending Approval</span></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="preview-alert">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <strong>Informasi:</strong> Pengajuan akan dikirim ke HRD untuk diproses. Anda akan mendapat notifikasi
+                    melalui email tentang status persetujuan cuti Anda.
+                </div>
+            `;
+
+            document.getElementById('previewContent').innerHTML = previewHtml;
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            modal.show();
+        }
+
+        function submitForm() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('previewModal'));
+            modal.hide();
+            document.getElementById('cutiForm').submit();
+        }
+
+        // Auto-set end date when start date is selected (for single day leave)
+        document.getElementById('tglMulai').addEventListener('change', function() {
+            const endDateField = document.getElementById('tglSelesai');
+            if (!endDateField.value) {
+                endDateField.value = this.value;
+                calculateDuration();
+            }
+        });
+
+        // Enhanced form validation
+        document.getElementById('cutiForm').addEventListener('submit', function(e) {
+            const startDate = new Date(document.getElementById('tglMulai').value);
+            const endDate = new Date(document.getElementById('tglSelesai').value);
+
+            if (endDate < startDate) {
+                e.preventDefault();
+                showNotification('Tanggal selesai tidak boleh lebih awal dari tanggal mulai', 'error');
+                return false;
+            }
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="spinner-border spinner-border-sm loading-spinner me-2"></i>Mengirim...';
+        });
+
+        // Enhanced notification function
+        function showNotification(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+
+            const notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <i class="bi ${icon}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            $('body').append(notification);
+
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                $('.alert').fadeOut();
+            }, 4000);
+        }
+
+        // Page load animation
+        $(document).ready(function() {
+            $('.cuti-card').css({
+                'opacity': '0',
+                'transform': 'translateY(20px)'
+            }).animate({
+                'opacity': '1'
+            }, 600).css('transform', 'translateY(0)');
+        });
+    </script>
+}
