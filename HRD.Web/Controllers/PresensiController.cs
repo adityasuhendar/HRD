@@ -41,7 +41,6 @@ namespace HRD.Web.Controllers
             }
         }
 
-        // Employee: Clock in page
         [Authorize(Roles = "Karyawan")]
         public async Task<IActionResult> ClockIn()
         {
@@ -54,13 +53,22 @@ namespace HRD.Web.Controllers
                     ViewBag.AlreadyClocked = true;
                     ViewBag.TodayAttendance = todayResult.Data;
                 }
+                else
+                {
+                    ViewBag.AlreadyClocked = false;
+                    ViewBag.TodayAttendance = null;
+                }
             }
-            catch
+            catch (Exception ex)
             {
                 // Continue if error checking today's attendance
+                ViewBag.AlreadyClocked = false;
+                ViewBag.TodayAttendance = null;
+                ViewBag.Error = null; // Don't show error for checking attendance
             }
 
-            return View();
+            // Always return with ClockInRequest model
+            return View(new ClockInRequest());
         }
 
         [HttpPost]
@@ -97,7 +105,6 @@ namespace HRD.Web.Controllers
                 var result = await _apiService.PostAsync<ClockOutResponse>("api/presensi/clock-out", model);
                 if (result?.Success == true)
                 {
-                    TempData["SuccessMessage"] = result.Message;
                     return Json(new { success = true, message = result.Message });
                 }
                 else

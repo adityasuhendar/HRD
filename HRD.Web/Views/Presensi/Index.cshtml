@@ -1,4 +1,75 @@
-﻿@page
-@model HRD.Web.Views.Presensi.IndexModel
+﻿@model List<HRD.Web.Models.DTOs.PresensiResponse>
 @{
+    ViewData["Title"] = "Riwayat Presensi";
 }
+
+<div class="container-fluid px-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="bi bi-clock-history text-primary me-2"></i>
+        Riwayat Presensi Saya
+    </h1>
+
+    @if (!string.IsNullOrEmpty(ViewBag.Error))
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @ViewBag.Error
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Jam Masuk</th>
+                                <th>Jam Keluar</th>
+                                <th>Total Jam</th>
+                                <th>Status</th>
+                                <th>Metode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var presensi in Model.OrderByDescending(p => p.Tanggal))
+                            {
+                                <tr>
+                                    <td>@presensi.Tanggal.ToString("dd/MM/yyyy")</td>
+                                    <td>@(presensi.JamMasuk?.ToString("HH:mm") ?? "-")</td>
+                                    <td>@(presensi.JamKeluar?.ToString("HH:mm") ?? "-")</td>
+                                    <td>@presensi.TotalJam jam</td>
+                                    <td>
+                                        <span class="badge bg-primary">@presensi.StatusPresensi</span>
+                                    </td>
+                                    <td>@presensi.MetodePresensi</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="bi bi-clock display-1 text-muted"></i>
+                    <h4>Belum Ada Data Presensi</h4>
+                    <p class="text-muted">Mulai dengan clock in hari ini</p>
+                    <a href="@Url.Action("ClockIn")" class="btn btn-primary">
+                        <i class="bi bi-clock me-2"></i>Clock In
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
