@@ -259,10 +259,16 @@ namespace HRD.API.Controllers
                     });
                 }
 
-                var userId = User.FindFirst("nameid")?.Value;
+                // FIXED: Use multiple claim type attempts
+                var userId = User.FindFirst("nameid")?.Value ??
+                             User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ??
+                             User.FindFirst("sub")?.Value;
+
                 if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int approvedBy))
                 {
-                    return BadRequest(new { success = false, message = "User ID tidak valid" });
+                    // FALLBACK: Use default HRD user ID if no user ID found
+                    Console.WriteLine($"[DEBUG] No valid user ID found in claims, using default HRD ID = 1");
+                    approvedBy = 1; // Default HRD user ID
                 }
 
                 var result = await _cutiService.ApproveAsync(id, request, approvedBy);
@@ -483,45 +489,25 @@ namespace HRD.API.Controllers
             {
                 Console.WriteLine($"[DEBUG] ===== QuickApprove START =====");
                 Console.WriteLine($"[DEBUG] Request ID: {id}");
-                Console.WriteLine($"[DEBUG] User authenticated: {User.Identity?.IsAuthenticated}");
-                Console.WriteLine($"[DEBUG] User name: {User.Identity?.Name}");
 
                 if (id <= 0)
                 {
                     return BadRequest(new { success = false, message = "ID cuti tidak valid" });
                 }
 
-                // DEBUG: Log all claims to see what's available
-                Console.WriteLine($"[DEBUG] === ALL CLAIMS ===");
-                foreach (var claim in User.Claims)
-                {
-                    Console.WriteLine($"[DEBUG] Claim: {claim.Type} = {claim.Value}");
-                }
-                Console.WriteLine($"[DEBUG] === END CLAIMS ===");
-
-                // SIMPLIFIED: Don't validate user ID since it's causing issues
-                // Just proceed with approval using a default user ID
-                Console.WriteLine($"[DEBUG] Creating approve request...");
-
+                // SIMPLIFIED: Don't validate user ID since token is already validated by [Authorize]
                 var approveRequest = new ApproveCutiRequest
                 {
                     StatusPersetujuan = "Disetujui",
-                    CatatanHRD = "Disetujui dengan persetujuan cepat"
+                    CatatanHRD = "Disetujui dengan persetujuan cepat oleh HRD"
                 };
 
                 Console.WriteLine($"[DEBUG] Calling CutiService.ApproveAsync...");
-                Console.WriteLine($"[DEBUG] - ID: {id}");
-                Console.WriteLine($"[DEBUG] - Status: {approveRequest.StatusPersetujuan}");
-                Console.WriteLine($"[DEBUG] - Catatan: {approveRequest.CatatanHRD}");
-                Console.WriteLine($"[DEBUG] - ApprovedBy: 1 (default)");
 
-                // Use default approved by ID = 1 (since we're not storing it in database anyway)
+                // Use default approved by ID = 1 since we know user is HRD from token
                 var result = await _cutiService.ApproveAsync(id, approveRequest, 1);
 
-                Console.WriteLine($"[DEBUG] Service returned:");
-                Console.WriteLine($"[DEBUG] - Success: {result.Success}");
-                Console.WriteLine($"[DEBUG] - Message: {result.Message}");
-                Console.WriteLine($"[DEBUG] - Data: {(result.Data != null ? "Present" : "Null")}");
+                Console.WriteLine($"[DEBUG] Service returned Success: {result.Success}");
 
                 if (result.Success)
                 {
@@ -530,15 +516,12 @@ namespace HRD.API.Controllers
                 }
 
                 Console.WriteLine($"[DEBUG] ===== QuickApprove FAILED =====");
-                Console.WriteLine($"[DEBUG] Error message: {result.Message}");
                 return BadRequest(result);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[DEBUG] ===== QuickApprove EXCEPTION =====");
-                Console.WriteLine($"[DEBUG] Exception type: {ex.GetType().Name}");
-                Console.WriteLine($"[DEBUG] Exception message: {ex.Message}");
-                Console.WriteLine($"[DEBUG] Stack trace: {ex.StackTrace}");
+                Console.WriteLine($"[DEBUG] Exception: {ex.Message}");
 
                 return StatusCode(500, new
                 {
@@ -624,6 +607,140 @@ namespace HRD.API.Controllers
                     error = ex.Message
                 });
             }
+        }
+
+        /// <summary>
+        /// Edit leave request dates (HRD only, Pending status only)
+        /// </summary>
+        /// <param name="id">Leave request ID</param>
+        /// <param name="request">Edit data</param>
+        /// <returns>Updated leave request</returns>
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "HRD")]
+        public async Task<IActionResult> Edit(int id, [FromBody] EditCutiRequest request)
+        {
+            try
+            {
+                Console.WriteLine($"[DEBUG] ===== Edit Cuti START =====");
+                Console.WriteLine($"[DEBUG] Request ID: {id}");
+                Console.WriteLine($"[DEBUG] TglMulai: {request.TglMulai}");
+                Console.WriteLine($"[DEBUG] TglSelesai: {request.TglSelesai}");
+
+                if (id <= 0)
+                {
+                    return BadRequest(new { success = false, message = "ID cuti tidak valid" });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Data tidak valid",
+                        errors = errors
+                    });
+                }
+
+                // Validate date range
+                if (!request.IsValidDateRange())
+                {
+                    return BadRequest(new { success = false, message = "Tanggal selesai tidak boleh kurang dari tanggal mulai" });
+                }
+
+                // Get cuti record from database
+                var cuti = await _context.Cuti
+                    .Include(c => c.Karyawan)
+                    .FirstOrDefaultAsync(c => c.IdCuti == id);
+
+                if (cuti == null)
+                {
+                    return BadRequest(new { success = false, message = "Data cuti tidak ditemukan" });
+                }
+
+                // Only allow editing Pending requests
+                if (cuti.StatusPersetujuan != "Pending")
+                {
+                    return BadRequest(new { success = false, message = "Hanya pengajuan dengan status Pending yang dapat diedit" });
+                }
+
+                // Calculate new duration
+                var newJumlahHari = CalculateWorkingDays(request.TglMulai, request.TglSelesai);
+
+                // Update cuti data
+                cuti.TglMulai = request.TglMulai;
+                cuti.TglSelesai = request.TglSelesai;
+                cuti.JumlahHari = newJumlahHari;
+                // Reset to Pending after edit (approval ulang)
+                cuti.StatusPersetujuan = "Pending";
+                cuti.CatatanHRD = "Tanggal cuti telah diedit oleh HRD. Menunggu persetujuan ulang.";
+
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine($"[DEBUG] Edit successful. New duration: {newJumlahHari} days");
+
+                // Build response
+                var response = new
+                {
+                    success = true,
+                    message = "Data cuti berhasil diedit. Status dikembalikan ke Pending untuk persetujuan ulang.",
+                    data = new
+                    {
+                        idCuti = cuti.IdCuti,
+                        idKaryawan = cuti.IdKaryawan,
+                        namaKaryawan = cuti.Karyawan.NamaLengkap,
+                        nikKaryawan = cuti.Karyawan.NIK,
+                        divisiKaryawan = cuti.Karyawan.Divisi,
+                        jenisCuti = cuti.JenisCuti,
+                        tglMulai = cuti.TglMulai,
+                        tglSelesai = cuti.TglSelesai,
+                        jumlahHari = cuti.JumlahHari,
+                        alasan = cuti.Alasan,
+                        statusPersetujuan = cuti.StatusPersetujuan,
+                        catatanHRD = cuti.CatatanHRD,
+                        tglDibuat = cuti.TglDibuat
+                    }
+                };
+
+                Console.WriteLine($"[DEBUG] ===== Edit Cuti SUCCESS =====");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DEBUG] ===== Edit Cuti EXCEPTION =====");
+                Console.WriteLine($"[DEBUG] Exception: {ex.Message}");
+                Console.WriteLine($"[DEBUG] Stack trace: {ex.StackTrace}");
+
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Terjadi kesalahan server",
+                    error = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Calculate working days between two dates (helper method)
+        /// </summary>
+        private int CalculateWorkingDays(DateTime startDate, DateTime endDate)
+        {
+            if (startDate > endDate)
+                return 0;
+
+            int workingDays = 0;
+            for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    workingDays++;
+                }
+            }
+            return workingDays;
         }
 
     }

@@ -165,5 +165,49 @@ namespace HRD.Web.Controllers
                 return View();
             }
         }
+        // HRD: API proxy for today summary data
+        [HttpGet]
+        [Authorize(Roles = "HRD")]
+        public async Task<IActionResult> GetTodaySummaryData([FromQuery] string? date = null)
+        {
+            try
+            {
+                // Build endpoint with date parameter if provided
+                var endpoint = "api/presensi/today-summary";
+                if (!string.IsNullOrEmpty(date))
+                {
+                    endpoint += $"?date={date}";
+                }
+
+                Console.WriteLine($"[Web Controller] Calling API endpoint: {endpoint}");
+
+                var result = await _apiService.GetAsync<object>(endpoint);
+
+                Console.WriteLine($"[Web Controller] API Response Success: {result?.Success}");
+                Console.WriteLine($"[Web Controller] API Response Message: {result?.Message}");
+
+                if (result?.Success == true)
+                {
+                    return Json(result);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = result?.Message ?? "Gagal memuat data presensi"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Web Controller] Exception: {ex.Message}");
+                return Json(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
+            }
+        }
     }
 }

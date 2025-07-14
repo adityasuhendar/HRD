@@ -217,5 +217,28 @@ namespace HRD.Web.Controllers
                 return View();
             }
         }
+
+        // HRD: Edit leave request dates (Pending only)
+        [HttpPost]
+        [Authorize(Roles = "HRD")]
+        public async Task<IActionResult> Edit(int id, EditCutiRequest model)
+        {
+            try
+            {
+                var result = await _apiService.PutAsync<CutiResponse>($"api/cuti/{id}", model);
+                if (result?.Success == true)
+                {
+                    return Json(new { success = true, message = result.Message, data = result.Data });
+                }
+                else
+                {
+                    return Json(new { success = false, message = result?.Message ?? "Gagal mengedit cuti" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
     }
 }

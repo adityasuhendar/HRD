@@ -33,4 +33,16 @@ namespace HRD.Web.Models.DTOs
         public string StatusPersetujuan { get; set; } = string.Empty;
         public string? CatatanHRD { get; set; }
     }
+
+    public class EditCutiRequest
+    {
+        public DateTime TglMulai { get; set; }
+        public DateTime TglSelesai { get; set; }
+
+        // Validation method
+        public bool IsValidDateRange()
+        {
+            return TglSelesai >= TglMulai;
+        }
+    }
 }

@@ -12,6 +12,7 @@
         --aegis-red: #ff4061;
         --aegis-white: #ffffff;
         --aegis-red-hover: #e5395a;
+        --aegis-red-hover2: #eeeeee;
         --aegis-red-light: rgba(255, 64, 97, 0.1);
         --aegis-red-shadow: rgba(255, 64, 97, 0.3);
         --aegis-dark: #2c3e50;
@@ -25,6 +26,7 @@
         border-radius: 20px;
         padding: 2rem;
         margin-bottom: 2rem;
+        margin-top: 2rem;
         box-shadow: 0 10px 30px var(--aegis-red-shadow);
     }
 
@@ -227,14 +229,16 @@
 
     /* Add Employee Button */
     .btn-add-employee {
-        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
-        border: none;
-        border-radius: 10px;
-        color: var(--aegis-white);
-        padding: 0.75rem 2rem;
-        font-weight: 600;
+        background: var(--aegis-white);
+        color: var(--aegis-red);
+        border: 3px solid var(--aegis-white);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 2;
     }
 
     .btn-add-employee:hover {
@@ -622,7 +626,7 @@ else
             // Table row hover enhancement
             $('.custom-table tbody tr').hover(
                 function() {
-                    $(this).css('background-color', 'var(--aegis-red-light)');
+                    $(this).css('background-color', 'var(--aegis-red-hover2)');
                 },
                 function() {
                     $(this).css('background-color', '');

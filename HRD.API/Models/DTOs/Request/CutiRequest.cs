@@ -33,4 +33,19 @@ namespace HRD.API.Models.DTOs.Request
         [StringLength(500, ErrorMessage = "Catatan HRD maksimal 500 karakter")]
         public string? CatatanHRD { get; set; }
     }
+
+    public class EditCutiRequest
+    {
+        [Required(ErrorMessage = "Tanggal mulai wajib diisi")]
+        public DateTime TglMulai { get; set; }
+
+        [Required(ErrorMessage = "Tanggal selesai wajib diisi")]
+        public DateTime TglSelesai { get; set; }
+
+        // Validate that end date is not before start date
+        public bool IsValidDateRange()
+        {
+            return TglSelesai >= TglMulai;
+        }
+    }
 }

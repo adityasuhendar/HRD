@@ -1,0 +1,1719 @@
+﻿@model List<HRD.Web.Models.DTOs.CutiResponse>
+@{
+    ViewData["Title"] = "Kelola Cuti - HRD";
+}
+
+<!-- Custom CSS untuk Kelola Cuti HRD Page -->
+<style>
+    /* Aegislabs Theme Variables */
+    :root {
+        --aegis-red: #ff4061;
+        --aegis-white: #ffffff;
+        --aegis-red-hover: #eeeeee;
+        --aegis-red-light: rgba(255, 64, 97, 0.1);
+        --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+        --aegis-dark: #2c3e50;
+        --aegis-gray: #f8f9fa;
+    }
+
+    /* Main Container */
+    .cuti-manage-container {
+        background: linear-gradient(135deg, var(--aegis-gray), #e9ecef);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px var(--aegis-red-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: scale(0.8);
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-header p {
+        margin: 0.75rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-header i {
+        font-size: 2.2rem;
+        margin-right: 0.75rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-card-body {
+        padding: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stats-card.pending {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.approved {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.rejected {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.total {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        opacity: 0.9;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Filter Section */
+    .filter-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .filter-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--aegis-dark);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--aegis-red);
+        box-shadow: 0 0 0 0.2rem var(--aegis-red-light);
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+        font-size: 0.9rem;
+    }
+
+    .btn-filter:hover {
+        background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 6px 20px var(--aegis-red-shadow);
+    }
+
+    .btn-reset {
+        background: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        border-radius: 8px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .btn-reset:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Main Table Card */
+    .table-card {
+        background: var(--aegis-white);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .table-card-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Custom Table Styling */
+    .custom-table {
+        margin: 0;
+    }
+
+    .custom-table thead th {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .custom-table tbody td {
+        border: none;
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f8f9fa;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .custom-table tbody tr:hover {
+        background: var(--aegis-red-light);
+    }
+
+    .custom-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Employee Info Display */
+    .employee-info {
+        text-align: left;
+    }
+
+    .employee-name {
+        font-weight: 600;
+        color: var(--aegis-dark);
+        font-size: 0.95rem;
+    }
+
+    .employee-details {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    /* Leave Type Badge */
+    .leave-type-badge {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: 1px solid rgba(255, 64, 97, 0.3);
+        padding: 0.375rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.375rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #d97706;
+        border: 1px solid #fed7aa;
+    }
+
+    .status-approved {
+        background: #dcfce7;
+        color: #059669;
+        border: 1px solid #bbf7d0;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    /* Date Display */
+    .date-range {
+        text-align: left;
+    }
+
+    .date-start {
+        font-weight: 600;
+        color: var(--aegis-dark);
+        font-size: 0.9rem;
+    }
+
+    .date-end {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .date-duration {
+        font-size: 0.75rem;
+        color: var(--aegis-red);
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        margin: 0 0.125rem;
+        min-width: 60px;
+    }
+
+    .btn-approve {
+        background: #10b981;
+        color: white;
+    }
+
+    .btn-approve:hover {
+        background: #059669;
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .btn-reject {
+        background: #ef4444;
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .btn-edit {
+        background: transparent;
+        border: 2px solid var(--aegis-red);
+        color: var(--aegis-red);
+    }
+
+    .btn-edit:hover {
+        background: var(--aegis-red);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .btn-view {
+        background: transparent;
+        border: 2px solid #3b82f6;
+        color: #3b82f6;
+    }
+
+    .btn-view:hover {
+        background: #3b82f6;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Modal Styling */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        border-radius: 15px 15px 0 0;
+        padding: 1.5rem;
+    }
+
+    .modal-header h5 {
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #f8f9fa;
+        padding: 1.5rem;
+    }
+
+    .btn-modal-confirm {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-modal-confirm:hover {
+        background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-modal-cancel {
+        background: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-modal-cancel:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Pagination */
+    .pagination {
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .page-link {
+        border: 2px solid var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 0.5rem 1rem;
+        margin: 0 0.125rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: var(--aegis-red);
+        border-color: var(--aegis-red);
+        color: white;
+    }
+
+    .page-item.active .page-link {
+        background: var(--aegis-red);
+        border-color: var(--aegis-red);
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--aegis-white);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--aegis-red), #ff6b85);
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: #dee2e6;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        color: var(--aegis-dark);
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    /* Detail Card Floating */
+    .detail-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1055;
+        background: var(--aegis-white);
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .detail-card-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        padding: 1.5rem;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .detail-card-body {
+        padding: 2rem;
+    }
+
+    .detail-item {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: var(--aegis-dark);
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .cuti-manage-container {
+            padding: 1rem 0;
+        }
+        
+        .page-header {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .stats-card-body {
+            padding: 1rem;
+        }
+        
+        .stats-number {
+            font-size: 1.75rem;
+        }
+        
+        .custom-table {
+            font-size: 0.8rem;
+        }
+        
+        .custom-table thead th,
+        .custom-table tbody td {
+            padding: 0.5rem 0.25rem;
+        }
+        
+        .action-btn {
+            padding: 0.125rem 0.25rem;
+            font-size: 0.7rem;
+            margin: 0.125rem;
+            min-width: 45px;
+        }
+        
+        .employee-info {
+            text-align: center;
+        }
+        
+        .date-range {
+            text-align: center;
+        }
+        
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+        
+        .col-lg-2-4 {
+            flex: 0 0 auto;
+            width: 100%;
+        }
+    }
+
+    /* Animation */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .col-lg-2-4 {
+        flex: 0 0 auto;
+        width: 20%;
+    }
+
+    @@media (max-width: 991.98px) {
+        .col-lg-2-4 {
+            width: 50%;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .col-lg-2-4 {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="cuti-manage-container">
+    <div class="container-fluid px-4">
+        <!-- Page Header -->
+        <div class="page-header animate-in">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>
+                        <i class="bi bi-calendar-check-fill"></i>
+                        Kelola Cuti Karyawan
+                    </h1>
+                    <p>Manajemen persetujuan dan pengawasan cuti karyawan Aegislabs</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-2-4 col-md-6 mb-3">
+                <div class="card stats-card total animate-in" style="animation-delay: 0.1s;">
+                    <div class="stats-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="stats-number" id="totalCuti">@Model.Count</h4>
+                                <p class="stats-label">Total Pengajuan</p>
+                            </div>
+                            <div>
+                                <i class="bi bi-calendar-week-fill stats-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2-4 col-md-6 mb-3">
+                <div class="card stats-card pending animate-in" style="animation-delay: 0.2s;">
+                    <div class="stats-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="stats-number" id="pendingCuti">@Model.Count(c => c.StatusPersetujuan == "Pending")</h4>
+                                <p class="stats-label">Menunggu Persetujuan</p>
+                            </div>
+                            <div>
+                                <i class="bi bi-clock-fill stats-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2-4 col-md-6 mb-3">
+                <div class="card stats-card approved animate-in" style="animation-delay: 0.3s;">
+                    <div class="stats-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="stats-number" id="approvedCuti">@Model.Count(c => c.StatusPersetujuan == "Disetujui")</h4>
+                                <p class="stats-label">Disetujui</p>
+                            </div>
+                            <div>
+                                <i class="bi bi-check-circle-fill stats-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2-4 col-md-6 mb-3">
+                <div class="card stats-card rejected animate-in" style="animation-delay: 0.4s;">
+                    <div class="stats-card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="stats-number" id="rejectedCuti">@Model.Count(c => c.StatusPersetujuan == "Ditolak")</h4>
+                                <p class="stats-label">Ditolak</p>
+                            </div>
+                            <div>
+                                <i class="bi bi-x-circle-fill stats-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card filter-card animate-in" style="animation-delay: 0.6s;">
+            <div class="card-body">
+                <form id="filterForm" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="filterNama" class="form-label">Nama Karyawan</label>
+                        <input type="text" class="form-control" id="filterNama" placeholder="Cari nama karyawan...">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="filterStatus" class="form-label">Status Persetujuan</label>
+                        <select class="form-select" id="filterStatus">
+                            <option value="">Semua Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Disetujui">Disetujui</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="filterTanggal" class="form-label">Tanggal Pengajuan</label>
+                        <input type="date" class="form-control" id="filterTanggal">
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-filter" onclick="applyFilter()">
+                                <i class="bi bi-search"></i> Filter
+                            </button>
+                            <button type="button" class="btn btn-reset" onclick="resetFilter()">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Error/Success Messages -->
+        @if (!string.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                @ViewBag.Error
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Main Table -->
+        @if (Model.Any())
+        {
+            <div class="card table-card animate-in" style="animation-delay: 0.7s;">
+                <div class="table-card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table"></i>
+                        Daftar Pengajuan Cuti (<span id="displayCount">@Model.Count</span> pengajuan)
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table custom-table" id="cutiTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">Karyawan</th>
+                                    <th style="width: 15%;">Jenis Cuti</th>
+                                    <th style="width: 20%;">Periode Cuti</th>
+                                    <th style="width: 10%;">Durasi</th>
+                                    <th style="width: 15%;">Status</th>
+                                    <th style="width: 12%;">Tanggal Pengajuan</th>
+                                    <th style="width: 8%;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cutiTableBody">
+                                <!-- Table rows will be rendered by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Pagination">
+                <ul class="pagination" id="pagination">
+                    <!-- Pagination akan dirender oleh JavaScript -->
+                </ul>
+            </nav>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state animate-in" style="animation-delay: 0.7s;">
+                <i class="bi bi-calendar-x"></i>
+                <h4>Belum Ada Pengajuan Cuti</h4>
+                <p>Belum ada pengajuan cuti yang masuk ke sistem. Data akan muncul setelah karyawan mengajukan cuti.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal Approve -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveModalLabel">
+                    <i class="bi bi-check-circle"></i> Konfirmasi Persetujuan Cuti
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin <strong>menyetujui</strong> pengajuan cuti dari:</p>
+                <div class="alert alert-info">
+                    <strong id="approveEmployeeName"></strong>
+                </div>
+                <div class="mb-3">
+                    <label for="approveCatatan" class="form-label">Catatan HRD <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="approveCatatan" rows="3" placeholder="Masukkan catatan persetujuan..." required></textarea>
+                    <div class="invalid-feedback">Catatan HRD wajib diisi</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x"></i> Batal
+                </button>
+                <button type="button" class="btn btn-modal-confirm" onclick="confirmApprove()">
+                    <i class="bi bi-check-circle"></i> Setujui Cuti
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Reject -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">
+                    <i class="bi bi-x-circle"></i> Konfirmasi Penolakan Cuti
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin <strong>menolak</strong> pengajuan cuti dari:</p>
+                <div class="alert alert-warning">
+                    <strong id="rejectEmployeeName"></strong>
+                </div>
+                <div class="mb-3">
+                    <label for="rejectCatatan" class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="rejectCatatan" rows="3" placeholder="Masukkan alasan penolakan..." required></textarea>
+                    <div class="invalid-feedback">Alasan penolakan wajib diisi</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-left"></i> Batal
+                </button>
+                <button type="button" class="btn btn-modal-confirm" style="background: linear-gradient(135deg, #ef4444, #dc2626);" onclick="confirmReject()">
+                    <i class="bi bi-x-circle"></i> Tolak Cuti
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">
+                    <i class="bi bi-pencil-square"></i> Edit Tanggal Cuti
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Edit tanggal cuti untuk:</p>
+                <div class="alert alert-info">
+                    <strong id="editEmployeeName"></strong>
+                </div>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Perhatian:</strong> Setelah edit, status akan kembali ke Pending dan memerlukan persetujuan ulang.
+                </div>
+                
+                <form id="editForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editTglMulai" class="form-label">Tanggal Mulai <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="editTglMulai" required>
+                                <div class="invalid-feedback">Tanggal mulai wajib diisi</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editTglSelesai" class="form-label">Tanggal Selesai <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="editTglSelesai" required>
+                                <div class="invalid-feedback">Tanggal selesai wajib diisi</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="alert alert-light" id="editDurationInfo" style="display: none;">
+                            <i class="bi bi-calendar-week"></i>
+                            <strong>Durasi:</strong> <span id="editDurationText">0 hari kerja</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x"></i> Batal
+                </button>
+                <button type="button" class="btn btn-modal-confirm" onclick="confirmEdit()">
+                    <i class="bi bi-pencil-square"></i> Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Detail Modal Backdrop -->
+<div class="modal-backdrop fade" id="detailBackdrop" style="display: none;"></div>
+
+@section Scripts {
+    <script>
+        // Global variables
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        let allCutiData = @Html.Raw(Json.Serialize(Model));
+        let filteredData = allCutiData;
+        let currentCutiId = null;
+
+        $(document).ready(function() {
+            console.log('Raw data from API:', allCutiData);
+            
+            // Initialize
+            renderTable();
+            renderPagination();
+            
+            // Show welcome message
+            setTimeout(() => {
+                if (allCutiData.length > 0) {
+                    const pendingCount = allCutiData.filter(c => c.statusPersetujuan === 'Pending').length;
+                    if (pendingCount > 0) {
+                        showNotification(`Ada ${pendingCount} pengajuan cuti yang menunggu persetujuan Anda`, 'info');
+                    } else {
+                        showNotification('Semua pengajuan cuti telah diproses', 'success');
+                    }
+                }
+            }, 1000);
+        });
+
+        // Render table with pagination
+        function renderTable() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            const tbody = document.getElementById('cutiTableBody');
+            tbody.innerHTML = '';
+            
+            pageData.forEach(cuti => {
+                const row = createTableRow(cuti);
+                tbody.appendChild(row);
+            });
+            
+            updateStats();
+            updateDisplayCount();
+        }
+
+        // Create table row - FIXED property names to match API response
+        function createTableRow(cuti) {
+            const row = document.createElement('tr');
+            row.setAttribute('data-cuti-id', cuti.idCuti);
+            
+            // Format tanggal - FIXED property names
+            const tglMulai = new Date(cuti.tglMulai).toLocaleDateString('id-ID');
+            const tglSelesai = new Date(cuti.tglSelesai).toLocaleDateString('id-ID');
+            const tglDibuat = new Date(cuti.tglDibuat);
+            const tglDibuatStr = tglDibuat.toLocaleDateString('id-ID');
+            const jamDibuat = tglDibuat.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            
+            // Icon untuk jenis cuti - FIXED property names
+            const iconMap = {
+                'Tahunan': 'bi-calendar-heart',
+                'Sakit': 'bi-heart-pulse',
+                'Melahirkan': 'bi-person-plus',
+                'Menikah': 'bi-heart',
+                'Duka Cita': 'bi-heart-break',
+                'Izin Khusus': 'bi-calendar-event'
+            };
+            const icon = iconMap[cuti.jenisCuti] || 'bi-calendar-event';
+            
+            // Status badge - FIXED property names
+            let statusBadge = '';
+            if (cuti.statusPersetujuan === 'Pending') {
+                statusBadge = '<span class="status-badge status-pending"><i class="bi bi-clock"></i> Pending</span>';
+            } else if (cuti.statusPersetujuan === 'Disetujui') {
+                statusBadge = '<span class="status-badge status-approved"><i class="bi bi-check-circle"></i> Disetujui</span>';
+            } else {
+                statusBadge = '<span class="status-badge status-rejected"><i class="bi bi-x-circle"></i> Ditolak</span>';
+            }
+            
+            // Action buttons - FIXED property names
+            let actionButtons = '';
+            if (cuti.statusPersetujuan === 'Pending') {
+                actionButtons = `
+                    <button class="btn action-btn btn-approve" onclick="showApproveModal(${cuti.idCuti}, '${cuti.namaKaryawan}')" title="Setujui">
+                        <i class="bi bi-check"></i> Setujui
+                    </button>
+                    <button class="btn action-btn btn-reject" onclick="showRejectModal(${cuti.idCuti}, '${cuti.namaKaryawan}')" title="Tolak">
+                        <i class="bi bi-x"></i> Tolak
+                    </button>
+                    <button class="btn action-btn btn-edit" onclick="editCuti(${cuti.idCuti})" title="Edit">
+                        <i class="bi bi-pencil"></i> Edit
+                    </button>
+                `;
+            }
+            actionButtons += `
+                <button class="btn action-btn btn-view" onclick="viewCutiDetail(${cuti.idCuti})" title="Detail">
+                    <i class="bi bi-eye"></i> Detail
+                </button>
+            `;
+            
+            // FIXED: Use correct property names from API response (camelCase)
+            row.innerHTML = `
+                <td>
+                    <div class="employee-info">
+                        <div class="employee-name">${cuti.namaKaryawan || 'N/A'}</div>
+                        <div class="employee-details">
+                            NIK: ${cuti.nikKaryawan || 'N/A'}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="leave-type-badge">
+                        <i class="bi ${icon}"></i>
+                        ${cuti.jenisCuti || 'N/A'}
+                    </span>
+                </td>
+                <td>
+                    <div class="date-range">
+                        <div class="date-start">${tglMulai}</div>
+                        <div class="date-end">s/d ${tglSelesai}</div>
+                        <div class="date-duration">${cuti.jumlahHari || 0} hari kerja</div>
+                    </div>
+                </td>
+                <td>
+                    <strong>${cuti.jumlahHari || 0}</strong>
+                    <small class="d-block text-muted">hari</small>
+                </td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div>${tglDibuatStr}</div>
+                    <small class="text-muted">${jamDibuat}</small>
+                </td>
+                <td>
+                    <div class="d-flex flex-column gap-1">
+                        ${actionButtons}
+                    </div>
+                </td>
+            `;
+            
+            return row;
+        }
+
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})"><i class="bi bi-chevron-left"></i></a>`;
+            pagination.appendChild(prevLi);
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+                pagination.appendChild(li);
+            }
+            
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})"><i class="bi bi-chevron-right"></i></a>`;
+            pagination.appendChild(nextLi);
+        }
+
+        // Change page
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        // Update statistics - FIXED property names
+        function updateStats() {
+            const total = filteredData.length;
+            const pending = filteredData.filter(c => c.statusPersetujuan === 'Pending').length;
+            const approved = filteredData.filter(c => c.statusPersetujuan === 'Disetujui').length;
+            const rejected = filteredData.filter(c => c.statusPersetujuan === 'Ditolak').length;
+            
+            document.getElementById('totalCuti').textContent = total;
+            document.getElementById('pendingCuti').textContent = pending;
+            document.getElementById('approvedCuti').textContent = approved;
+            document.getElementById('rejectedCuti').textContent = rejected;
+        }
+
+        // Update display count
+        function updateDisplayCount() {
+            document.getElementById('displayCount').textContent = filteredData.length;
+        }
+
+        // Apply filter - FIXED property names
+        function applyFilter() {
+            const nama = document.getElementById('filterNama').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const tanggal = document.getElementById('filterTanggal').value;
+            
+            filteredData = allCutiData.filter(cuti => {
+                const namaMatch = nama === '' || (cuti.namaKaryawan && cuti.namaKaryawan.toLowerCase().includes(nama));
+                const statusMatch = status === '' || cuti.statusPersetujuan === status;
+                
+                let tanggalMatch = true;
+                if (tanggal !== '') {
+                    const filterDate = new Date(tanggal);
+                    const cutiDate = new Date(cuti.tglDibuat);
+                    tanggalMatch = filterDate.toDateString() === cutiDate.toDateString();
+                }
+                
+                return namaMatch && statusMatch && tanggalMatch;
+            });
+            
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+            
+            showNotification(`Filter diterapkan. Ditemukan ${filteredData.length} pengajuan cuti`, 'info');
+        }
+
+        // Reset filter
+        function resetFilter() {
+            document.getElementById('filterForm').reset();
+            filteredData = allCutiData;
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+            
+            showNotification('Filter telah direset', 'info');
+        }
+
+        // FIXED: Add safety checks for all modal functions
+        function showApproveModal(cutiId, employeeName) {
+            console.log('showApproveModal called with:', cutiId, employeeName);
+    
+            currentCutiId = cutiId;
+    
+            const approveEmployeeNameElement = document.getElementById('approveEmployeeName');
+            const approveCatatanElement = document.getElementById('approveCatatan');
+    
+            if (approveEmployeeNameElement && approveCatatanElement) {
+                approveEmployeeNameElement.textContent = employeeName;
+                approveCatatanElement.value = '';
+                approveCatatanElement.classList.remove('is-invalid');
+        
+                const modal = new bootstrap.Modal(document.getElementById('approveModal'));
+                modal.show();
+            } else {
+                console.error('Modal elements not found');
+                showNotification('Error: Modal tidak dapat dibuka', 'error');
+            }
+        }
+
+        function showRejectModal(cutiId, employeeName) {
+            console.log('showRejectModal called with:', cutiId, employeeName);
+    
+            currentCutiId = cutiId;
+    
+            const rejectEmployeeNameElement = document.getElementById('rejectEmployeeName');
+            const rejectCatatanElement = document.getElementById('rejectCatatan');
+    
+            if (rejectEmployeeNameElement && rejectCatatanElement) {
+                rejectEmployeeNameElement.textContent = employeeName;
+                rejectCatatanElement.value = '';
+                rejectCatatanElement.classList.remove('is-invalid');
+        
+                const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+                modal.show();
+            } else {
+                console.error('Modal elements not found');
+                showNotification('Error: Modal tidak dapat dibuka', 'error');
+            }
+        }
+
+        // Confirm approve - FIXED to use actual API call
+        function confirmApprove() {
+            const catatan = document.getElementById('approveCatatan').value.trim();
+            if (catatan === '') {
+                document.getElementById('approveCatatan').classList.add('is-invalid');
+                return;
+            }
+            
+            // Show loading state
+            const confirmBtn = document.querySelector('#approveModal .btn-modal-confirm');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i> Memproses...';
+            confirmBtn.disabled = true;
+            
+            // FIXED: Use actual API call
+            $.ajax({
+                url: `@Url.Action("Approve", "Cuti")`,
+                type: 'POST',
+                data: {
+                    id: currentCutiId,
+                    StatusPersetujuan: 'Disetujui',
+                    CatatanHRD: catatan
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update data in memory
+                        const cutiIndex = allCutiData.findIndex(c => c.idCuti === currentCutiId);
+                        if (cutiIndex !== -1) {
+                            allCutiData[cutiIndex].statusPersetujuan = 'Disetujui';
+                        }
+                        
+                        // Update filtered data
+                        const filteredIndex = filteredData.findIndex(c => c.idCuti === currentCutiId);
+                        if (filteredIndex !== -1) {
+                            filteredData[filteredIndex].statusPersetujuan = 'Disetujui';
+                        }
+                        
+                        // Re-render
+                        renderTable();
+                        renderPagination();
+                        
+                        // Close modal
+                        bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();
+                        
+                        // Show success message
+                        showNotification('Pengajuan cuti berhasil disetujui', 'success');
+                    } else {
+                        showNotification(response.message || 'Gagal menyetujui cuti', 'error');
+                    }
+                },
+                error: function() {
+                    showNotification('Terjadi kesalahan saat menyetujui cuti', 'error');
+                },
+                complete: function() {
+                    // Restore button
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                    currentCutiId = null;
+                }
+            });
+        }
+
+        // Confirm reject - FIXED to use actual API call
+        function confirmReject() {
+            const catatan = document.getElementById('rejectCatatan').value.trim();
+            if (catatan === '') {
+                document.getElementById('rejectCatatan').classList.add('is-invalid');
+                return;
+            }
+            
+            // Show loading state
+            const confirmBtn = document.querySelector('#rejectModal .btn-modal-confirm');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i> Memproses...';
+            confirmBtn.disabled = true;
+            
+            // FIXED: Use actual API call
+            $.ajax({
+                url: `@Url.Action("Approve", "Cuti")`,
+                type: 'POST',
+                data: {
+                    id: currentCutiId,
+                    StatusPersetujuan: 'Ditolak',
+                    CatatanHRD: catatan
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update data in memory
+                        const cutiIndex = allCutiData.findIndex(c => c.idCuti === currentCutiId);
+                        if (cutiIndex !== -1) {
+                            allCutiData[cutiIndex].statusPersetujuan = 'Ditolak';
+                        }
+                        
+                        // Update filtered data
+                        const filteredIndex = filteredData.findIndex(c => c.idCuti === currentCutiId);
+                        if (filteredIndex !== -1) {
+                            filteredData[filteredIndex].statusPersetujuan = 'Ditolak';
+                        }
+                        
+                        // Re-render
+                        renderTable();
+                        renderPagination();
+                        
+                        // Close modal
+                        bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+                        
+                        // Show success message
+                        showNotification('Pengajuan cuti berhasil ditolak', 'success');
+                    } else {
+                        showNotification(response.message || 'Gagal menolak cuti', 'error');
+                    }
+                },
+                error: function() {
+                    showNotification('Terjadi kesalahan saat menolak cuti', 'error');
+                },
+                complete: function() {
+                    // Restore button
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                    currentCutiId = null;
+                }
+            });
+        }
+
+        // Edit cuti - UPDATED to show modal
+        function editCuti(cutiId) {
+            const cuti = allCutiData.find(c => c.idCuti === cutiId);
+            if (!cuti) {
+                showNotification('Data cuti tidak ditemukan', 'error');
+                return;
+            }
+            
+            showEditModal(cutiId, cuti.namaKaryawan);
+        }
+
+        // Show edit modal
+        function showEditModal(cutiId, employeeName) {
+            console.log('showEditModal called with:', cutiId, employeeName);
+            
+            currentCutiId = cutiId;
+            
+            // Find cuti data
+            const cuti = allCutiData.find(c => c.idCuti === cutiId);
+            if (!cuti) {
+                showNotification('Data cuti tidak ditemukan', 'error');
+                return;
+            }
+            
+            // Check if status is Pending
+            if (cuti.statusPersetujuan !== 'Pending') {
+                showNotification('Hanya pengajuan dengan status Pending yang dapat diedit', 'error');
+                return;
+            }
+            
+            const editEmployeeNameElement = document.getElementById('editEmployeeName');
+            const editTglMulaiElement = document.getElementById('editTglMulai');
+            const editTglSelesaiElement = document.getElementById('editTglSelesai');
+            
+            if (editEmployeeNameElement && editTglMulaiElement && editTglSelesaiElement) {
+                editEmployeeNameElement.textContent = employeeName;
+                
+                // Format dates for input (YYYY-MM-DD)
+                const tglMulai = new Date(cuti.tglMulai);
+                const tglSelesai = new Date(cuti.tglSelesai);
+                
+                editTglMulaiElement.value = tglMulai.toISOString().split('T')[0];
+                editTglSelesaiElement.value = tglSelesai.toISOString().split('T')[0];
+                
+                // Clear validation states
+                editTglMulaiElement.classList.remove('is-invalid');
+                editTglSelesaiElement.classList.remove('is-invalid');
+                
+                // Calculate initial duration
+                calculateEditDuration();
+                
+                // Add event listeners for date changes
+                editTglMulaiElement.addEventListener('change', calculateEditDuration);
+                editTglSelesaiElement.addEventListener('change', calculateEditDuration);
+                
+                const modal = new bootstrap.Modal(document.getElementById('editModal'));
+                modal.show();
+            } else {
+                console.error('Edit modal elements not found');
+                showNotification('Error: Modal tidak dapat dibuka', 'error');
+            }
+        }
+
+        // Calculate duration for edit
+        function calculateEditDuration() {
+            const tglMulaiElement = document.getElementById('editTglMulai');
+            const tglSelesaiElement = document.getElementById('editTglSelesai');
+            const durationInfoElement = document.getElementById('editDurationInfo');
+            const durationTextElement = document.getElementById('editDurationText');
+            
+            if (tglMulaiElement.value && tglSelesaiElement.value) {
+                const startDate = new Date(tglMulaiElement.value);
+                const endDate = new Date(tglSelesaiElement.value);
+                
+                if (endDate >= startDate) {
+                    const workingDays = calculateWorkingDays(startDate, endDate);
+                    durationTextElement.textContent = `${workingDays} hari kerja`;
+                    durationInfoElement.style.display = 'block';
+                    
+                    // Remove invalid state if dates are valid
+                    tglMulaiElement.classList.remove('is-invalid');
+                    tglSelesaiElement.classList.remove('is-invalid');
+                } else {
+                    durationInfoElement.style.display = 'none';
+                    tglSelesaiElement.classList.add('is-invalid');
+                }
+            } else {
+                durationInfoElement.style.display = 'none';
+            }
+        }
+
+        // Calculate working days (exclude weekends)
+        function calculateWorkingDays(startDate, endDate) {
+            let workingDays = 0;
+            const currentDate = new Date(startDate);
+            
+            while (currentDate <= endDate) {
+                const dayOfWeek = currentDate.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Not Sunday (0) or Saturday (6)
+                    workingDays++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            return workingDays;
+        }
+
+        // Confirm edit
+        function confirmEdit() {
+            const tglMulaiElement = document.getElementById('editTglMulai');
+            const tglSelesaiElement = document.getElementById('editTglSelesai');
+            
+            // Validation
+            let isValid = true;
+            
+            if (!tglMulaiElement.value) {
+                tglMulaiElement.classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            if (!tglSelesaiElement.value) {
+                tglSelesaiElement.classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            if (tglMulaiElement.value && tglSelesaiElement.value) {
+                const startDate = new Date(tglMulaiElement.value);
+                const endDate = new Date(tglSelesaiElement.value);
+                
+                if (endDate < startDate) {
+                    tglSelesaiElement.classList.add('is-invalid');
+                    showNotification('Tanggal selesai tidak boleh kurang dari tanggal mulai', 'error');
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            // Show loading state
+            const confirmBtn = document.querySelector('#editModal .btn-modal-confirm');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i> Menyimpan...';
+            confirmBtn.disabled = true;
+            
+            // AJAX call to edit API
+            $.ajax({
+                url: `@Url.Action("Edit", "Cuti")`,
+                type: 'POST',
+                data: {
+                    id: currentCutiId,
+                    TglMulai: tglMulaiElement.value,
+                    TglSelesai: tglSelesaiElement.value
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update data in memory
+                        const cutiIndex = allCutiData.findIndex(c => c.idCuti === currentCutiId);
+                        if (cutiIndex !== -1) {
+                            allCutiData[cutiIndex].tglMulai = response.data.tglMulai;
+                            allCutiData[cutiIndex].tglSelesai = response.data.tglSelesai;
+                            allCutiData[cutiIndex].jumlahHari = response.data.jumlahHari;
+                            allCutiData[cutiIndex].statusPersetujuan = response.data.statusPersetujuan;
+                        }
+                        
+                        // Update filtered data
+                        const filteredIndex = filteredData.findIndex(c => c.idCuti === currentCutiId);
+                        if (filteredIndex !== -1) {
+                            filteredData[filteredIndex] = allCutiData[cutiIndex];
+                        }
+                        
+                        // Re-render
+                        renderTable();
+                        renderPagination();
+                        
+                        // Close modal
+                        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                        
+                        // Show success message
+                        showNotification(response.message, 'success');
+                    } else {
+                        showNotification(response.message || 'Gagal mengedit cuti', 'error');
+                    }
+                },
+                error: function() {
+                    showNotification('Terjadi kesalahan saat mengedit cuti', 'error');
+                },
+                complete: function() {
+                    // Restore button
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                    currentCutiId = null;
+                }
+            });
+        }
+
+        // View cuti detail - FIXED to show floating card
+        function viewCutiDetail(cutiId) {
+            const cuti = allCutiData.find(c => c.idCuti === cutiId);
+            if (!cuti) {
+                showNotification('Data cuti tidak ditemukan', 'error');
+                return;
+            }
+            
+            // Create floating detail card
+            const backdrop = document.getElementById('detailBackdrop');
+            
+            // Remove existing detail card if any
+            const existingCard = document.querySelector('.detail-card');
+            if (existingCard) {
+                existingCard.remove();
+            }
+            
+            const detailCard = document.createElement('div');
+            detailCard.className = 'detail-card';
+            
+            // Format dates
+            const tglMulai = new Date(cuti.tglMulai).toLocaleDateString('id-ID', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            const tglSelesai = new Date(cuti.tglSelesai).toLocaleDateString('id-ID', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            const tglDibuat = new Date(cuti.tglDibuat).toLocaleDateString('id-ID', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', 
+                hour: '2-digit', minute: '2-digit' 
+            });
+            
+            detailCard.innerHTML = `
+                <div class="detail-card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-event"></i> Detail Pengajuan Cuti
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="closeDetailCard()"></button>
+                </div>
+                <div class="detail-card-body">
+                    <div class="detail-item">
+                        <div class="detail-label">Nama Karyawan</div>
+                        <div class="detail-value">${cuti.namaKaryawan || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">NIK</div>
+                        <div class="detail-value">${cuti.nikKaryawan || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Jenis Cuti</div>
+                        <div class="detail-value">${cuti.jenisCuti || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tanggal Mulai</div>
+                        <div class="detail-value">${tglMulai}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tanggal Selesai</div>
+                        <div class="detail-value">${tglSelesai}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Jumlah Hari</div>
+                        <div class="detail-value">${cuti.jumlahHari || 0} hari kerja</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Status Persetujuan</div>
+                        <div class="detail-value">
+                            ${cuti.statusPersetujuan === 'Pending' ? 
+                                '<span class="status-badge status-pending"><i class="bi bi-clock"></i> Pending</span>' :
+                              cuti.statusPersetujuan === 'Disetujui' ? 
+                                '<span class="status-badge status-approved"><i class="bi bi-check-circle"></i> Disetujui</span>' :
+                                '<span class="status-badge status-rejected"><i class="bi bi-x-circle"></i> Ditolak</span>'
+                            }
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tanggal Pengajuan</div>
+                        <div class="detail-value">${tglDibuat}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Show backdrop and card
+            backdrop.style.display = 'block';
+            backdrop.classList.add('show');
+            document.body.appendChild(detailCard);
+            
+            // Add click handler to backdrop
+            backdrop.onclick = closeDetailCard;
+        }
+
+        // Close detail card
+        function closeDetailCard() {
+            const backdrop = document.getElementById('detailBackdrop');
+            const detailCard = document.querySelector('.detail-card');
+            
+            backdrop.style.display = 'none';
+            backdrop.classList.remove('show');
+            
+            if (detailCard) {
+                detailCard.remove();
+            }
+        }
+
+        // Utility function for notifications
+        function showNotification(message, type = 'info') {
+            const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-info';
+            const icon = type === 'success' ? 'bi-check-circle-fill' : type === 'error' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill';
+            
+            const notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <i class="bi ${icon}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', notification);
+            
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.alert');
+                alerts[alerts.length - 1]?.remove();
+            }, 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('filterNama').focus();
+            }
+            if (e.key === 'Escape') {
+                closeDetailCard();
+            }
+        });
+
+        // Add spinning animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+}
