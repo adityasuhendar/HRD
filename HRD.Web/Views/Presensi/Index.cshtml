@@ -3,15 +3,445 @@
     ViewData["Title"] = "Riwayat Presensi";
 }
 
-<div class="container-fluid px-4">
-    <h1 class="h3 mb-0 text-gray-800">
-        <i class="bi bi-clock-history text-primary me-2"></i>
-        Riwayat Presensi Saya
-    </h1>
+<!-- Custom CSS untuk Presensi Index Page -->
+<style>
+    /* Aegislabs Theme Variables */
+    :root {
+        --aegis-red: #ff4061;
+        --aegis-white: #ffffff;
+        --aegis-red-hover: #e5395a;
+        --aegis-red-light: rgba(255, 64, 97, 0.1);
+        --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+        --aegis-dark: #2c3e50;
+        --aegis-gray: #f8f9fa;
+        --aegis-success: #10b981;
+        --aegis-warning: #f59e0b;
+        --aegis-info: #3b82f6;
+    }
 
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 10px 30px var(--aegis-red-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: scale(0.8);
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header i {
+            font-size: 2.2rem;
+            margin-right: 0.75rem;
+            position: relative;
+            z-index: 2;
+        }
+
+    /* Clock In Button */
+    .btn-clock-in {
+        background: var(--aegis-white);
+        color: var(--aegis-red);
+        border: 3px solid var(--aegis-white);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+        .btn-clock-in:hover {
+            background: transparent;
+            color: var(--aegis-white);
+            border-color: var(--aegis-white);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+        }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 15px;
+        border: none;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+    .alert-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+        .alert-success::before {
+            background: #10b981;
+        }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+    }
+
+        .alert-danger::before {
+            background: #ef4444;
+        }
+
+    /* Stats Cards */
+    .stats-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+    .stats-card-body {
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stats-card.hadir {
+        background: linear-gradient(135deg, var(--aegis-success), #059669);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.total-jam {
+        background: linear-gradient(135deg, var(--aegis-info), #2563eb);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.terlambat {
+        background: linear-gradient(135deg, var(--aegis-warning), #d97706);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.alpha {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: var(--aegis-white);
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Main Table Card */
+    .table-card {
+        background: var(--aegis-white);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .table-card-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Custom Table Styling */
+    .custom-table {
+        margin: 0;
+    }
+
+        .custom-table thead th {
+            background: var(--aegis-red-light);
+            color: var(--aegis-red);
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .custom-table tbody td {
+            border: none;
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .custom-table tbody tr:hover {
+            background: var(--aegis-red-light);
+        }
+
+        .custom-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Badge Styling */
+    .custom-badge {
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .badge-hadir {
+        background: var(--aegis-success);
+        color: white;
+    }
+
+    .badge-terlambat {
+        background: var(--aegis-warning);
+        color: white;
+    }
+
+    .badge-alpha {
+        background: #ef4444;
+        color: white;
+    }
+
+    .badge-izin {
+        background: var(--aegis-info);
+        color: white;
+    }
+
+    /* Time Display */
+    .time-display {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--aegis-dark);
+    }
+
+    .time-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    /* Date Display */
+    .date-main {
+        font-weight: 600;
+        color: var(--aegis-dark);
+    }
+
+    .date-secondary {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    /* Method Badge */
+    .method-badge {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: 1px solid rgba(255, 64, 97, 0.3);
+        border-radius: 8px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--aegis-white);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .empty-state::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--aegis-red), #ff6b85);
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h4 {
+            color: var(--aegis-dark);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+    .btn-first-clock {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        padding: 0.875rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+    }
+
+        .btn-first-clock:hover {
+            background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 6px 20px var(--aegis-red-shadow);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .page-header
+
+    {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .stats-card-body {
+        padding: 1rem;
+    }
+
+    .stats-number {
+        font-size: 1.75rem;
+    }
+
+    .custom-table {
+        font-size: 0.85rem;
+    }
+
+        .custom-table thead th,
+        .custom-table tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+        }
+
+    }
+
+    /* Animation */
+    @@keyframes fadeInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="page-header animate-in">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="bi bi-clock-history"></i>
+                    Riwayat Presensi Saya
+                </h2>
+                <p>Pantau kehadiran dan jam kerja Anda di Aegislabs</p>
+            </div>
+            <a href="@Url.Action("ClockIn")" class="btn btn-clock-in">
+                <i class="bi bi-clock"></i> Clock In
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
     @if (!string.IsNullOrEmpty(ViewBag.Error))
     {
-        <div class="alert alert-danger">
+        <div class="alert alert-danger animate-in">
             <i class="bi bi-exclamation-triangle me-2"></i>
             @ViewBag.Error
         </div>
@@ -19,18 +449,62 @@
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success">
+        <div class="alert alert-success animate-in">
             <i class="bi bi-check-circle me-2"></i>
             @TempData["SuccessMessage"]
         </div>
     }
 
-    <div class="card">
-        <div class="card-body">
-            @if (Model.Any())
-            {
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card hadir animate-in" style="animation-delay: 0.1s;">
+                <div class="stats-card-body">
+                    <i class="bi bi-check-circle-fill stats-icon"></i>
+                    <h4 class="stats-number">@Model.Count(p => p.StatusPresensi == "Hadir")</h4>
+                    <p class="stats-label">Hari Hadir</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card terlambat animate-in" style="animation-delay: 0.2s;">
+                <div class="stats-card-body">
+                    <i class="bi bi-clock-fill stats-icon"></i>
+                    <h4 class="stats-number">@Model.Count(p => p.StatusPresensi == "Terlambat")</h4>
+                    <p class="stats-label">Hari Terlambat</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card alpha animate-in" style="animation-delay: 0.3s;">
+                <div class="stats-card-body">
+                    <i class="bi bi-x-circle-fill stats-icon"></i>
+                    <h4 class="stats-number">@Model.Count(p => p.StatusPresensi == "Alpha")</h4>
+                    <p class="stats-label">Hari Alpha</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card total-jam animate-in" style="animation-delay: 0.4s;">
+                <div class="stats-card-body">
+                    <i class="bi bi-hourglass-split stats-icon"></i>
+                    <h4 class="stats-number">@Model.Sum(p => p.TotalJam)</h4>
+                    <p class="stats-label">Total Jam Kerja</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <!-- Main Table -->
+        <div class="card table-card animate-in" style="animation-delay: 0.5s;">
+            <div class="table-card-header">
+                <i class="bi bi-table"></i> Daftar Presensi (@Model.Count() hari kerja)
+            </div>
+            <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table custom-table">
                         <thead>
                             <tr>
                                 <th>Tanggal</th>
@@ -45,31 +519,211 @@
                             @foreach (var presensi in Model.OrderByDescending(p => p.Tanggal))
                             {
                                 <tr>
-                                    <td>@presensi.Tanggal.ToString("dd/MM/yyyy")</td>
-                                    <td>@(presensi.JamMasuk?.ToString("HH:mm") ?? "-")</td>
-                                    <td>@(presensi.JamKeluar?.ToString("HH:mm") ?? "-")</td>
-                                    <td>@presensi.TotalJam jam</td>
                                     <td>
-                                        <span class="badge bg-primary">@presensi.StatusPresensi</span>
+                                        <div class="date-main">@presensi.Tanggal.ToString("dd/MM/yyyy")</div>
+                                        <div class="date-secondary">@presensi.Tanggal.ToString("dddd", new System.Globalization.CultureInfo("id-ID"))</div>
                                     </td>
-                                    <td>@presensi.MetodePresensi</td>
+                                    <td>
+                                        @if (presensi.JamMasuk.HasValue)
+                                        {
+                                            <div class="time-display">@presensi.JamMasuk.Value.ToString("HH:mm")</div>
+                                            <div class="time-label">Clock In</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (presensi.JamKeluar.HasValue)
+                                        {
+                                            <div class="time-display">@presensi.JamKeluar.Value.ToString("HH:mm")</div>
+                                            <div class="time-label">Clock Out</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="time-display">@presensi.TotalJam</div>
+                                        <div class="time-label">jam kerja</div>
+                                    </td>
+                                    <td>
+                                        @if (presensi.StatusPresensi == "Hadir")
+                                        {
+                                            <span class="custom-badge badge-hadir">
+                                                <i class="bi bi-check-circle"></i> Hadir
+                                            </span>
+                                        }
+                                        else if (presensi.StatusPresensi == "Terlambat")
+                                        {
+                                            <span class="custom-badge badge-terlambat">
+                                                <i class="bi bi-clock"></i> Terlambat
+                                            </span>
+                                        }
+                                        else if (presensi.StatusPresensi == "Alpha")
+                                        {
+                                            <span class="custom-badge badge-alpha">
+                                                <i class="bi bi-x-circle"></i> Alpha
+                                            </span>
+                                        }
+                                        else if (presensi.StatusPresensi == "Izin")
+                                        {
+                                            <span class="custom-badge badge-izin">
+                                                <i class="bi bi-info-circle"></i> Izin
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="custom-badge badge-hadir">
+                                                <i class="bi bi-question-circle"></i> @presensi.StatusPresensi
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="method-badge">
+                                            @switch (presensi.MetodePresensi)
+                                            {
+                                                case "Mobile":
+                                                    <i class="bi bi-phone"></i>
+                                                    break;
+                                                case "Web":
+                                                    <i class="bi bi-laptop"></i>
+                                                    break;
+                                                case "Card":
+                                                    <i class="bi bi-credit-card"></i>
+                                                    break;
+                                                case "Fingerprint":
+                                                    <i class="bi bi-fingerprint"></i>
+                                                    break;
+                                                default:
+                                                    <i class="bi bi-device-ssd"></i>
+                                                    break;
+                                            }
+                                            @presensi.MetodePresensi
+                                        </span>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
-            }
-            else
-            {
-                <div class="text-center py-4">
-                    <i class="bi bi-clock display-1 text-muted"></i>
-                    <h4>Belum Ada Data Presensi</h4>
-                    <p class="text-muted">Mulai dengan clock in hari ini</p>
-                    <a href="@Url.Action("ClockIn")" class="btn btn-primary">
-                        <i class="bi bi-clock me-2"></i>Clock In
-                    </a>
-                </div>
-            }
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <!-- Empty State -->
+        <div class="empty-state animate-in" style="animation-delay: 0.5s;">
+            <i class="bi bi-clock-history"></i>
+            <h4>Belum Ada Data Presensi</h4>
+            <p>Mulai dengan clock in hari ini untuk memulai tracking kehadiran Anda</p>
+            <a href="@Url.Action("ClockIn")" class="btn btn-first-clock">
+                <i class="bi bi-clock"></i> Clock In Sekarang
+            </a>
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Enhanced table row hover effects
+            $('.custom-table tbody tr').hover(
+                function() {
+                    $(this).css('background-color', 'var(--aegis-red-light)');
+                },
+                function() {
+                    $(this).css('background-color', '');
+                }
+            );
+
+            // Stats cards animation on scroll
+            $(window).scroll(function() {
+                $('.stats-card').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const elementBottom = elementTop + $(this).outerHeight();
+                    const viewportTop = $(window).scrollTop();
+                    const viewportBottom = viewportTop + $(window).height();
+
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass('animate-in');
+                    }
+                });
+            });
+
+            // Add loading state to clock in button
+            $('.btn-clock-in, .btn-first-clock').on('click', function(e) {
+                const btn = $(this);
+                const originalText = btn.html();
+
+                btn.prop('disabled', true);
+                btn.html('<i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i> Loading...');
+
+                // Restore button after a short delay (in case navigation is slow)
+                setTimeout(() => {
+                    btn.prop('disabled', false);
+                    btn.html(originalText);
+                }, 3000);
+            });
+
+            // Auto-hide alerts after 5 seconds
+            $('.alert').delay(5000).fadeOut('slow');
+
+            // Enhanced notification system
+            function showNotification(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+                const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+
+                const notification = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <i class="bi ${icon}"></i> ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+
+                $('body').append(notification);
+
+                setTimeout(() => {
+                    $('.alert').fadeOut();
+                }, 4000);
+            }
+
+            // Show welcome message for first-time users
+            @if (!Model.Any())
+            {
+                    <text>
+                    setTimeout(() => {
+                        showNotification('Selamat datang di sistem presensi Aegislabs! Jangan lupa clock in setiap hari.', 'success');
+                    }, 1000);
+                    </text>
+            }
+
+            // Add CSS for spinning animation
+            $('<style>').text(`
+                @@keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `).appendTo('head');
+
+            // Real-time clock display (optional enhancement)
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
+                // You can add a clock display element if needed
+                // $('#current-time').text(timeString);
+            }
+
+            // Update clock every second
+            setInterval(updateClock, 1000);
+            updateClock(); // Initial call
+        });
+    </script>
+}

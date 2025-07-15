@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\dotnet\\HRDSolution\\HRD.API\\HRD.API.csproj": {}
+    "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.API\\HRD.API.csproj": {}
   },
   "projects": {
-    "D:\\Project\\dotnet\\HRDSolution\\HRD.API\\HRD.API.csproj": {
+    "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.API\\HRD.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\dotnet\\HRDSolution\\HRD.API\\HRD.API.csproj",
+        "projectUniqueName": "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.API\\HRD.API.csproj",
         "projectName": "HRD.API",
-        "projectPath": "D:\\Project\\dotnet\\HRDSolution\\HRD.API\\HRD.API.csproj",
-        "packagesPath": "C:\\Users\\Alwi\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\dotnet\\HRDSolution\\HRD.API\\obj\\",
+        "projectPath": "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.API\\HRD.API.csproj",
+        "packagesPath": "C:\\Users\\wahyu\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Alwi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\wahyu\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

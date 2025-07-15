@@ -9,109 +9,109 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = HRD.Web
 build_property.RootNamespace = HRD.Web
-build_property.ProjectDir = D:\Project\dotnet\HRDSolution\HRD.Web\
+build_property.ProjectDir = C:\Users\wahyu\Source\Repos\HRD\HRD.Web\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Project\dotnet\HRDSolution\HRD.Web
+build_property.MSBuildProjectDirectory = C:\Users\wahyu\Source\Repos\HRD\HRD.Web
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Auth/Login.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Auth/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Cuti/Create.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Cuti/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3V0aVxDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Cuti/Index.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Cuti/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3V0aVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Cuti/Manage.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Cuti/Manage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3V0aVxNYW5hZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Employee/CurrentPayslip.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Employee/CurrentPayslip.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcQ3VycmVudFBheXNsaXAuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Employee/PayslipHistory.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Employee/PayslipHistory.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcUGF5c2xpcEhpc3RvcnkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Employee/SalaryHistory.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Employee/SalaryHistory.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcU2FsYXJ5SGlzdG9yeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Home/EmployeeDashboard.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Home/EmployeeDashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxFbXBsb3llZURhc2hib2FyZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Home/HRDDashboard.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Home/HRDDashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxIUkREYXNoYm9hcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Home/Index.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Home/Privacy.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Karyawan/Create.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Karyawan/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2FyeWF3YW5cQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Karyawan/Index.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Karyawan/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS2FyeWF3YW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Payroll/Index.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Payroll/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5cm9sbFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Presensi/ClockIn.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Presensi/ClockIn.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2Vuc2lcQ2xvY2tJbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Presensi/Index.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Presensi/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2Vuc2lcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Presensi/Index2.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Presensi/Index2.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2Vuc2lcSW5kZXgyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Presensi/TodaySummary.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Presensi/TodaySummary.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2Vuc2lcVG9kYXlTdW1tYXJ5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Shared/Error.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Shared/_LoginLayout.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Shared/_LoginLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpbkxheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/_ViewImports.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/_ViewStart.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Project/dotnet/HRDSolution/HRD.Web/Views/Shared/_Layout.cshtml]
+[C:/Users/wahyu/Source/Repos/HRD/HRD.Web/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-m05gr66vle
