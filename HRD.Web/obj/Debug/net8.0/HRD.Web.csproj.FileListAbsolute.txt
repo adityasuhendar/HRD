@@ -98,7 +98,6 @@ D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\staticwebassets.build.jso
 D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\staticwebassets.build.json.cache
 D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\staticwebassets.development.json
 D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\HRD.Web.csproj.Up2Date
 D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\HRD.Web.dll
 D:\Project\dotnet\HRDSolution\HRD.Web\obj\Debug\net8.0\refint\HRD.Web.dll

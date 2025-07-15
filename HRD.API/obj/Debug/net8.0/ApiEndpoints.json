@@ -116,6 +116,27 @@
   },
   {
     "ContainingType": "HRD.API.Controllers.CutiController",
+    "Method": "Edit",
+    "RelativePath": "api/Cuti/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "HRD.API.Models.DTOs.Request.EditCutiRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HRD.API.Controllers.CutiController",
     "Method": "Approve",
     "RelativePath": "api/Cuti/{id}/approve",
     "HttpMethod": "PUT",
