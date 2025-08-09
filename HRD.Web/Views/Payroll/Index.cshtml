@@ -1,0 +1,1087 @@
+﻿@{
+    ViewData["Title"] = "Payroll Management";
+}
+
+<!-- Custom CSS untuk Payroll Management -->
+<style>
+    /* Aegislabs Theme Variables */
+    :root {
+        --aegis-red: #ff4061;
+        --aegis-white: #ffffff;
+        --aegis-red-hover: #e5395a;
+        --aegis-red-light: rgba(255, 64, 97, 0.1);
+        --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+        --aegis-dark: #2c3e50;
+        --aegis-gray: #f8f9fa;
+    }
+
+    /* Header Section */
+    .page-header {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px var(--aegis-red-shadow);
+    }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+    /* Filter Card */
+    .filter-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+        .filter-card .card-body {
+            padding: 1.5rem;
+        }
+
+    /* Generate Button */
+    .btn-generate {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        border: none;
+        border-radius: 10px;
+        color: var(--aegis-white);
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--aegis-red-shadow);
+    }
+
+        .btn-generate:hover {
+            background: linear-gradient(135deg, var(--aegis-red-hover), #e5395a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--aegis-red-shadow);
+            color: var(--aegis-white);
+        }
+
+    /* Summary Stats Cards */
+    .stats-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+    .stats-card-body {
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stats-card.primary {
+        background: linear-gradient(135deg, var(--aegis-red), #ff6b85);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.info {
+        background: linear-gradient(135deg, #17a2b8, #20c997);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.success {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.warning {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.secondary {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: var(--aegis-white);
+    }
+
+    .stats-card.danger {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: var(--aegis-white);
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .stats-number {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Actions Section */
+    .actions-card {
+        background: var(--aegis-white);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-action {
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-process {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: var(--aegis-white);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+
+        .btn-process:hover:not(:disabled) {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: translateY(-1px);
+            color: var(--aegis-white);
+        }
+
+        .btn-process:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+    /* Table Card */
+    .table-card {
+        background: var(--aegis-white);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .table-card-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Custom Table Styling */
+    .custom-table {
+        margin: 0;
+    }
+
+        .custom-table thead th {
+            background: var(--aegis-red-light);
+            color: var(--aegis-red);
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .custom-table tbody td {
+            border: none;
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .custom-table tbody tr:hover {
+            background: var(--aegis-red-light);
+        }
+
+        .custom-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Badge Styling */
+    .custom-badge {
+        border-radius: 8px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-paid {
+        background: #28a745;
+        color: white;
+    }
+
+    .badge-unpaid {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .badge-position {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border: 1px solid rgba(255, 64, 97, 0.3);
+    }
+
+    /* Form Controls */
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--aegis-red);
+            box-shadow: 0 0 0 0.2rem var(--aegis-red-light);
+        }
+
+    /* Modal Styling */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+        background: var(--aegis-red-light);
+        color: var(--aegis-red);
+        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
+        border-radius: 15px 15px 0 0;
+        padding: 1.5rem;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--aegis-white);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h4 {
+            color: var(--aegis-dark);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+    /* Loading State */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-spinner {
+        color: var(--aegis-red);
+        font-size: 3rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header
+
+    {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .stats-card-body {
+        padding: 1rem;
+    }
+
+    .custom-table {
+        font-size: 0.85rem;
+    }
+
+    .btn-action {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2>
+                <i class="bi bi-cash-stack"></i> Payroll Management Aegislabs
+            </h2>
+            <p>Kelola gaji bulanan karyawan dengan sistem terintegrasi</p>
+        </div>
+        <button type="button" class="btn btn-generate" data-bs-toggle="modal" data-bs-target="#generateModal">
+            <i class="bi bi-plus-circle-fill"></i> Generate Payroll
+        </button>
+    </div>
+</div>
+
+<!-- Month/Year Filter -->
+<div class="card filter-card">
+    <div class="card-body">
+        <div class="row align-items-end">
+            <div class="col-lg-3 col-md-4 mb-3">
+                <label for="bulanSelect" class="form-label fw-semibold">
+                    <i class="bi bi-calendar-month text-primary"></i> Pilih Bulan
+                </label>
+                <select id="bulanSelect" class="form-select">
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-4 mb-3">
+                <label for="tahunSelect" class="form-label fw-semibold">
+                    <i class="bi bi-calendar-year text-primary"></i> Pilih Tahun
+                </label>
+                <select id="tahunSelect" class="form-select">
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025" selected>2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-4 mb-3">
+                <button type="button" class="btn btn-generate w-100" onclick="loadPayroll()">
+                    <i class="bi bi-search"></i> Load Payroll Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Stats Cards -->
+<div id="summaryCards" class="row mb-4" style="display: none;">
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card stats-card primary">
+            <div class="stats-card-body">
+                <i class="bi bi-people-fill stats-icon"></i>
+                <h4 class="stats-number" id="totalEmployees">0</h4>
+                <p class="stats-label">Total Karyawan</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card stats-card info">
+            <div class="stats-card-body">
+                <i class="bi bi-currency-dollar stats-icon"></i>
+                <h4 class="stats-number" id="totalPayroll">Rp 0</h4>
+                <p class="stats-label">Total Payroll</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card stats-card success">
+            <div class="stats-card-body">
+                <i class="bi bi-check-circle-fill stats-icon"></i>
+                <h4 class="stats-number" id="sudahBayar">0</h4>
+                <p class="stats-label">Sudah Bayar</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card stats-card warning">
+            <div class="stats-card-body">
+                <i class="bi bi-clock-fill stats-icon"></i>
+                <h4 class="stats-number" id="belumBayar">0</h4>
+                <p class="stats-label">Belum Bayar</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card stats-card secondary">
+            <div class="stats-card-body">
+                <i class="bi bi-plus-circle-fill stats-icon"></i>
+                <h4 class="stats-number" id="totalTunjangan">Rp 0</h4>
+                <p class="stats-label">Total Tunjangan</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card stats-card danger">
+            <div class="stats-card-body">
+                <i class="bi bi-dash-circle-fill stats-icon"></i>
+                <h4 class="stats-number" id="totalPotongan">Rp 0</h4>
+                <p class="stats-label">Total Potongan</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payroll Actions -->
+<div id="payrollActions" class="actions-card" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <button type="button" class="btn btn-outline-primary btn-action" onclick="selectAll()">
+                <i class="bi bi-check-all"></i> Select All
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-action" onclick="deselectAll()">
+                <i class="bi bi-x-lg"></i> Deselect All
+            </button>
+        </div>
+        <div>
+            <button type="button" class="btn btn-process btn-action" onclick="processSelectedPayments()" disabled id="processBtn">
+                <i class="bi bi-credit-card-fill"></i> Process Payment (<span id="selectedCount">0</span>)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Payroll Table -->
+<div id="payrollTable" style="display: none;">
+    <div class="card table-card">
+        <div class="table-card-header">
+            <i class="bi bi-table"></i> Data Payroll Karyawan
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            <th width="40">
+                                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"
+                                       style="transform: scale(1.2); accent-color: var(--aegis-red);">
+                            </th>
+                            <th>NIK</th>
+                            <th>Karyawan</th>
+                            <th>Posisi</th>
+                            <th>Gaji Pokok</th>
+                            <th>Tunjangan</th>
+                            <th>Potongan</th>
+                            <th>Total Gaji</th>
+                            <th>Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payrollTableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Empty State -->
+<div id="emptyState" class="empty-state">
+    <i class="bi bi-cash-stack"></i>
+    <h4>Payroll Belum Dimuat</h4>
+    <p>Pilih bulan dan tahun, lalu klik "Load Payroll Data" untuk melihat informasi gaji karyawan</p>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="text-center">
+        <i class="bi bi-arrow-repeat loading-spinner"></i>
+        <p class="text-white mt-2">Loading...</p>
+    </div>
+</div>
+
+<!-- Generate Payroll Modal -->
+<div class="modal fade" id="generateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle-fill"></i> Generate Payroll Baru
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="generateForm">
+                    <div class="mb-3">
+                        <label for="generateBulan" class="form-label fw-semibold">
+                            <i class="bi bi-calendar-month text-primary"></i> Bulan <span class="text-danger">*</span>
+                        </label>
+                        <select id="generateBulan" class="form-select" required>
+                            <option value="">-- Pilih Bulan --</option>
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Maret</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8">Agustus</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="generateTahun" class="form-label fw-semibold">
+                            <i class="bi bi-calendar-year text-primary"></i> Tahun <span class="text-danger">*</span>
+                        </label>
+                        <select id="generateTahun" class="form-select" required>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                            <option value="2025" selected>2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-info" style="border-radius: 10px;">
+                        <h6><i class="bi bi-info-circle-fill"></i> Informasi Generate Payroll:</h6>
+                        <ul class="mb-0 mt-2">
+                            <li>Sistem akan membuat record gaji untuk semua karyawan aktif</li>
+                            <li>Gaji pokok diambil dari master data karyawan</li>
+                            <li>Tunjangan otomatis 10% dari gaji pokok</li>
+                            <li>Potongan otomatis 5% dari gaji pokok (pajak)</li>
+                            <li>Status default: Belum Bayar</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Batal
+                </button>
+                <button type="button" class="btn btn-generate" onclick="generatePayroll()">
+                    <i class="bi bi-plus-circle-fill"></i> Generate Payroll
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Payroll Modal -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-fill"></i> Edit Payroll Karyawan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editIdGaji">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-person-fill text-primary"></i> Karyawan
+                        </label>
+                        <input type="text" id="editKaryawan" class="form-control" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-currency-dollar text-primary"></i> Gaji Pokok
+                        </label>
+                        <input type="text" id="editGajiPokok" class="form-control" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTunjangan" class="form-label fw-semibold">
+                            <i class="bi bi-plus-circle text-success"></i> Tunjangan
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" id="editTunjangan" class="form-control" min="0" step="1000">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPotongan" class="form-label fw-semibold">
+                            <i class="bi bi-dash-circle text-danger"></i> Potongan
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" id="editPotongan" class="form-control" min="0" step="1000">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editJamKerja" class="form-label fw-semibold">
+                            <i class="bi bi-clock text-info"></i> Total Jam Kerja
+                        </label>
+                        <div class="input-group">
+                            <input type="number" id="editJamKerja" class="form-control" min="0" max="300">
+                            <span class="input-group-text">jam</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editKeterangan" class="form-label fw-semibold">
+                            <i class="bi bi-chat-text text-secondary"></i> Keterangan
+                        </label>
+                        <textarea id="editKeterangan" class="form-control" rows="3" placeholder="Keterangan tambahan (opsional)"></textarea>
+                    </div>
+                    <div class="alert alert-success" style="border-radius: 10px;">
+                        <h6><i class="bi bi-calculator"></i> Kalkulasi Total Gaji:</h6>
+                        <p class="mb-0"><strong>Total Gaji: <span id="editTotalGaji">Rp 0</span></strong></p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Batal
+                </button>
+                <button type="button" class="btn btn-generate" onclick="updatePayroll()">
+                    <i class="bi bi-save-fill"></i> Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentPayrollData = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentMonth = new Date().getMonth() + 1;
+            const currentYear = new Date().getFullYear();
+
+            document.getElementById('bulanSelect').value = currentMonth;
+            document.getElementById('tahunSelect').value = currentYear;
+
+            // Auto-load current month
+            loadPayroll();
+        });
+
+        // Load payroll data
+        async function loadPayroll() {
+            const bulan = document.getElementById('bulanSelect').value;
+            const tahun = document.getElementById('tahunSelect').value;
+
+            if (!bulan || !tahun) {
+                showNotification('Pilih bulan dan tahun terlebih dahulu', 'error');
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                const response = await fetch(`/Payroll/GetPayrollSummary?bulan=${bulan}&tahun=${tahun}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    currentPayrollData = result.data.detailPayroll || [];
+                    displayPayrollSummary(result.data);
+                    displayPayrollTable(result.data.detailPayroll);
+
+                    document.getElementById('emptyState').style.display = 'none';
+                    document.getElementById('summaryCards').style.display = 'flex';
+                    document.getElementById('payrollActions').style.display = currentPayrollData.length > 0 ? 'block' : 'none';
+                    document.getElementById('payrollTable').style.display = currentPayrollData.length > 0 ? 'block' : 'none';
+
+                    showNotification(`Data payroll ${getMonthName(bulan)} ${tahun} berhasil dimuat`, 'success');
+                } else {
+                    // No data found
+                    currentPayrollData = [];
+                    document.getElementById('summaryCards').style.display = 'none';
+                    document.getElementById('payrollActions').style.display = 'none';
+                    document.getElementById('payrollTable').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'block';
+
+                    document.getElementById('emptyState').innerHTML = `
+                        <i class="bi bi-cash-stack"></i>
+                        <h4>Payroll Belum Dibuat</h4>
+                        <p>Payroll untuk ${getMonthName(bulan)} ${tahun} belum dibuat. Generate payroll untuk memulai proses penggajian.</p>
+                        <button type="button" class="btn btn-generate btn-lg" data-bs-toggle="modal" data-bs-target="#generateModal">
+                            <i class="bi bi-plus-circle-fill"></i> Generate Payroll Sekarang
+                        </button>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading payroll:', error);
+                showNotification('Gagal memuat data payroll', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display summary cards
+        function displayPayrollSummary(data) {
+            document.getElementById('totalEmployees').textContent = data.jumlahKaryawan || 0;
+            document.getElementById('totalPayroll').textContent = formatCurrency(data.totalPayroll || 0);
+            document.getElementById('sudahBayar').textContent = data.sudahBayar || 0;
+            document.getElementById('belumBayar').textContent = data.belumBayar || 0;
+            document.getElementById('totalTunjangan').textContent = formatCurrency(data.totalTunjangan || 0);
+            document.getElementById('totalPotongan').textContent = formatCurrency(data.totalPotongan || 0);
+        }
+
+        // Display payroll table
+        function displayPayrollTable(payrolls) {
+            const tbody = document.getElementById('payrollTableBody');
+            tbody.innerHTML = '';
+
+            if (!payrolls || payrolls.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Tidak ada data payroll</td></tr>';
+                return;
+            }
+
+            payrolls.forEach((payroll, index) => {
+                const row = document.createElement('tr');
+                const isDisabled = payroll.statusBayar === 'Sudah Bayar';
+
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="payroll-checkbox" value="${payroll.idGaji}"
+                               onchange="updateSelectedCount()" ${isDisabled ? 'disabled' : ''}
+                               style="transform: scale(1.2); accent-color: var(--aegis-red);">
+                    </td>
+                    <td><span class="fw-bold text-primary">${payroll.nik}</span></td>
+                    <td>
+                        <div>
+                            <div class="fw-bold">${payroll.namaLengkap}</div>
+                            <small class="text-muted">${payroll.divisi}</small>
+                        </div>
+                    </td>
+                    <td><span class="custom-badge badge-position">${payroll.posisi}</span></td>
+                    <td><strong>${formatCurrency(payroll.gajiPokok)}</strong></td>
+                    <td><span class="text-success">${formatCurrency(payroll.tunjangan)}</span></td>
+                    <td><span class="text-danger">${formatCurrency(payroll.potongan)}</span></td>
+                    <td><strong class="text-success">${formatCurrency(payroll.totalGaji)}</strong></td>
+                    <td>
+                        ${payroll.statusBayar === 'Sudah Bayar'
+                            ? '<span class="custom-badge badge-paid"><i class="bi bi-check-circle"></i> Sudah Bayar</span>'
+                            : '<span class="custom-badge badge-unpaid"><i class="bi bi-clock"></i> Belum Bayar</span>'
+                        }
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                onclick="editPayroll(${payroll.idGaji})" ${isDisabled ? 'disabled' : ''}
+                                style="border-radius: 8px;">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Generate payroll
+        async function generatePayroll() {
+            const bulan = parseInt(document.getElementById('generateBulan').value);
+            const tahun = parseInt(document.getElementById('generateTahun').value);
+
+            if (!bulan || !tahun) {
+                showNotification('Pilih bulan dan tahun terlebih dahulu', 'error');
+                return;
+            }
+
+            if (!confirm(`Yakin ingin generate payroll untuk ${getMonthName(bulan)} ${tahun}?`)) {
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                const response = await fetch('/Payroll/GeneratePayroll', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ Bulan: bulan, Tahun: tahun })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('generateModal')).hide();
+
+                    // Update selectors and reload
+                    document.getElementById('bulanSelect').value = bulan;
+                    document.getElementById('tahunSelect').value = tahun;
+
+                    // Reload payroll data
+                    await loadPayroll();
+
+                    showNotification(`Payroll berhasil dibuat untuk ${result.data.jumlahKaryawan} karyawan`, 'success');
+                } else {
+                    showNotification(result.message || 'Gagal generate payroll', 'error');
+                }
+            } catch (error) {
+                console.error('Error generating payroll:', error);
+                showNotification('Terjadi kesalahan saat generate payroll', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Edit payroll
+        function editPayroll(idGaji) {
+            const payroll = currentPayrollData.find(p => p.idGaji === idGaji);
+            if (!payroll) {
+                showNotification('Data payroll tidak ditemukan', 'error');
+                return;
+            }
+
+            // Populate edit form
+            document.getElementById('editIdGaji').value = payroll.idGaji;
+            document.getElementById('editKaryawan').value = `${payroll.nik} - ${payroll.namaLengkap}`;
+            document.getElementById('editGajiPokok').value = formatCurrency(payroll.gajiPokok);
+            document.getElementById('editTunjangan').value = payroll.tunjangan;
+            document.getElementById('editPotongan').value = payroll.potongan;
+            document.getElementById('editJamKerja').value = payroll.totalJamKerja;
+            document.getElementById('editKeterangan').value = payroll.keterangan || '';
+
+            updateTotalGaji();
+
+            // Show modal
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+
+        // Update total gaji in edit form
+        function updateTotalGaji() {
+            const gajiPokok = parseFloat(document.getElementById('editGajiPokok').value.replace(/[^0-9]/g, '')) || 0;
+            const tunjangan = parseFloat(document.getElementById('editTunjangan').value) || 0;
+            const potongan = parseFloat(document.getElementById('editPotongan').value) || 0;
+
+            const total = gajiPokok + tunjangan - potongan;
+            document.getElementById('editTotalGaji').textContent = formatCurrency(total);
+        }
+
+        // Auto-update total when values change
+        document.getElementById('editTunjangan').addEventListener('input', updateTotalGaji);
+        document.getElementById('editPotongan').addEventListener('input', updateTotalGaji);
+
+        // Update payroll
+        async function updatePayroll() {
+            const idGaji = document.getElementById('editIdGaji').value;
+            const data = {
+                Tunjangan: parseFloat(document.getElementById('editTunjangan').value) || 0,
+                Potongan: parseFloat(document.getElementById('editPotongan').value) || 0,
+                TotalJamKerja: parseInt(document.getElementById('editJamKerja').value) || 0,
+                Keterangan: document.getElementById('editKeterangan').value
+            };
+
+            try {
+                showLoading(true);
+
+                const response = await fetch(`/Payroll/UpdatePayroll?idGaji=${idGaji}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+
+                    // Reload data
+                    await loadPayroll();
+
+                    showNotification('Payroll berhasil diperbarui', 'success');
+                } else {
+                    showNotification(result.message || 'Gagal memperbarui payroll', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating payroll:', error);
+                showNotification('Terjadi kesalahan saat memperbarui payroll', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Select/deselect functions
+        function selectAll() {
+            document.querySelectorAll('.payroll-checkbox:not(:disabled)').forEach(cb => cb.checked = true);
+            updateSelectedCount();
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.payroll-checkbox').forEach(cb => cb.checked = false);
+            updateSelectedCount();
+        }
+
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            document.querySelectorAll('.payroll-checkbox:not(:disabled)').forEach(cb => {
+                cb.checked = selectAllCheckbox.checked;
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const selected = document.querySelectorAll('.payroll-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = selected;
+            document.getElementById('processBtn').disabled = selected === 0;
+
+            // Update select all checkbox
+            const checkboxes = document.querySelectorAll('.payroll-checkbox:not(:disabled)');
+            const checkedCheckboxes = document.querySelectorAll('.payroll-checkbox:checked');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+
+            if (checkedCheckboxes.length === 0) {
+                selectAllCheckbox.indeterminate = false;
+                selectAllCheckbox.checked = false;
+            } else if (checkedCheckboxes.length === checkboxes.length) {
+                selectAllCheckbox.indeterminate = false;
+                selectAllCheckbox.checked = true;
+            } else {
+                selectAllCheckbox.indeterminate = true;
+            }
+        }
+
+        // Process selected payments
+        async function processSelectedPayments() {
+            const selectedIds = Array.from(document.querySelectorAll('.payroll-checkbox:checked'))
+                .map(cb => parseInt(cb.value));
+
+            if (selectedIds.length === 0) {
+                showNotification('Pilih minimal satu payroll untuk diproses', 'error');
+                return;
+            }
+
+            if (!confirm(`Yakin ingin memproses pembayaran untuk ${selectedIds.length} karyawan?`)) {
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                const response = await fetch('/Payroll/ProcessPayment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(selectedIds)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Reload data
+                    await loadPayroll();
+
+                    showNotification(result.message || 'Pembayaran berhasil diproses', 'success');
+                } else {
+                    showNotification(result.message || 'Gagal memproses pembayaran', 'error');
+                }
+            } catch (error) {
+                console.error('Error processing payment:', error);
+                showNotification('Terjadi kesalahan saat memproses pembayaran', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Helper functions
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount || 0);
+        }
+
+        function getMonthName(bulan) {
+            const months = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                           'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            return months[parseInt(bulan)] || '';
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (show) {
+                overlay.style.display = 'flex';
+                document.querySelector('.loading-spinner').classList.add('fa-spin');
+            } else {
+                overlay.style.display = 'none';
+                document.querySelector('.loading-spinner').classList.remove('fa-spin');
+            }
+        }
+
+        function showNotification(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+
+            const notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                    <i class="bi ${icon}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            $('body').append(notification);
+
+            setTimeout(() => {
+                $('.alert').fadeOut();
+            }, 4000);
+        }
+
+        // Animation on scroll
+        $(document).ready(function() {
+            $(window).scroll(function() {
+                $('.stats-card').each(function() {
+                    const elementTop = $(this).offset().top;
+                    const elementBottom = elementTop + $(this).outerHeight();
+                    const viewportTop = $(window).scrollTop();
+                    const viewportBottom = viewportTop + $(window).height();
+
+                    if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                        $(this).addClass('animate__fadeInUp');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,543 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Aegislabs HRD System</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Aegislabs Custom Styles -->
+    <style>
+        /* Aegislabs Theme Variables */
+        :root {
+            --aegis-red: #ff4061;
+            --aegis-white: #ffffff;
+            --aegis-red-hover: #e5395a;
+            --aegis-red-light: rgba(255, 64, 97, 0.1);
+            --aegis-red-shadow: rgba(255, 64, 97, 0.3);
+            --aegis-dark: #2c3e50;
+            --aegis-gray: #f8f9fa;
+            --sidebar-width: 280px;
+        }
+
+        /* Body dan Layout Utama */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--aegis-gray);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Navigation */
+        .aegis-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--aegis-red) 0%, #e5395a 100%);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Logo Section di Sidebar */
+        .sidebar-brand {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            /* width: fit-content;
+            display: flex;
+            background: #ffff
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1rem;         
+            width: 100%;                 
+            background: transparent;    
+            border-radius: 10px;    
+            padding: 10px;
+            margin: 0 auto 1rem;
+            box-shadow: none; */
+
+            width: fit-content;            /* Biar ngepas sama kontennya (logo) */
+            background: #ffffff;           /* Putih */
+            border-radius: 10px;           /* Sudut tidak lancip */
+            padding: 10px;                 /* Jarak biar nggak nempel logo */
+            margin: 0 auto 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* opsional bayangan */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sidebar-brand h4 {
+            color: var(--aegis-white);
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .sidebar-brand p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        /* Navigation Menu */
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav-item {
+            margin: 0.25rem 0;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--aegis-white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--aegis-white);
+            padding-left: 2rem;
+        }
+
+        .sidebar-nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-right: 4px solid var(--aegis-white);
+        }
+
+        .sidebar-nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Dropdown Menu */
+        .sidebar-dropdown {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-dropdown-item {
+            display: block;
+            padding: 0.5rem 1.5rem 0.5rem 3rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--aegis-white);
+            padding-left: 3.5rem;
+        }
+
+        /* Main Content Area */
+        .aegis-main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Top Header di Main Content */
+        .main-header {
+            background: var(--aegis-white);
+            border-radius: 15px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .header-info h1 {
+            color: var(--aegis-dark);
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .header-info p {
+            color: #6c757d;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--aegis-red-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--aegis-red);
+            font-weight: 600;
+        }
+
+        .user-info h6 {
+            margin: 0;
+            color: var(--aegis-dark);
+            font-weight: 600;
+        }
+
+        .user-info small {
+            color: #6c757d;
+        }
+
+        .btn-logout {
+            background: var(--aegis-red);
+            color: var(--aegis-white);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--aegis-red-hover);
+            color: var(--aegis-white);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between; /* kiri dan kanan */
+            align-items: center;
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem; /* jarak antara profil dan logout */
+        }
+
+
+        /* Mobile Responsive */
+        @@media (max-width: 768px) {
+            .aegis-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .aegis-sidebar.show {
+                transform: translateX(0);
+            }
+
+            .aegis-main {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .main-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .mobile-toggle {
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 1001;
+                background: var(--aegis-red);
+                color: var(--aegis-white);
+                border: none;
+                border-radius: 8px;
+                padding: 0.5rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        /* Hide mobile toggle on desktop */
+        .mobile-toggle {
+            display: none;
+        }
+
+        @@media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+        }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle d-md-none" id="sidebarToggle">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <!-- Sidebar Navigation -->
+        <nav class="aegis-sidebar" id="sidebar">
+            <!-- Logo/Brand Section -->
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">
+                    <img src="~/Images/logoaegistp.png" alt="Aegislabs" />
+                </div>
+                <h4>Aegislabs</h4>
+                <p>HRD System</p>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="sidebar-nav">
+                <!-- Dashboard Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="sidebar-nav-item">
+                        <a class="sidebar-nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                @if (User.IsInRole("Karyawan"))
+                {
+                    <!-- Employee Menu -->
+                    <div class="nav-section">
+                        <div class="nav-section-title">Employee</div>
+                        
+                        <!-- Presensi -->
+                        <div class="sidebar-nav-item">
+                            <a class="sidebar-nav-link" data-bs-toggle="collapse" href="#presensiMenu" role="button">
+                                <i class="bi bi-clock"></i>
+                                <span>Presensi</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse sidebar-dropdown" id="presensiMenu">
+                                <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="ClockIn">Clock In/Out</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="Index">Riwayat Presensi</a>
+                            </div>
+                        </div>
+
+                        <!-- Cuti -->
+                        <div class="sidebar-nav-item">
+                            <a class="sidebar-nav-link" data-bs-toggle="collapse" href="#cutiMenu" role="button">
+                                <i class="bi bi-calendar"></i>
+                                <span>Cuti</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse sidebar-dropdown" id="cutiMenu">
+                                <a class="sidebar-dropdown-item" asp-controller="Cuti" asp-action="Create">Ajukan Cuti</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Cuti" asp-action="Index">Riwayat Cuti</a>
+                            </div>
+                        </div>
+
+                        <!-- Payslip -->
+                        <div class="sidebar-nav-item">
+                            <a class="sidebar-nav-link" data-bs-toggle="collapse" href="#payslipMenu" role="button">
+                                <i class="bi bi-receipt"></i>
+                                <span>My Payslip</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse sidebar-dropdown" id="payslipMenu">
+                                <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="CurrentPayslip">Slip Gaji Bulan Ini</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="PayslipHistory">Riwayat Slip Gaji</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="SalaryHistory">Grafik Gaji</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (User.IsInRole("HRD"))
+                {
+                    <!-- HRD Management -->
+                    <div class="nav-section">
+                        <div class="nav-section-title">Management</div>
+                        
+                        <!-- Karyawan -->
+                        <div class="sidebar-nav-item">
+                            <a class="sidebar-nav-link" data-bs-toggle="collapse" href="#karyawanMenu" role="button">
+                                <i class="bi bi-people"></i>
+                                <span>Karyawan</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse sidebar-dropdown" id="karyawanMenu">
+                                <a class="sidebar-dropdown-item" asp-controller="Karyawan" asp-action="Index">Daftar Karyawan</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Karyawan" asp-action="Create">Tambah Karyawan</a>
+                            </div>
+                        </div>
+
+                        <!-- Presensi -->
+                        <div class="sidebar-nav-item">
+                            <a class="sidebar-nav-link" data-bs-toggle="collapse" href="#presensiHRDMenu" role="button">
+                                <i class="bi bi-clock-history"></i>
+                                <span>Presensi</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse sidebar-dropdown" id="presensiHRDMenu">
+                                <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="TodaySummary">Ringkasan Hari Ini</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Presensi" asp-action="Manage">Kelola Presensi</a>
+                            </div>
+                        </div>
+
+                        <!-- Cuti -->
+                        <div class="sidebar-nav-item">
+                            <a class="sidebar-nav-link" data-bs-toggle="collapse" href="#cutiHRDMenu" role="button">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Cuti</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse sidebar-dropdown" id="cutiHRDMenu">
+                                <a class="sidebar-dropdown-item" asp-controller="Cuti" asp-action="Manage">Kelola Cuti</a>
+                            </div>
+                        </div>
+
+                        <!-- Payroll -->
+                        <div class="sidebar-nav-item">
+                            <a class="sidebar-nav-link" data-bs-toggle="collapse" href="#payrollMenu" role="button">
+                                <i class="bi bi-cash-stack"></i>
+                                <span>Payroll</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse sidebar-dropdown" id="payrollMenu">
+                                <a class="sidebar-dropdown-item" asp-controller="Payroll" asp-action="Index">Payroll Management</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Payroll" asp-action="Reports">Laporan Gaji</a>
+                                <a class="sidebar-dropdown-item" asp-controller="Payroll" asp-action="Settings">Pengaturan Payroll</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="aegis-main">
+            <!-- Top Header -->
+            <div class="dashboard-header">
+                <div class="header-info">
+                    <h1>@ViewData["Title"]</h1>
+                    <p>@DateTime.Now.ToString("dddd, dd MMMM yyyy")</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        @(User.FindFirst("NamaLengkap")?.Value?.Substring(0, 1) ?? "U")
+                    </div>
+                    <div class="user-info">
+                        <h6>@User.FindFirst("NamaLengkap")?.Value</h6>
+                        <small>@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
+                    </div>
+                    <form method="post" asp-controller="Auth" asp-action="Logout" class="d-inline">
+                        <button type="submit" class="btn btn-logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Alert Messages -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 10px;">
+                    <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 10px;">
+                    <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 10px;">
+                    <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Main Content -->
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
+    else
+    {
+        <!-- Layout untuk halaman yang tidak authenticated (login) -->
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+    }
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Sidebar Toggle Script -->
+    <script>
+        // Mobile sidebar toggle
+        $(document).ready(function() {
+            $('#sidebarToggle').click(function() {
+                $('#sidebar').toggleClass('show');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            $(document).click(function(e) {
+                if (!$(e.target).closest('#sidebar, #sidebarToggle').length) {
+                    $('#sidebar').removeClass('show');
+                }
+            });
+
+            // Active menu highlighting
+            var currentPath = window.location.pathname;
+            $('.sidebar-nav-link, .sidebar-dropdown-item').each(function() {
+                if ($(this).attr('href') === currentPath) {
+                    $(this).addClass('active');
+                    $(this).closest('.collapse').addClass('show');
+                }
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <body>
+        @RenderBody
+    </body>
+</body>
+</html>
