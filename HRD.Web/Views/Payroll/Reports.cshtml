@@ -1,0 +1,526 @@
+@model HRD.Web.Models.DTOs.PayrollSummaryResponse
+@{
+    ViewData["Title"] = "Laporan Payroll";
+    var currentMonth = ViewBag.CurrentMonth ?? DateTime.Now.Month;
+    var currentYear = ViewBag.CurrentYear ?? DateTime.Now.Year;
+    var monthName = ViewBag.MonthName ?? "";
+    var availableYears = ViewBag.AvailableYears as List<int> ?? new List<int>();
+    var availableMonths = ViewBag.AvailableMonths as List<object> ?? new List<object>();
+    var availableDivisions = ViewBag.AvailableDivisions as List<string> ?? new List<string>();
+    var selectedDivisi = ViewBag.SelectedDivisi as string ?? "";
+}
+
+<style>
+    .reports-header {
+        background: linear-gradient(135deg, #ff4061, #e5395a);
+        color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(255, 64, 97, 0.3);
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.2s;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .stats-number {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .stats-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .report-table {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .report-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        border: none;
+        padding: 1rem;
+    }
+
+    .report-table td {
+        border: none;
+        padding: 1rem;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .report-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .status-paid {
+        background: #d1f2eb;
+        color: #0c5d36;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-unpaid {
+        background: #fff3cd;
+        color: #856404;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .simple-chart {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        height: 250px;
+        position: relative;
+    }
+
+    .chart-bar {
+        background: linear-gradient(45deg, #ff4061, #e5395a);
+        border-radius: 4px;
+        margin: 3px 0;
+        color: white;
+        padding: 8px;
+        font-size: 0.85rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .chart-bar:hover {
+        transform: scale(1.02);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #ff4061;
+    }
+
+    .btn-export {
+        background: #28a745;
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        margin: 0 0.25rem;
+        transition: all 0.3s;
+    }
+
+    .btn-export:hover {
+        background: #218838;
+        transform: translateY(-1px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Override Bootstrap primary color untuk konsistensi dengan tema Aegislabs */
+    .btn-primary {
+        background: linear-gradient(135deg, #ff4061, #e5395a);
+        border-color: #ff4061;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #e5395a, #cc2e4a);
+        border-color: #e5395a;
+        color: white;
+    }
+
+    .btn-primary:focus, .btn-primary:active {
+        background: linear-gradient(135deg, #e5395a, #cc2e4a);
+        border-color: #e5395a;
+        box-shadow: 0 0 0 0.2rem rgba(255, 64, 97, 0.25);
+        color: white;
+    }
+
+    .stats-number.text-primary {
+        color: #ff4061 !important;
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="reports-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-graph-up"></i> Laporan Payroll</h1>
+                <p class="mb-0">Laporan komprehensif gaji dan tunjangan karyawan</p>
+            </div>
+            <div>
+                <button class="btn btn-light" onclick="exportToExcel()">
+                    <i class="bi bi-file-excel"></i> Export Excel
+                </button>
+                <button class="btn btn-light" onclick="exportToPDF()">
+                    <i class="bi bi-file-pdf"></i> Export PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-card">
+        <form method="get" class="row align-items-end">
+            <div class="col-md-3">
+                <label class="form-label"><i class="bi bi-calendar"></i> Bulan</label>
+                <select name="bulan" class="form-select">
+                    @foreach (dynamic month in availableMonths)
+                    {
+                        <option value="@month.Value" selected="@(month.Value == currentMonth)">
+                            @month.Name
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label"><i class="bi bi-calendar3"></i> Tahun</label>
+                <select name="tahun" class="form-select">
+                    @foreach (var year in availableYears)
+                    {
+                        <option value="@year" selected="@(year == currentYear)">@year</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label"><i class="bi bi-building"></i> Divisi</label>
+                <select name="divisi" class="form-select">
+                    <option value="">Semua Divisi</option>
+                    @foreach (var divisi in availableDivisions)
+                    {
+                        <option value="@divisi" selected="@(divisi == selectedDivisi)">@divisi</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Filter
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="resetFilter()">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Error/Message Alert -->
+    @if (!string.IsNullOrEmpty(ViewBag.Error))
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> @ViewBag.Message
+        </div>
+    }
+
+    @if (Model?.DetailPayroll != null && Model.DetailPayroll.Any())
+    {
+        <!-- Summary Stats -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 class="stats-number text-primary">@Model.DetailPayroll.Count</h3>
+                    <p class="stats-label">Total Karyawan</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 class="stats-number text-success">Rp @Model.TotalGajiPokok.ToString("N0")</h3>
+                    <p class="stats-label">Total Gaji Pokok</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 class="stats-number text-info">Rp @Model.TotalTunjangan.ToString("N0")</h3>
+                    <p class="stats-label">Total Tunjangan</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 class="stats-number text-warning">Rp @Model.TotalPayroll.ToString("N0")</h3>
+                    <p class="stats-label">Total Payroll</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mt-4">
+            <div class="col-lg-8">
+                <div class="stats-card">
+                    <h5><i class="bi bi-bar-chart"></i> Distribusi Gaji per Divisi</h5>
+                    <div class="simple-chart">
+                        @{
+                            var divisiStats = Model.DetailPayroll
+                                .GroupBy(p => p.Divisi)
+                                .Select(g => new { 
+                                    Divisi = g.Key, 
+                                    TotalGaji = g.Sum(p => p.TotalGaji),
+                                    JumlahKaryawan = g.Count()
+                                })
+                                .OrderByDescending(x => x.TotalGaji)
+                                .ToList();
+                            var maxGaji = divisiStats.Any() ? divisiStats.Max(x => x.TotalGaji) : 1;
+                        }
+                        
+                        @foreach (var stat in divisiStats)
+                        {
+                            var percentage = maxGaji > 0 ? (double)stat.TotalGaji / (double)maxGaji * 100 : 0;
+                            <div class="chart-bar" style="width: @percentage%; min-width: 150px;">
+                                <span><strong>@stat.Divisi</strong> (@stat.JumlahKaryawan orang)</span>
+                                <span>Rp @stat.TotalGaji.ToString("N0")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="stats-card">
+                    <h6><i class="bi bi-pie-chart"></i> Ringkasan Pembayaran</h6>
+                    @{
+                        var sudahBayar = Model.DetailPayroll.Count(p => p.StatusBayar == "Sudah Bayar");
+                        var belumBayar = Model.DetailPayroll.Count(p => p.StatusBayar != "Sudah Bayar");
+                        var totalPayrolls = Model.DetailPayroll.Count;
+                        var persenSudahBayar = totalPayrolls > 0 ? (sudahBayar * 100.0 / totalPayrolls) : 0;
+                        var persenBelumBayar = totalPayrolls > 0 ? (belumBayar * 100.0 / totalPayrolls) : 0;
+                    }
+                    
+                    <div class="summary-grid">
+                        <div>
+                            <div class="summary-item">
+                                <span><i class="bi bi-check-circle text-success"></i> Sudah Dibayar</span>
+                                <span><strong>@sudahBayar</strong></span>
+                            </div>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: @persenSudahBayar.ToString("0")%"></div>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span><i class="bi bi-clock text-warning"></i> Belum Dibayar</span>
+                                <span><strong>@belumBayar</strong></span>
+                            </div>
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: @persenBelumBayar.ToString("0")%"></div>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span>Total Karyawan</span>
+                                <span><strong>@totalPayrolls</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="stats-card mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5><i class="bi bi-table"></i> Detail Payroll @monthName @currentYear</h5>
+                <div>
+                    <button class="btn btn-export" onclick="exportToExcel()">
+                        <i class="bi bi-file-excel"></i> Excel
+                    </button>
+                    <button class="btn btn-export" onclick="exportToPDF()">
+                        <i class="bi bi-file-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table report-table">
+                    <thead>
+                        <tr>
+                            <th>Karyawan</th>
+                            <th>Divisi</th>
+                            <th class="text-end">Gaji Pokok</th>
+                            <th class="text-end">Tunjangan</th>
+                            <th class="text-end">Potongan</th>
+                            <th class="text-end">Total Gaji</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payroll in Model.DetailPayroll.OrderBy(p => p.Divisi).ThenBy(p => p.NamaLengkap))
+                        {
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>@payroll.NamaLengkap</strong><br>
+                                        <small class="text-muted">@payroll.NIK</small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-light text-dark">@payroll.Divisi</span></td>
+                                <td class="text-end">Rp @payroll.GajiPokok.ToString("N0")</td>
+                                <td class="text-end text-success">Rp @payroll.Tunjangan.ToString("N0")</td>
+                                <td class="text-end text-danger">Rp @payroll.Potongan.ToString("N0")</td>
+                                <td class="text-end"><strong>Rp @payroll.TotalGaji.ToString("N0")</strong></td>
+                                <td class="text-center">
+                                    @if (payroll.StatusBayar == "Sudah Bayar")
+                                    {
+                                        <span class="status-paid">
+                                            <i class="bi bi-check-circle"></i> Sudah Dibayar
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-unpaid">
+                                            <i class="bi bi-clock"></i> Belum Dibayar
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot style="background: #f8f9fa;">
+                        <tr>
+                            <th colspan="2">TOTAL</th>
+                            <th class="text-end">Rp @Model.TotalGajiPokok.ToString("N0")</th>
+                            <th class="text-end">Rp @Model.TotalTunjangan.ToString("N0")</th>
+                            <th class="text-end">Rp @Model.TotalPotongan.ToString("N0")</th>
+                            <th class="text-end"><strong>Rp @Model.TotalPayroll.ToString("N0")</strong></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Empty State -->
+        <div class="empty-state">
+            <i class="bi bi-inbox" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+            <h4>Tidak Ada Data Payroll</h4>
+            <p>Belum ada data payroll untuk periode @monthName @currentYear</p>
+            @if (!string.IsNullOrEmpty(selectedDivisi))
+            {
+                <p>pada divisi <strong>@selectedDivisi</strong></p>
+            }
+            <div class="mt-3">
+                <a href="@Url.Action("Index", "Payroll")" class="btn btn-primary">
+                    <i class="bi bi-plus"></i> Generate Payroll
+                </a>
+                <button class="btn btn-outline-secondary" onclick="resetFilter()">
+                    <i class="bi bi-arrow-clockwise"></i> Reset Filter
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function exportToExcel() {
+        showNotification('Fitur export Excel dalam pengembangan', 'info');
+    }
+
+    function exportToPDF() {
+        showNotification('Fitur export PDF dalam pengembangan', 'info');
+    }
+
+    function resetFilter() {
+        window.location.href = '@Url.Action("Reports", "Payroll")';
+    }
+
+    function showNotification(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : type === 'info' ? 'alert-info' : 'alert-danger';
+        const icon = type === 'success' ? 'bi-check-circle' : type === 'info' ? 'bi-info-circle' : 'bi-exclamation-triangle';
+        
+        const notification = `
+            <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; border-radius: 8px;">
+                <i class="bi ${icon}"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', notification);
+        
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            if (alerts.length > 0) alerts[alerts.length - 1].remove();
+        }, 4000);
+    }
+
+    // Simple animations on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const charts = document.querySelectorAll('.chart-bar');
+        charts.forEach((bar, index) => {
+            bar.style.opacity = '0';
+            bar.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+                bar.style.transition = 'all 0.5s ease';
+                bar.style.opacity = '1';
+                bar.style.transform = 'translateX(0)';
+            }, index * 100);
+        });
+
+        const cards = document.querySelectorAll('.stats-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 50);
+        });
+    });
+</script>

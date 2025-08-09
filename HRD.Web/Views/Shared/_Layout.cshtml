@@ -374,7 +374,6 @@
                             <div class="collapse sidebar-dropdown" id="payslipMenu">
                                 <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="CurrentPayslip">Slip Gaji Bulan Ini</a>
                                 <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="PayslipHistory">Riwayat Slip Gaji</a>
-                                <a class="sidebar-dropdown-item" asp-controller="Employee" asp-action="SalaryHistory">Grafik Gaji</a>
                             </div>
                         </div>
                     </div>
@@ -536,8 +535,5 @@
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
-    <body>
-        @RenderBody
-    </body>
 </body>
 </html>

@@ -1,0 +1,725 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Pengaturan Payroll";
+    var positions = ViewBag.Positions as List<string> ?? new List<string>();
+    var divisions = ViewBag.Divisions as List<string> ?? new List<string>();
+}
+
+<style>
+    .settings-header {
+        background: linear-gradient(135deg, #ff4061, #e5395a);
+        color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(255, 64, 97, 0.3);
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .settings-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        color: #495057;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-section {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #ff4061;
+        box-shadow: 0 0 0 0.2rem rgba(255, 64, 97, 0.25);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #ff4061, #e5395a);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #e5395a, #cc2e4a);
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #ff4061;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
+    .salary-table {
+        margin-top: 1rem;
+    }
+
+    .salary-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        border: none;
+        padding: 1rem;
+    }
+
+    .salary-table td {
+        padding: 1rem;
+        border: none;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .salary-table tbody tr:hover {
+        background: rgba(255, 64, 97, 0.05);
+    }
+
+    .allowance-item, .deduction-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .allowance-item:hover, .deduction-item:hover {
+        background: rgba(255, 64, 97, 0.05);
+    }
+
+    .item-info h6 {
+        margin: 0;
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .item-info small {
+        color: #6c757d;
+    }
+
+    .item-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .amount-display {
+        font-weight: 600;
+        color: #ff4061;
+        font-size: 1.1rem;
+    }
+
+    .schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .schedule-item {
+        text-align: center;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+
+    .schedule-item:hover {
+        border-color: #ff4061;
+        background: rgba(255, 64, 97, 0.05);
+    }
+
+    .schedule-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ff4061;
+        margin-bottom: 0.5rem;
+    }
+
+    .schedule-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .add-new-btn {
+        background: rgba(255, 64, 97, 0.1);
+        border: 2px dashed #ff4061;
+        color: #ff4061;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 1rem;
+    }
+
+    .add-new-btn:hover {
+        background: rgba(255, 64, 97, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .save-section {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 2rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="settings-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-gear"></i> Pengaturan Payroll</h1>
+                <p class="mb-0">Konfigurasi sistem gaji dan tunjangan karyawan</p>
+            </div>
+            <div>
+                <button class="btn btn-light" onclick="resetToDefaults()">
+                    <i class="bi bi-arrow-clockwise"></i> Reset Default
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Alert -->
+    @if (!string.IsNullOrEmpty(ViewBag.Error))
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form id="settingsForm">
+        <!-- Payroll Schedule Settings -->
+        <div class="settings-card">
+            <div class="card-header-custom">
+                <i class="bi bi-calendar-check"></i>
+                <span>Jadwal Payroll</span>
+            </div>
+            <div class="form-section">
+                <div class="schedule-grid">
+                    <div class="schedule-item">
+                        <div class="schedule-number" id="payroll-day">@Model.PayrollSchedule.PayrollDay</div>
+                        <div class="schedule-label">Tanggal Gajian</div>
+                        <input type="number" class="form-control mt-2" name="payrollDay" value="@Model.PayrollSchedule.PayrollDay" min="1" max="31">
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-number" id="cutoff-day">@Model.PayrollSchedule.CutOffDay</div>
+                        <div class="schedule-label">Cut Off</div>
+                        <input type="number" class="form-control mt-2" name="cutOffDay" value="@Model.PayrollSchedule.CutOffDay" min="1" max="31">
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-number" id="working-hours">@Model.PayrollSchedule.WorkingHoursPerDay</div>
+                        <div class="schedule-label">Jam Kerja/Hari</div>
+                        <input type="number" class="form-control mt-2" name="workingHoursPerDay" value="@Model.PayrollSchedule.WorkingHoursPerDay" min="1" max="24">
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-number" id="working-days">@Model.PayrollSchedule.WorkingDaysPerMonth</div>
+                        <div class="schedule-label">Hari Kerja/Bulan</div>
+                        <input type="number" class="form-control mt-2" name="workingDaysPerMonth" value="@Model.PayrollSchedule.WorkingDaysPerMonth" min="1" max="31">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Salary by Position -->
+        <div class="settings-card">
+            <div class="card-header-custom">
+                <i class="bi bi-currency-dollar"></i>
+                <span>Gaji Pokok per Posisi</span>
+            </div>
+            <div class="form-section">
+                <div class="add-new-btn" onclick="addNewSalary()">
+                    <i class="bi bi-plus-circle"></i> Tambah Posisi Baru
+                </div>
+                <div class="table-responsive">
+                    <table class="table salary-table">
+                        <thead>
+                            <tr>
+                                <th>Posisi</th>
+                                <th>Gaji Pokok</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salary-table-body">
+                            @foreach (var salary in Model.SalaryByPosition)
+                            {
+                                <tr>
+                                    <td><strong>@salary.Position</strong></td>
+                                    <td>
+                                        <input type="text" class="form-control salary-input" 
+                                               name="salary_@salary.Position" 
+                                               value="@salary.BaseSalary.ToString("N0")" 
+                                               data-position="@salary.Position">
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSalary(this)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Allowances Settings -->
+        <div class="settings-card">
+            <div class="card-header-custom">
+                <i class="bi bi-plus-circle"></i>
+                <span>Tunjangan</span>
+            </div>
+            <div class="form-section">
+                <div class="add-new-btn" onclick="addNewAllowance()">
+                    <i class="bi bi-plus-circle"></i> Tambah Tunjangan Baru
+                </div>
+                <div id="allowances-container">
+                    @foreach (var allowance in Model.Allowances)
+                    {
+                        <div class="allowance-item">
+                            <div class="item-info">
+                                <h6>@allowance.Type</h6>
+                                <small>Tunjangan tetap per bulan</small>
+                            </div>
+                            <div class="item-controls">
+                                <span class="amount-display">Rp @allowance.Amount.ToString("N0")</span>
+                                <input type="text" class="form-control" name="allowance_@allowance.Type" 
+                                       value="@allowance.Amount" style="width: 150px; display: none;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="allowance_active_@allowance.Type" 
+                                           @(allowance.IsActive ? "checked" : "")>
+                                    <span class="slider"></span>
+                                </label>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editAllowance(this)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeAllowance(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Deductions Settings -->
+        <div class="settings-card">
+            <div class="card-header-custom">
+                <i class="bi bi-dash-circle"></i>
+                <span>Potongan</span>
+            </div>
+            <div class="form-section">
+                <div class="add-new-btn" onclick="addNewDeduction()">
+                    <i class="bi bi-plus-circle"></i> Tambah Potongan Baru
+                </div>
+                <div id="deductions-container">
+                    @foreach (var deduction in Model.Deductions)
+                    {
+                        <div class="deduction-item">
+                            <div class="item-info">
+                                <h6>@deduction.Type</h6>
+                                <small>
+                                    @if (deduction.Percentage > 0)
+                                    {
+                                        <text>@deduction.Percentage% dari gaji pokok</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Potongan tetap</text>
+                                    }
+                                </small>
+                            </div>
+                            <div class="item-controls">
+                                <span class="amount-display">
+                                    @if (deduction.Percentage > 0)
+                                    {
+                                        <text>@deduction.Percentage%</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Rp @(deduction.Amount ?? 0).ToString("N0")</text>
+                                    }
+                                </span>
+                                <input type="text" class="form-control" name="deduction_@deduction.Type" 
+                                       value="@(deduction.Percentage > 0 ? deduction.Percentage.ToString() : (deduction.Amount ?? 0).ToString())" 
+                                       style="width: 150px; display: none;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="deduction_active_@deduction.Type" 
+                                           @(deduction.IsActive ? "checked" : "")>
+                                    <span class="slider"></span>
+                                </label>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editDeduction(this)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDeduction(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Section -->
+        <div class="save-section">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <h5><i class="bi bi-save"></i> Simpan Pengaturan</h5>
+                    <p class="text-muted">Pastikan semua pengaturan sudah sesuai sebelum menyimpan</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="button" class="btn btn-primary btn-lg" onclick="saveSettings()">
+                            <i class="bi bi-check-circle"></i> Simpan Semua Pengaturan
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-lg" onclick="previewChanges()">
+                            <i class="bi bi-eye"></i> Preview Perubahan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Update schedule numbers when inputs change
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('.schedule-item input');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const numberDisplay = this.parentElement.querySelector('.schedule-number');
+                numberDisplay.textContent = this.value || '0';
+            });
+        });
+
+        // Format salary inputs
+        const salaryInputs = document.querySelectorAll('.salary-input');
+        salaryInputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                const value = parseInt(this.value.replace(/[^\d]/g, '')) || 0;
+                this.value = value.toLocaleString('id-ID');
+            });
+        });
+    });
+
+    function addNewSalary() {
+        const position = prompt('Nama Posisi:');
+        if (!position) return;
+
+        const baseSalary = prompt('Gaji Pokok:', '5000000');
+        if (!baseSalary) return;
+
+        const tbody = document.getElementById('salary-table-body');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td><strong>${position}</strong></td>
+            <td>
+                <input type="text" class="form-control salary-input" 
+                       name="salary_${position}" 
+                       value="${parseInt(baseSalary).toLocaleString('id-ID')}" 
+                       data-position="${position}">
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSalary(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(newRow);
+        showNotification('Posisi baru berhasil ditambahkan', 'success');
+    }
+
+    function removeSalary(btn) {
+        if (confirm('Hapus posisi ini?')) {
+            btn.closest('tr').remove();
+            showNotification('Posisi berhasil dihapus', 'success');
+        }
+    }
+
+    function addNewAllowance() {
+        const type = prompt('Jenis Tunjangan:');
+        if (!type) return;
+
+        const amount = prompt('Jumlah (Rp):', '500000');
+        if (!amount) return;
+
+        const container = document.getElementById('allowances-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'allowance-item';
+        newItem.innerHTML = `
+            <div class="item-info">
+                <h6>${type}</h6>
+                <small>Tunjangan tetap per bulan</small>
+            </div>
+            <div class="item-controls">
+                <span class="amount-display">Rp ${parseInt(amount).toLocaleString('id-ID')}</span>
+                <input type="text" class="form-control" name="allowance_${type}" 
+                       value="${amount}" style="width: 150px; display: none;">
+                <label class="toggle-switch">
+                    <input type="checkbox" name="allowance_active_${type}" checked>
+                    <span class="slider"></span>
+                </label>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editAllowance(this)">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeAllowance(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(newItem);
+        showNotification('Tunjangan baru berhasil ditambahkan', 'success');
+    }
+
+    function editAllowance(btn) {
+        const item = btn.closest('.allowance-item');
+        const display = item.querySelector('.amount-display');
+        const input = item.querySelector('input[type="text"]');
+        
+        if (input.style.display === 'none') {
+            display.style.display = 'none';
+            input.style.display = 'block';
+            input.focus();
+            btn.innerHTML = '<i class="bi bi-check"></i>';
+        } else {
+            const value = parseInt(input.value) || 0;
+            display.textContent = 'Rp ' + value.toLocaleString('id-ID');
+            display.style.display = 'block';
+            input.style.display = 'none';
+            btn.innerHTML = '<i class="bi bi-pencil"></i>';
+        }
+    }
+
+    function removeAllowance(btn) {
+        if (confirm('Hapus tunjangan ini?')) {
+            btn.closest('.allowance-item').remove();
+            showNotification('Tunjangan berhasil dihapus', 'success');
+        }
+    }
+
+    function addNewDeduction() {
+        const type = prompt('Jenis Potongan:');
+        if (!type) return;
+
+        const isPercentage = confirm('Apakah potongan berdasarkan persentase dari gaji?');
+        let value, displayValue;
+
+        if (isPercentage) {
+            value = prompt('Persentase (%):', '5');
+            displayValue = value + '%';
+        } else {
+            value = prompt('Jumlah (Rp):', '100000');
+            displayValue = 'Rp ' + parseInt(value).toLocaleString('id-ID');
+        }
+
+        if (!value) return;
+
+        const container = document.getElementById('deductions-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'deduction-item';
+        newItem.innerHTML = `
+            <div class="item-info">
+                <h6>${type}</h6>
+                <small>${isPercentage ? value + '% dari gaji pokok' : 'Potongan tetap'}</small>
+            </div>
+            <div class="item-controls">
+                <span class="amount-display">${displayValue}</span>
+                <input type="text" class="form-control" name="deduction_${type}" 
+                       value="${value}" style="width: 150px; display: none;">
+                <label class="toggle-switch">
+                    <input type="checkbox" name="deduction_active_${type}" checked>
+                    <span class="slider"></span>
+                </label>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="editDeduction(this)">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDeduction(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(newItem);
+        showNotification('Potongan baru berhasil ditambahkan', 'success');
+    }
+
+    function editDeduction(btn) {
+        // Similar to editAllowance but for deductions
+        const item = btn.closest('.deduction-item');
+        const display = item.querySelector('.amount-display');
+        const input = item.querySelector('input[type="text"]');
+        
+        if (input.style.display === 'none') {
+            display.style.display = 'none';
+            input.style.display = 'block';
+            input.focus();
+            btn.innerHTML = '<i class="bi bi-check"></i>';
+        } else {
+            const value = parseFloat(input.value) || 0;
+            const isPercentage = display.textContent.includes('%');
+            display.textContent = isPercentage ? value + '%' : 'Rp ' + parseInt(value).toLocaleString('id-ID');
+            display.style.display = 'block';
+            input.style.display = 'none';
+            btn.innerHTML = '<i class="bi bi-pencil"></i>';
+        }
+    }
+
+    function removeDeduction(btn) {
+        if (confirm('Hapus potongan ini?')) {
+            btn.closest('.deduction-item').remove();
+            showNotification('Potongan berhasil dihapus', 'success');
+        }
+    }
+
+    async function saveSettings() {
+        const formData = new FormData(document.getElementById('settingsForm'));
+        const settings = {};
+        
+        // Convert FormData to object
+        for (let [key, value] of formData.entries()) {
+            settings[key] = value;
+        }
+
+        try {
+            showNotification('Menyimpan pengaturan...', 'info');
+            
+            const response = await fetch('@Url.Action("UpdateSettings", "Payroll")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(settings)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification(result.message, 'success');
+            } else {
+                showNotification(result.message, 'error');
+            }
+        } catch (error) {
+            showNotification('Error: ' + error.message, 'error');
+        }
+    }
+
+    function previewChanges() {
+        showNotification('Fitur preview dalam pengembangan', 'info');
+    }
+
+    function resetToDefaults() {
+        if (confirm('Reset semua pengaturan ke default? Perubahan yang belum disimpan akan hilang.')) {
+            location.reload();
+        }
+    }
+
+    function showNotification(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : type === 'info' ? 'alert-info' : 'alert-danger';
+        const icon = type === 'success' ? 'bi-check-circle' : type === 'info' ? 'bi-info-circle' : 'bi-exclamation-triangle';
+        
+        const notification = `
+            <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 8px;">
+                <i class="bi ${icon}"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', notification);
+        
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            if (alerts.length > 0) alerts[alerts.length - 1].remove();
+        }, 4000);
+    }
+</script>

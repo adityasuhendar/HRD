@@ -417,23 +417,6 @@
         transform: translateY(-1px);
     }
 
-    /* Chart Card */
-    .chart-card {
-        background: var(--aegis-white);
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
-
-    .chart-card-header {
-        background: var(--aegis-red-light);
-        color: var(--aegis-red);
-        padding: 1.5rem 2rem;
-        border-bottom: 1px solid rgba(255, 64, 97, 0.2);
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
 
     /* Empty State */
     .empty-state {
@@ -894,22 +877,6 @@
                 </div>
             </div>
 
-            <!-- Chart Section -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card chart-card animate-in" style="animation-delay: 0.8s;">
-                        <div class="chart-card-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-graph-up"></i>
-                                Grafik Perkembangan Gaji @currentYear
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="salaryChart" height="100"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
         }
         else
         {
@@ -934,122 +901,12 @@
     </div>
 </div>
 
-<!-- Chart.js for Salary Chart -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize salary chart if data exists
-            @if (Model != null && Model.Any())
-            {
-                <text>
-                const ctx = document.getElementById('salaryChart').getContext('2d');
-                const payslipData = @Html.Raw(Json.Serialize(Model.OrderBy(p => p.Bulan).Select(p => new { 
-                    month = p.Bulan, 
-                    monthName = System.Globalization.CultureInfo.GetCultureInfo("id-ID").DateTimeFormat.GetMonthName(p.Bulan),
-                    totalGaji = p.TotalGaji,
-                    gajiPokok = p.GajiPokok,
-                    tunjangan = p.Tunjangan,
-                    potongan = p.Potongan
-                })));
+            // Chart functionality removed to improve performance
 
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: payslipData.map(p => p.monthName),
-                        datasets: [{
-                            label: 'Total Gaji',
-                            data: payslipData.map(p => p.totalGaji),
-                            borderColor: '#ff4061',
-                            backgroundColor: 'rgba(255, 64, 97, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
-                        }, {
-                            label: 'Gaji Pokok',
-                            data: payslipData.map(p => p.gajiPokok),
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.4
-                        }, {
-                            label: 'Tunjangan',
-                            data: payslipData.map(p => p.tunjangan),
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false,
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Bulan'
-                                }
-                            },
-                            y: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Nominal (Rupiah)'
-                                },
-                                ticks: {
-                                    callback: function(value) {
-                                        return 'Rp ' + value.toLocaleString('id-ID');
-                                    }
-                                }
-                            }
-                        },
-                        interaction: {
-                            mode: 'nearest',
-                            axis: 'x',
-                            intersect: false
-                        }
-                    }
-                });
-                </text>
-            }
-
-            // Enhanced notification system
-            function showNotification(message, type) {
-                const alertClass = type === 'success' ? 'alert-success' : type === 'info' ? 'alert-info' : 'alert-danger';
-                const icon = type === 'success' ? 'bi-check-circle-fill' : type === 'info' ? 'bi-info-circle-fill' : 'bi-exclamation-triangle-fill';
-                
-                const notification = `
-                    <div class="alert ${alertClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                        <i class="bi ${icon}"></i> ${message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                `;
-                
-                $('body').append(notification);
-                
-                setTimeout(() => {
-                    $('.alert').fadeOut();
-                }, 4000);
-            }
 
             // Show welcome message
             @if (Model != null && Model.Any())

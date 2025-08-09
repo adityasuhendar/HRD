@@ -331,6 +331,22 @@
                             <span asp-validation-for="NoTelepon" class="text-danger"></span>
                         </div>
                         <div class="col-lg-3 mb-3">
+                            <label asp-for="Divisi" class="form-label">
+                                <i class="bi bi-diagram-3-fill"></i> Divisi <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Divisi" class="form-select">
+                                <option value="">-- Pilih Divisi --</option>
+                                <option value="Development">💻 Development</option>
+                                <option value="Design">🎨 Design</option>
+                                <option value="Marketing">📢 Marketing</option>
+                                <option value="Finance">💰 Finance</option>
+                                <option value="Human Resources">👥 Human Resources</option>
+                                <option value="Operations">⚙️ Operations</option>
+                                <option value="Sales">💼 Sales</option>
+                            </select>
+                            <span asp-validation-for="Divisi" class="text-danger"></span>
+                        </div>
+                        <div class="col-lg-3 mb-3">
                             <label asp-for="Posisi" class="form-label">
                                 <i class="bi bi-briefcase-fill"></i> Posisi <span class="text-danger">*</span>
                             </label>
@@ -350,22 +366,6 @@
                                 <option value="Finance Officer">💰 Finance Officer</option>
                             </select>
                             <span asp-validation-for="Posisi" class="text-danger"></span>
-                        </div>
-                        <div class="col-lg-3 mb-3">
-                            <label asp-for="Divisi" class="form-label">
-                                <i class="bi bi-diagram-3-fill"></i> Divisi <span class="text-danger">*</span>
-                            </label>
-                            <select asp-for="Divisi" class="form-select">
-                                <option value="">-- Pilih Divisi --</option>
-                                <option value="Development">💻 Development</option>
-                                <option value="Design">🎨 Design</option>
-                                <option value="Marketing">📢 Marketing</option>
-                                <option value="Finance">💰 Finance</option>
-                                <option value="Human Resources">👥 Human Resources</option>
-                                <option value="Operations">⚙️ Operations</option>
-                                <option value="Sales">💼 Sales</option>
-                            </select>
-                            <span asp-validation-for="Divisi" class="text-danger"></span>
                         </div>
                         <div class="col-lg-3 mb-3">
                             <label asp-for="TglBergabung" class="form-label">

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.Web\\HRD.Web.csproj": {}
+    "C:\\Users\\wahyu\\source\\repos\\HRD\\HRD.Web\\HRD.Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.Web\\HRD.Web.csproj": {
+    "C:\\Users\\wahyu\\source\\repos\\HRD\\HRD.Web\\HRD.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.Web\\HRD.Web.csproj",
+        "projectUniqueName": "C:\\Users\\wahyu\\source\\repos\\HRD\\HRD.Web\\HRD.Web.csproj",
         "projectName": "HRD.Web",
-        "projectPath": "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.Web\\HRD.Web.csproj",
+        "projectPath": "C:\\Users\\wahyu\\source\\repos\\HRD\\HRD.Web\\HRD.Web.csproj",
         "packagesPath": "C:\\Users\\wahyu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\wahyu\\Source\\Repos\\HRD\\HRD.Web\\obj\\",
+        "outputPath": "C:\\Users\\wahyu\\source\\repos\\HRD\\HRD.Web\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
